@@ -1,18 +1,25 @@
 import { Link } from "expo-router"
 import { Text, View, StyleSheet } from "react-native";
+import {useThemeColor} from "@/hooks/useThemeColor";
 
 export default function Index() {
+  const themeColor = useThemeColor();
+
+  const styles = StyleSheet.create({
+    container: {
+      backgroundColor: themeColor.dark,
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    text: {
+      color: themeColor.text,
+    }
+  });
+
   return (
     <View style={styles.container}>
-      <Text>Edit app/index.tsx to edit this screen.</Text>
+      <Text style={styles.text}>Edit app/index.tsx to edit this screen.</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
