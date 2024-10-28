@@ -1,4 +1,3 @@
-import { Link } from "expo-router"
 import { Text, View, StyleSheet } from "react-native";
 import {useThemeColor} from "@/hooks/useThemeColor";
 
