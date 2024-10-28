@@ -1,5 +1,6 @@
 import { Text, View, StyleSheet } from "react-native";
 import {useThemeColor} from "@/hooks/useThemeColor";
+import "@/global.css";
 
 export default function Index() {
   const themeColor = useThemeColor();
