@@ -16,7 +16,6 @@ export default function Index() {
       color: themeColor.text,
     }
   });
-
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Edit app/index.tsx to edit this screen.</Text>
