@@ -5,8 +5,6 @@ import { DrawerContentComponentProps, DrawerContentScrollView, DrawerItemList } 
 import { View, Image, Text } from 'react-native';
 import { StyleSheet } from 'react-native';
 import {useThemeColor} from "@/hooks/useThemeColor";
-import {useEffect, useState} from "react";
-import axios from "axios";
 
 export default function Layout() {
     const theme = useThemeColor();
@@ -38,26 +36,6 @@ export default function Layout() {
         },
     });
 
-    // API Hook (For Staff name and role
-    const [staffName, setStaffName] = useState('John Doe');
-    const [staffRole, setStaffRole] = useState('Senior Carer');
-
-    useEffect(() => {
-        const fetchStaffInfo = async () => {
-            try {
-                const {data: response} = await axios.get('http://10.12.120.22:8000/api/staff/')
-                // Get the first staff member
-                console.log(response);
-                const first_member = response[0];
-                setStaffName(first_member.full_name);
-                setStaffRole(first_member.role);
-            } catch (e) {
-                console.error(e);
-            }
-        }
-        fetchStaffInfo();
-    }, []);
-
     function CustomDrawerContent(props: DrawerContentComponentProps) {
         return (
             <DrawerContentScrollView {...props}>
@@ -68,9 +46,9 @@ export default function Layout() {
                         style={styles.profilePicture}
                     />
                     <View style={styles.profileInfo}>
-                        <Text style={styles.profileName}>{staffName}</Text>
+                        <Text style={styles.profileName}>John Doe</Text>
                         <Text style={styles.profileLink}>
-                            {staffRole}
+                            View Profile
                         </Text>
                     </View>
                 </View>
