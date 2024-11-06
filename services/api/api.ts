@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
-import {ApiError, LoginRequest, LoginResponse, User} from "@/services/api/types";
+import {ApiError, LoginRequest, LoginResponse} from "@/services/api/types";
 
 // Define the API class
 export class API {
