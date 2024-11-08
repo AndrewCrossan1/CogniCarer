@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 import {ApiError, LoginRequest, LoginResponse} from "@/services/api/types";
+import * as SecureStore from "expo-secure-store";
 
 // Define the API class
 export class API {
@@ -7,7 +8,7 @@ export class API {
 
     constructor() {
         this.client = axios.create({
-            baseURL: 'https://api.example.com',
+            baseURL: process.env['BASE_URL'],
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -44,12 +45,17 @@ export class API {
     // Token Retrieval
     private async getToken(): Promise<string | null> {
         // Retrieve the token from storage
-        return null;
+        let token = await SecureStore.getItemAsync('token');
+        if (!token) {
+            return null;
+        }
+        return token;
     }
 
     // Login
     public async login(data: LoginRequest): Promise<LoginResponse> {
         const response = await this.client.post<LoginResponse>('/auth/login', data);
+
         return response.data;
     }
 }

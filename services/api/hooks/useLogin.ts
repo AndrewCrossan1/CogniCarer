@@ -1,6 +1,7 @@
 import { useState } from "react";
 import API from "@/services/api/api";
 import { LoginRequest, LoginResponse } from "@/services/api/types";
+import * as SecureStore from "expo-secure-store";
 
 export const useLogin = () => {
     const [loading, setLoading] = useState(false);
@@ -13,7 +14,10 @@ export const useLogin = () => {
         try {
             const response = await API.login(loginRequest);
             setData(response);
+            // Retrieve the token and store it in the secure store
+            await SecureStore.setItemAsync("token", response.token);
             return response;
+
         } catch (e) {
             if (e instanceof Error) {
                 setError(e.message);
