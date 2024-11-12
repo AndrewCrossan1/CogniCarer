@@ -14,8 +14,25 @@ export const useLogin = () => {
         try {
             const response = await API.login(loginRequest);
             setData(response);
+
             // Retrieve the token and store it in the secure store
-            await SecureStore.setItemAsync("token", response.token);
+            await SecureStore.setItemAsync('token', response.key).catch(
+                (e) => {
+                    console.error(e);
+                }
+            )
+
+            // Request the user data
+            const user = await API.getUser();
+
+            // Store the user data in the state
+            setData({
+                ...response,
+                user: user,
+            });
+
+            // Modify the response to include the user data
+            response.user = user;
             return response;
 
         } catch (e) {
