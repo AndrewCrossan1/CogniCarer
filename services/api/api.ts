@@ -1,5 +1,5 @@
-import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
-import {ApiError, LoginRequest, LoginResponse} from "@/services/api/types";
+import axios, {AxiosInstance, AxiosResponse, InternalAxiosRequestConfig} from 'axios';
+import {ApiError, LoginRequest, LoginResponse, User} from "@/services/api/types";
 import * as SecureStore from "expo-secure-store";
 
 // Define the API class
@@ -54,9 +54,24 @@ export class API {
 
     // Login
     public async login(data: LoginRequest): Promise<LoginResponse> {
-        const response = await this.client.post<LoginResponse>('/auth/login', data);
-
+        const response = await this.client.post<LoginResponse>('http://192.168.4.37:8000/auth/login/', data);
         return response.data;
+    }
+
+    // Get User
+    public async getUser(): Promise<User> {
+        return await this.client.get('http://192.168.4.37:8000/auth/user/')
+            .then((response) =>
+                response.data);
+    }
+
+    // Logout
+    public async logout(): Promise<void> {
+        // Call the logout endpoint
+        await this.client.post('http://192.168.4.37:8000/auth/logout/');
+
+        // Remove the token from storage
+        await SecureStore.deleteItemAsync('token');
     }
 }
 
