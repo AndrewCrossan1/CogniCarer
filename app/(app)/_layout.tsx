@@ -5,9 +5,12 @@ import { DrawerContentComponentProps, DrawerContentScrollView, DrawerItemList } 
 import { View, Image, Text } from 'react-native';
 import { StyleSheet } from 'react-native';
 import {useThemeColor} from "@/hooks/useThemeColor";
+import {useAuth} from "@/context/AuthContext";
 
 export default function Layout() {
     const theme = useThemeColor();
+
+    const { user } = useAuth();
 
     const styles = StyleSheet.create({
         profileContainer: {
@@ -46,7 +49,7 @@ export default function Layout() {
                         style={styles.profilePicture}
                     />
                     <View style={styles.profileInfo}>
-                        <Text style={styles.profileName}>John Doe</Text>
+                        <Text style={styles.profileName}>{user?.first_name + " " + user?.last_name}</Text>
                         <Text style={styles.profileLink}>
                             View Profile
                         </Text>
@@ -76,11 +79,6 @@ export default function Layout() {
                                options={{
                                    drawerIcon: ({ color }) => <FontAwesome name="home" size={24} color={color} />,
                                    title: 'Home',
-                               }}/>
-                <Drawer.Screen name="(mealtime)"
-                               options={{
-                                   drawerIcon: ({ color }) => <FontAwesome name="cutlery" size={24} color={color} />,
-                                   title: 'Meals',
                                }}/>
             </Drawer>
         </GestureHandlerRootView>
