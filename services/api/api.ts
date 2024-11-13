@@ -58,6 +58,13 @@ export class API {
         return response.data;
     }
 
+    // Update User
+    public async update(data: {email: string, first_name: string, last_name: string}): Promise<User> {
+        return await this.client.put('http://192.168.4.37:8000/auth/user/', data)
+            .then((response) =>
+                response.data);
+    }
+
     // Get User
     public async getUser(): Promise<User> {
         return await this.client.get('http://192.168.4.37:8000/auth/user/')
