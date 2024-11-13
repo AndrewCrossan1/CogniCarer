@@ -29,7 +29,7 @@ export function Alert({ message, type, visible, onPress}: { message: string, typ
     }, [visible]);
 
     return (
-        <SafeAreaView className={"flex-1 inset-x-0 top-0 z-50"}>
+        <SafeAreaView className={"flex-1 inset-x-0 top-0"} style={{ zIndex: 1000}}>
             <Animated.View
                 className={`transition ease-linear ${visible ? "visible" : "invisible" } absolute top-6 left-4 right-4 mx-auto border-1-4 rounded-lg ${alertColors} shadow  p-4`}
                 style={{ zIndex: 1000, transform: [{ translateY: slideAnim}] }}>
