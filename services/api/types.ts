@@ -11,6 +11,7 @@ export interface User {
     first_name: string;
     last_name: string;
     staff_role: string;
+    date_joined: string;
 }
 
 // Define a type for login response payload
