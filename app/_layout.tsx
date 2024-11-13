@@ -6,20 +6,20 @@ import AuthHandler from "@/app/AuthHandler";
 export default function RootLayout() {
     return (
         <AuthProvider>
-           <AuthHandler/>
+            <AuthHandler/>
             <Stack
                 screenOptions={{
                     headerShown: false
                 }}>
                 <Stack.Screen name="(app)"
-                    options={{
-                        gestureEnabled: false
-                    }}
+                              options={{
+                                  gestureEnabled: false
+                              }}
                 />
                 <Stack.Screen name="(auth)/login"
-                    options={{
-                        gestureEnabled: false
-                    }}
+                              options={{
+                                  gestureEnabled: false
+                              }}
                 />
             </Stack>
         </AuthProvider>
