@@ -177,7 +177,7 @@ export default function LoginScreen() {
                                        placeholder={"Password"}
                                        placeholderTextColor={"gray"}/>
                         </Animated.View>
-                        <Text className={"dark:text-white"}>Forgot your password? <Link href={"/(auth)/forgot-password"} className={"underline underline-offset-2"}>Reset it here</Link></Text>
+                        {/* <Text className={"dark:text-white"}>Forgot your password? <Link href={"/(auth)/forgot-password"} className={"underline underline-offset-2"}>Reset it here</Link></Text>*/}
                         {loading ? <ActivityIndicator size={"large"} className={"dark:text-white text-blue-500 mt-10"}/> : <TouchableOpacity onPress={handleLogin} className={"w-full bg-blue-500 text-white p-2.5 rounded-md mt-10"}>
                             <Text className={"text-center text-white text-lg"}>
                                 Login
