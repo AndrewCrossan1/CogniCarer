@@ -2,6 +2,7 @@ import { createContext, useContext, useState, ReactNode, FC } from "react";
 import {useLogout} from "@/services/api/hooks/useLogout";
 import {useLogin} from "@/services/api/hooks/useLogin";
 import {User} from "@/services/api/types";
+import {useUpdateUser} from "@/services/api/hooks/useUpdateUser";
 
 // Define the shape of the context
 interface AuthContextType {
@@ -9,6 +10,7 @@ interface AuthContextType {
     user: User | null;
     loginUser: (email: string, password: string) => Promise<boolean>;
     logoutUser: () => void;
+    updateUser: (email: string, firstName: string, lastName: string) => Promise<boolean>
 }
 
 // Create the context
@@ -22,6 +24,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     // Call the login hook
     const { login } = useLogin();
     const { logout } = useLogout();
+    const { update } = useUpdateUser();
 
     const loginUser = async (email: string, password: string): Promise<boolean> => {
         const { user, key } = await login({ email, password });
@@ -43,8 +46,17 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         await logout();
     };
 
+    const updateUser = async (email: string, firstName: string, lastName: string): Promise<boolean> => {
+        const updatedUser = await update(email, firstName, lastName);
+        if (updatedUser) {
+            setUser(updatedUser);
+            return true;
+        }
+        return false;
+    }
+
     return (
-        <AuthContext.Provider value={{ key, user, loginUser, logoutUser }}>
+        <AuthContext.Provider value={{ key, user, loginUser, logoutUser, updateUser }}>
             {children}
         </AuthContext.Provider>
     );
