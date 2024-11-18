@@ -51,7 +51,7 @@ export default function Layout() {
                     <View style={styles.profileInfo}>
                         <Text style={styles.profileName}>{user?.first_name + " " + user?.last_name}</Text>
                         <Text style={styles.profileLink}>
-                            View Profile
+                            {user?.staff_role}
                         </Text>
                     </View>
                 </View>
@@ -80,6 +80,11 @@ export default function Layout() {
                                    drawerIcon: ({ color }) => <FontAwesome name="home" size={24} color={color} />,
                                    title: 'Home',
                                }}/>
+                <Drawer.Screen name="myaccount"
+                                 options={{
+                                      drawerIcon: ({ color }) => <FontAwesome name="user" size={24} color={color} />,
+                                      title: 'My Account',
+                                 }}/>
             </Drawer>
         </GestureHandlerRootView>
     )
