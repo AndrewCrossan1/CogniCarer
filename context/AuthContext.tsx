@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, ReactNode, FC } from "react";
-import {useLogout} from "@/services/api/hooks/useLogout";
-import {useLogin} from "@/services/api/hooks/useLogin";
+import {useLogout} from "@/hooks/useLogout";
+import {useLogin} from "@/hooks/useLogin";
 import {User} from "@/services/api/types";
-import {useUpdateUser} from "@/services/api/hooks/useUpdateUser";
+import {useUpdateUser} from "@/hooks/useUpdateUser";
 
 // Define the shape of the context
 interface AuthContextType {

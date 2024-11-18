@@ -1,6 +1,6 @@
 // useLogin.test.tsx
 import { renderHook, act } from '@testing-library/react';
-import { useLogin } from '@/services/api/hooks/useLogin';
+import { useLogin } from '@/hooks/useLogin';
 import API from '@/services/api/api';
 
 // Mock the API instance
