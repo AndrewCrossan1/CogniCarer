@@ -5,6 +5,7 @@ import * as SecureStore from "expo-secure-store";
 // Define the API class
 export class API {
     private client: AxiosInstance;
+    private base_url: string = 'http://192.168.4.49:8000'
 
     constructor() {
         this.client = axios.create({
@@ -54,20 +55,20 @@ export class API {
 
     // Login
     public async login(data: LoginRequest): Promise<LoginResponse> {
-        const response = await this.client.post<LoginResponse>('http://192.168.4.37:8000/auth/login/', data);
+        const response = await this.client.post<LoginResponse>(this.base_url + '/auth/login/', data);
         return response.data;
     }
 
     // Update User
     public async update(data: {email: string, first_name: string, last_name: string}): Promise<User> {
-        return await this.client.put('http://192.168.4.37:8000/auth/user/', data)
+        return await this.client.put(this.base_url + '/auth/user/', data)
             .then((response) =>
                 response.data);
     }
 
     // Get User
     public async getUser(): Promise<User> {
-        return await this.client.get('http://192.168.4.37:8000/auth/user/')
+        return await this.client.get(this.base_url + '/auth/user/')
             .then((response) =>
                 response.data);
     }
@@ -75,7 +76,7 @@ export class API {
     // Logout
     public async logout(): Promise<void> {
         // Call the logout endpoint
-        await this.client.post('http://192.168.4.37:8000/auth/logout/');
+        await this.client.post(this.base_url + '/auth/logout/');
 
         // Remove the token from storage
         await SecureStore.deleteItemAsync('token');

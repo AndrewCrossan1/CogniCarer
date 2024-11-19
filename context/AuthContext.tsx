@@ -3,6 +3,7 @@ import {useLogout} from "@/hooks/useLogout";
 import {useLogin} from "@/hooks/useLogin";
 import {User} from "@/services/api/types";
 import {useUpdateUser} from "@/hooks/useUpdateUser";
+import {useRouter} from "expo-router";
 
 // Define the shape of the context
 interface AuthContextType {
@@ -25,6 +26,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const { login } = useLogin();
     const { logout } = useLogout();
     const { update } = useUpdateUser();
+    const router = useRouter();
 
     const loginUser = async (email: string, password: string): Promise<boolean> => {
         const { user, key } = await login({ email, password });
@@ -44,6 +46,9 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
         // Call the logout hook
         await logout();
+
+        // Redirect to the login page
+        router.push("/(auth)/login");
     };
 
     const updateUser = async (email: string, firstName: string, lastName: string): Promise<boolean> => {

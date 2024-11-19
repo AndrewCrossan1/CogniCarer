@@ -51,15 +51,15 @@ export default function LoginScreen() {
         return () => clearTimeout(timer);
     }, [localVisible]);
 
-    const { loginUser } = useAuth();
+    const {loginUser} = useAuth();
 
     // Functions
     const shake = (animation: Animated.Value | Animated.ValueXY) => {
         Animated.sequence([
-            Animated.timing(animation, { toValue: 10, duration: 50, useNativeDriver: true }),
-            Animated.timing(animation, { toValue: -10, duration: 50, useNativeDriver: true }),
-            Animated.timing(animation, { toValue: 10, duration: 50, useNativeDriver: true }),
-            Animated.timing(animation, { toValue: 0, duration: 50, useNativeDriver: true })
+            Animated.timing(animation, {toValue: 10, duration: 50, useNativeDriver: true}),
+            Animated.timing(animation, {toValue: -10, duration: 50, useNativeDriver: true}),
+            Animated.timing(animation, {toValue: 10, duration: 50, useNativeDriver: true}),
+            Animated.timing(animation, {toValue: 0, duration: 50, useNativeDriver: true})
         ]).start();
     };
     const handleLogin = async () => {
@@ -111,7 +111,7 @@ export default function LoginScreen() {
             }
             setLoading(false);
             setServerVisible(true);
-            setError({ errorCode: err, errorMessage: ErrorMessages[err] });
+            setError({errorCode: err, errorMessage: ErrorMessages[err]});
         }
     };
     const validateForm = () => {
@@ -133,11 +133,15 @@ export default function LoginScreen() {
         <SafeAreaView className={"flex-1 inset-x-0 top-0 z-50 bg-neutral-200 dark:bg-neutral-800"}>
             {/* Alert for login errors */}
             <View className={"android:mt-safe"}>
-                {error ? <Alert message={error?.errorMessage} visible={serverVisible} onPress={() => setServerVisible(false)} type={"error"}/> : null}
+                {error ?
+                    <Alert message={error?.errorMessage} visible={serverVisible} onPress={() => setServerVisible(false)}
+                           type={"error"}/> : null}
             </View>
             {/* Alert for form errors */}
             <View className={"android:mt-safe"}>
-                {hasErrors ? <Alert message={"Please fill in all fields"} visible={localVisible} onPress={() => {setLocalVisible(false)}} type={"error"}/> : null}
+                {hasErrors ? <Alert message={"Please fill in all fields"} visible={localVisible} onPress={() => {
+                    setLocalVisible(false)
+                }} type={"error"}/> : null}
             </View>
             <View className={"flex-1 mt-safe-or-24"}>
                 <View className={"flex-1 p-8 justify-start"}>
@@ -157,7 +161,7 @@ export default function LoginScreen() {
                     {/* Form */}
                     <View className={"w-full mt-16"}>
                         <Text className={"font-bold dark:text-white"}>Email Address</Text>
-                        <Animated.View style={{ transform: [{ translateX: emailShakeAnim }] }}>
+                        <Animated.View style={{transform: [{translateX: emailShakeAnim}]}}>
                             <TextInput key={"emailInput"}
                                        onChangeText={setEmail}
                                        className={`w-full p-2.5 border border-gray-300 rounded-md my-2 focus:border-blue-500 transition ease-linear dark:text-white`}
@@ -168,7 +172,7 @@ export default function LoginScreen() {
                                        placeholderTextColor={"gray"}/>
                         </Animated.View>
                         <Text className={"font-bold mt-4 dark:text-white"}>Password</Text>
-                        <Animated.View style={{ transform: [{ translateX: passwordShakeAnim }] }}>
+                        <Animated.View style={{transform: [{translateX: passwordShakeAnim}]}}>
                             <TextInput key={"passwordInput"}
                                        onChangeText={setPassword}
                                        secureTextEntry={true}
@@ -178,16 +182,20 @@ export default function LoginScreen() {
                                        placeholderTextColor={"gray"}/>
                         </Animated.View>
                         {/* <Text className={"dark:text-white"}>Forgot your password? <Link href={"/(auth)/forgot-password"} className={"underline underline-offset-2"}>Reset it here</Link></Text>*/}
-                        {loading ? <ActivityIndicator size={"large"} className={"dark:text-white text-blue-500 mt-10"}/> : <TouchableOpacity onPress={handleLogin} className={"w-full bg-blue-500 text-white p-2.5 rounded-md mt-10"}>
-                            <Text className={"text-center text-white text-lg"}>
-                                Login
-                            </Text>
-                        </TouchableOpacity>}
+                        {loading ?
+                            <ActivityIndicator size={"large"} className={"dark:text-white text-blue-500 mt-10"}/> :
+                            <TouchableOpacity onPress={handleLogin}
+                                              className={"w-full bg-blue-500 text-white p-2.5 rounded-md mt-10"}>
+                                <Text className={"text-center text-white text-lg"}>
+                                    Login
+                                </Text>
+                            </TouchableOpacity>}
                     </View>
                     {/* Footer (Forgot Password and Sign up */}
                     <View className={`w-full mt-4 ${loading ? "invisible" : "visible"}`}>
                         <Text className={"text-lg leading-none tracking-tight dark:text-white"}>
-                            First time? <Link className={"underline underline-offset-2"} href={"/(auth)/sign-up"}>Sign up</Link>
+                            First time? <Link className={"underline underline-offset-2"} href={"/(auth)/sign-up"}>Sign
+                            up</Link>
                         </Text>
                     </View>
                 </View>
