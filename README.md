@@ -1,50 +1,27 @@
-# Welcome to your Expo app 👋
+<h2 style="color: pink;">IOS Development</h2>
+Until Expo 52 is fixed and I can properly use it again without literally my whole application crashing and
+breaking, IOS development is cancelled. The project will be tested purely on Android through an old version
+of Expo Go that supports Expo 51, this was achieved with sideloading.
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+When Expo 52 is patched and the bugs I am facing with <mark>react-navigation/drawer</mark> are fixed, then IOS
+Development can continue, just to note; Everything worked as expected with IOS so far, until the Expo Upgrade.
 
-## Get started
+<h2 style="color: pink;">Android Development</h2>
+This application will now target Android devices until the aforementioned issues are fixed, if they are not fixed,
+then it will be an Android application.
 
-1. Install dependencies
+<h2 style="color: pink;">Project Description</h2>
+This unnamed project is to create a centralised solution where carers can carry out daily activities and improve
+rehabilitation given to patients through different means, like reminiscence therapy, and physical touch exercises.
 
-   ```bash
-   npm install
-   ```
+Each feature is backed up and shown why it should be implemented using different articles and papers found online,
+these are all scientific and are the motivations behind the functionality.
 
-2. Start the app
+<h2 style="color: pink;">Technologies</h2>
+I have chosen to use Expo for this project because I do not have any form of Apple device with XCode installed, nor
+do I intend to purchase one for this project, so I use Expo to target IOS and Android, testing through the use of Expo
+Go.
 
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+<i>Developed by Andrew Crossan<br>
+4th Year Computer Science Student<br>
+University of Strathclyde
