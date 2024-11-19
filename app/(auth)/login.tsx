@@ -130,7 +130,7 @@ export default function LoginScreen() {
 
     // Render
     return (
-        <SafeAreaView className={"flex-1 inset-x-0 top-0 z-50 bg-neutral-200 dark:bg-neutral-800"}>
+        <SafeAreaView className={"flex-1 inset-x-0 top-0 z-50 bg-neutral-100 dark:bg-neutral-800"}>
             {/* Alert for login errors */}
             <View className={"android:mt-safe"}>
                 {error ?
@@ -163,10 +163,11 @@ export default function LoginScreen() {
                         <Text className={"font-bold dark:text-white"}>Email Address</Text>
                         <Animated.View style={{transform: [{translateX: emailShakeAnim}]}}>
                             <TextInput key={"emailInput"}
-                                       onChangeText={setEmail}
-                                       className={`w-full p-2.5 border border-gray-300 rounded-md my-2 focus:border-blue-500 transition ease-linear dark:text-white`}
+                                       onChangeText={e => setEmail(e)}
+                                       className={`w-full h-100 p-2.5 border border-gray-300 rounded-md my-2 focus:border-blue-500 transition ease-linear dark:text-white`}
                                        spellCheck={false}
                                        editable={!loading}
+                                       value={email}
                                        autoCorrect={false}
                                        placeholder={"Email Address"}
                                        placeholderTextColor={"gray"}/>
@@ -177,7 +178,8 @@ export default function LoginScreen() {
                                        onChangeText={setPassword}
                                        secureTextEntry={true}
                                        editable={!loading}
-                                       className={`w-full p-2.5 border border-gray-300 rounded-md my-2 focus:border-blue-500 transition ease-linear dark:text-white`}
+                                       value={password}
+                                       className={`w-full p-2.5 h-100 border border-gray-300 rounded-md my-2 focus:border-blue-500 transition ease-linear dark:text-white`}
                                        placeholder={"Password"}
                                        placeholderTextColor={"gray"}/>
                         </Animated.View>
