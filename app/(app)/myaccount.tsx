@@ -6,7 +6,7 @@ import {
     TextInput,
     TouchableOpacity,
     Animated,
-    ActivityIndicator
+    ActivityIndicator, ScrollView, Dimensions
 } from "react-native";
 import {useAuth} from "@/context/AuthContext";
 import {useEffect, useRef, useState} from "react";
@@ -175,8 +175,11 @@ export default function MyAccount() {
         }
     }
 
+    const height = Dimensions.get('window').height
+
     return (
-        <View className={"flex-1 dark:bg-neutral-800"} style={{zIndex: 0}}>
+        <View className={"flex-1 dark:bg-neutral-800"} style={{zIndex: 0, height: height}}>
+            <ScrollView>
             <View className={"android:mt-safe ios:mt-2"} style={{zIndex: 1000}}>
                 {/* Alert for login errors */}
                 {error ? <Alert message={error?.errorMessage} visible={serverVisible} onPress={() => setServerVisible(false)} type={"error"}/> : null}
@@ -188,7 +191,7 @@ export default function MyAccount() {
             <View className={"android:mt-safe ios:mt-2"} style={{zIndex: 0}}>
                 <View className={"items-center"}>
                     <Image
-                        source={{ uri: 'https://randomuser.me/api/portraits/women/4.jpg'}} // This is a placeholder image
+                        source={{ uri: 'https://randomuser.me/api/portraits/men/13.jpg'}} // This is a placeholder image
                         style={styles.profilePicture}
                     />
                     <Text className={"font-bold text-4xl dark:text-white mt-5"}>{user?.first_name + " " + user?.last_name}</Text>
@@ -197,76 +200,76 @@ export default function MyAccount() {
 
                 {/* Other account details */}
                 <View className={"mt-5 p-4"}>
-                    <Text className={"font-bold dark:text-white"}>User ID</Text>
-                    <TextInput
-                        className={`w-full p-2.5 border border-gray-300 rounded-md my-2 focus:border-blue-500 transition ease-linear dark:text-white`}
-                        spellCheck={false}
-                        autoCorrect={false}
-                        editable={false}
-                        placeholder={"User ID"}
-                        placeholderTextColor={"gray"}>
-                        {user?.pk}
-                    </TextInput>
-                    <View className={"flex flex-row items-center mt-2"}>
-                        <Text className={"font-bold dark:text-white mr-2"}>Email Address</Text>
-                        <FontAwesome name={editing ? "unlock" : "lock"} size={18} color={theme.text} />
-                    </View>
-                    <Animated.View style={{ transform: [{ translateX: emailShakeAnim }] }}>
+                        <Text className={"font-bold dark:text-white"}>User ID</Text>
                         <TextInput
                             className={`w-full p-2.5 border border-gray-300 rounded-md my-2 focus:border-blue-500 transition ease-linear dark:text-white`}
                             spellCheck={false}
                             autoCorrect={false}
-                            onChangeText={setEmail}
-                            editable={editing}
-                            placeholder={"Email Address"}
+                            editable={false}
+                            placeholder={"User ID"}
                             placeholderTextColor={"gray"}>
-                            {user?.email}
+                            {user?.pk}
                         </TextInput>
-                    </Animated.View>
-                    <View className={"flex flex-row items-center mt-2"}>
-                        <Text className={"font-bold dark:text-white mr-2"}>First name</Text>
-                        <FontAwesome name={editing ? "unlock" : "lock"} size={18} color={theme.text} />
-                    </View>
-                    <Animated.View style={{ transform: [{ translateX: firstNameShakeAnim }] }}>
+                        <View className={"flex flex-row items-center mt-2"}>
+                            <Text className={"font-bold dark:text-white mr-2"}>Email Address</Text>
+                            <FontAwesome name={editing ? "unlock" : "lock"} size={18} color={theme.text} />
+                        </View>
+                        <Animated.View style={{ transform: [{ translateX: emailShakeAnim }] }}>
+                            <TextInput
+                                className={`w-full p-2.5 border border-gray-300 rounded-md my-2 focus:border-blue-500 transition ease-linear dark:text-white`}
+                                spellCheck={false}
+                                autoCorrect={false}
+                                onChangeText={setEmail}
+                                value={email}
+                                editable={editing}
+                                placeholder={"Email Address"}
+                                placeholderTextColor={"gray"}>
+                            </TextInput>
+                        </Animated.View>
+                        <View className={"flex flex-row items-center mt-2"}>
+                            <Text className={"font-bold dark:text-white mr-2"}>First name</Text>
+                            <FontAwesome name={editing ? "unlock" : "lock"} size={18} color={theme.text} />
+                        </View>
+                        <Animated.View style={{ transform: [{ translateX: firstNameShakeAnim }] }}>
+                            <TextInput
+                                className={`w-full p-2.5 border border-gray-300 rounded-md my-2 focus:border-blue-500 transition ease-linear dark:text-white`}
+                                spellCheck={false}
+                                onChangeText={setFirstName}
+                                autoCorrect={false}
+                                value={firstName}
+                                editable={editing}
+                                placeholder={"First name"}
+                                placeholderTextColor={"gray"}>
+                            </TextInput>
+                        </Animated.View>
+                        <View className={"flex flex-row items-center mt-2"}>
+                            <Text className={"font-bold dark:text-white mr-2"}>Last name</Text>
+                            <FontAwesome name={editing ? "unlock" : "lock"} size={18} color={theme.text} />
+                        </View>
+                        <Animated.View style={{ transform: [{ translateX: lastNameShakeAnim }] }}>
+                            <TextInput className={`w-full p-2.5 border border-gray-300 rounded-md my-2 focus:border-blue-500 transition ease-linear dark:text-white`}
+                                       spellCheck={false}
+                                       onChangeText={setLastName}
+                                       autoCorrect={false}
+                                       editable={editing}
+                                       value={lastName}
+                                       placeholder={"Last name"}
+                                       placeholderTextColor={"gray"}>
+                            </TextInput>
+                        </Animated.View>
+                        <Text className={"font-bold dark:text-white mt-4"}>Date Joined</Text>
                         <TextInput
                             className={`w-full p-2.5 border border-gray-300 rounded-md my-2 focus:border-blue-500 transition ease-linear dark:text-white`}
                             spellCheck={false}
-                            onChangeText={setFirstName}
                             autoCorrect={false}
-                            editable={editing}
-                            placeholder={"First name"}
+                            editable={false}
+                            placeholder={"Date Joined"}
                             placeholderTextColor={"gray"}>
-                            {user?.first_name}
-                        </TextInput>
-                    </Animated.View>
-                    <View className={"flex flex-row items-center mt-2"}>
-                        <Text className={"font-bold dark:text-white mr-2"}>Last name</Text>
-                        <FontAwesome name={editing ? "unlock" : "lock"} size={18} color={theme.text} />
-                    </View>
-                    <Animated.View style={{ transform: [{ translateX: lastNameShakeAnim }] }}>
-                        <TextInput className={`w-full p-2.5 border border-gray-300 rounded-md my-2 focus:border-blue-500 transition ease-linear dark:text-white`}
-                                   spellCheck={false}
-                                   onChangeText={setLastName}
-                                   autoCorrect={false}
-                                   editable={editing}
-                                   placeholder={"Last name"}
-                                   placeholderTextColor={"gray"}>
-                            {user?.last_name}
-                        </TextInput>
-                    </Animated.View>
-                    <Text className={"font-bold dark:text-white mt-4"}>Date Joined</Text>
-                    <TextInput
-                        className={`w-full p-2.5 border border-gray-300 rounded-md my-2 focus:border-blue-500 transition ease-linear dark:text-white`}
-                        spellCheck={false}
-                        autoCorrect={false}
-                        editable={false}
-                        placeholder={"Date Joined"}
-                        placeholderTextColor={"gray"}>
-                        {/* Format the data */}
-                        {/* @ts-ignore */}
-                        {new Date(user.date_joined).toLocaleDateString()}
+                            {/* Format the data */}
+                            {/* @ts-ignore */}
+                            {new Date(user.date_joined).toLocaleDateString()}
 
-                    </TextInput>
+                        </TextInput>
                 </View>
                 <View className={"p-4"}>
                     {loading ? <ActivityIndicator size={"large"} className={"dark:text-white text-blue-500"}/> : <TouchableOpacity onPress={handlePress} className={"w-full bg-blue-500 text-white p-2.5 rounded-md"}>
@@ -276,6 +279,7 @@ export default function MyAccount() {
                     </TouchableOpacity>}
                 </View>
             </View>
+            </ScrollView>
         </View>
     )
 }
