@@ -7,6 +7,7 @@ import {useEffect, useRef, useState} from "react";
 import { ErrorCodes, ErrorMessages } from "@/constants/Errors";
 import {ErrorResponse} from "@/services/api/types";
 import {Alert} from "@/components/Alert";
+import {Checkbox} from "react-native-paper";
 
 export default function LoginScreen() {
     // State
@@ -17,6 +18,7 @@ export default function LoginScreen() {
     const [loading, setLoading] = useState(false);
     const [serverVisible, setServerVisible] = useState(false);
     const [localVisible, setLocalVisible] = useState(false);
+    const [checked, setChecked] = useState(false);
     const router = useRouter();
 
     // Refs
@@ -137,12 +139,14 @@ export default function LoginScreen() {
                     <Alert message={error?.errorMessage} visible={serverVisible} onPress={() => setServerVisible(false)}
                            type={"error"}/> : null}
             </View>
+
             {/* Alert for form errors */}
             <View className={"android:mt-safe"}>
                 {hasErrors ? <Alert message={"Please fill in all fields"} visible={localVisible} onPress={() => {
                     setLocalVisible(false)
                 }} type={"error"}/> : null}
             </View>
+
             <View className={"flex-1 mt-safe-or-24"}>
                 <View className={"flex-1 p-8 justify-start"}>
                     {/* Title and subtitle */}
@@ -158,6 +162,7 @@ export default function LoginScreen() {
                             </Text>
                         </View>
                     </View>
+
                     {/* Form */}
                     <View className={"w-full mt-16"}>
                         <Text className={"font-bold dark:text-white"}>Email Address</Text>
@@ -172,6 +177,7 @@ export default function LoginScreen() {
                                        placeholder={"Email Address"}
                                        placeholderTextColor={"gray"}/>
                         </Animated.View>
+
                         <Text className={"font-bold mt-4 dark:text-white"}>Password</Text>
                         <Animated.View style={{transform: [{translateX: passwordShakeAnim}]}}>
                             <TextInput key={"passwordInput"}
@@ -183,7 +189,12 @@ export default function LoginScreen() {
                                        placeholder={"Password"}
                                        placeholderTextColor={"gray"}/>
                         </Animated.View>
-                        {/* <Text className={"dark:text-white"}>Forgot your password? <Link href={"/(auth)/forgot-password"} className={"underline underline-offset-2"}>Reset it here</Link></Text>*/}
+
+                        <View className={"flex flex-row items-center mt-2"}>
+                            <Checkbox.Android status={checked ? 'checked' : 'unchecked'} onPress={() => setChecked(!checked)} color={"#3B82F6"} className={"dark:text-white"}/>
+                            <Text className={"dark:text-white ml-2"}>Remember me</Text>
+                        </View>
+
                         {loading ?
                             <ActivityIndicator size={"large"} className={"dark:text-white text-blue-500 mt-10"}/> :
                             <TouchableOpacity onPress={handleLogin}
@@ -193,6 +204,7 @@ export default function LoginScreen() {
                                 </Text>
                             </TouchableOpacity>}
                     </View>
+
                     {/* Footer (Forgot Password and Sign up */}
                     <View className={`w-full mt-4 ${loading ? "invisible" : "visible"}`}>
                         <Text className={"text-lg leading-none tracking-tight dark:text-white"}>
