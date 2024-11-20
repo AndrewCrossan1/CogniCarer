@@ -5,11 +5,10 @@ import * as SecureStore from "expo-secure-store";
 // Define the API class
 export class API {
     private client: AxiosInstance;
-    private base_url: string = 'http://192.168.4.49:8000'
 
     constructor() {
         this.client = axios.create({
-            baseURL: process.env['BASE_URL'],
+            baseURL: process.env.EXPO_PUBLIC_API_URL,
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -55,20 +54,20 @@ export class API {
 
     // Login
     public async login(data: LoginRequest): Promise<LoginResponse> {
-        const response = await this.client.post<LoginResponse>(this.base_url + '/auth/login/', data);
+        const response = await this.client.post<LoginResponse>('/auth/login/', data);
         return response.data;
     }
 
     // Update User
     public async update(data: {email: string, first_name: string, last_name: string}): Promise<User> {
-        return await this.client.put(this.base_url + '/auth/user/', data)
+        return await this.client.put('/auth/user/', data)
             .then((response) =>
                 response.data);
     }
 
     // Get User
     public async getUser(): Promise<User> {
-        return await this.client.get(this.base_url + '/auth/user/')
+        return await this.client.get('/auth/user/')
             .then((response) =>
                 response.data);
     }
@@ -76,7 +75,7 @@ export class API {
     // Logout
     public async logout(): Promise<void> {
         // Call the logout endpoint
-        await this.client.post(this.base_url + '/auth/logout/');
+        await this.client.post('/auth/logout/');
 
         // Remove the token from storage
         await SecureStore.deleteItemAsync('token');
