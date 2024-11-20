@@ -3,15 +3,18 @@ import { useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 
 export default function AuthHandler() {
-    const { key } = useAuth()
+    const { keyCheck, key } = useAuth()
     const router = useRouter()
     const [mounted, setMounted] = useState(false)
 
-    useEffect(() => {
+    useEffect(()  => {
         setMounted(true)
     }, []);
 
     useEffect(() => {
+        if (mounted && !key) {
+            keyCheck()
+        }
         if (mounted && !key) {
             router.push("/(auth)/login")
         } else if (mounted && key) {
