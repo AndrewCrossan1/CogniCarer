@@ -6,7 +6,7 @@ export default function TemplateList() {
             flex: 1,
             justifyContent: "center",
             alignItems: "center",
-        },
+        }
     });
 
     return (

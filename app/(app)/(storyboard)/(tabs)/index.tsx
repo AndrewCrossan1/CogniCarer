@@ -1,9 +1,6 @@
 import {View, Text, StyleSheet} from "react-native";
-import {useThemeColor} from "@/hooks/useThemeColor";
 
 export default function Storyboard() {
-    // This is the home page for Storyboards, responses and templates will be briefly displayed here,
-    // The user can also choose to register a new response with a patient.
     const styles = StyleSheet.create({
         container: {
             flex: 1,

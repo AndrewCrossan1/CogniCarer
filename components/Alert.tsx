@@ -1,6 +1,5 @@
 import {View, Text, TouchableOpacity, Animated, SafeAreaView} from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {useEffect, useRef} from "react";
 
 export function Alert({ message, type, visible, onPress}: { message: string, type: "error" | "success", visible: boolean, onPress: () => void }) {
 

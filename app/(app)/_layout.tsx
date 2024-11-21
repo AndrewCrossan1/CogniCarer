@@ -72,7 +72,7 @@ export default function Layout() {
                     headerTintColor: theme.text,
                     drawerInactiveTintColor: theme.text,
                     headerStyle: { backgroundColor: theme.light, shadowColor: theme.drawerBottomBorderColor },
-                    drawerStyle: { backgroundColor: theme.TabBackgroundColor, borderBottomColor: theme.drawerBottomBorderColor },
+                    drawerStyle: { backgroundColor: theme.TabBackgroundColor, borderBottomColor: theme.drawerBottomBorderColor }
                 }}
                 drawerContent={CustomDrawerContent}>
                 <Drawer.Screen name="index"
@@ -81,14 +81,14 @@ export default function Layout() {
                                    title: 'Home',
                                }}/>
                 <Drawer.Screen name="myaccount"
-                                 options={{
-                                      drawerIcon: ({ color }) => <FontAwesome name="user" size={24} color={color} />,
-                                      title: 'My Account',
-                                 }}/>
+                               options={{
+                                   drawerIcon: ({ color }) => <FontAwesome name="user" size={24} color={color} />,
+                                   title: 'My Account',
+                               }}/>
                 <Drawer.Screen name="(storyboard)"
                                options={{
-                                      drawerIcon: ({ color }) => <FontAwesome name="book" size={24} color={color} />,
-                                      title: 'Storyboard',
+                                   drawerIcon: ({ color }) => <FontAwesome name="book" size={24} color={color} />,
+                                   title: 'Storyboard',
                                }}/>
             </Drawer>
         </GestureHandlerRootView>
