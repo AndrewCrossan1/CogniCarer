@@ -10,8 +10,9 @@ export const useGetTemplates = () => {
     const getTemplates = async () => {
         setLoading(true);
         return await API.getTemplates().then((templates) => {
-            setTemplates(templates);
             setLoading(false);
+            setTemplates(templates);
+            return templates;
         });
     }
 
