@@ -31,3 +31,13 @@ export interface ErrorResponse {
     errorMessage: string;
     errorCode: number;
 }
+
+// Storyboard Types
+export interface Template {
+    uuid: string;
+    name: string;
+    description: string;
+    content: string;
+    created_at: string;
+    updated_at: string;
+}
