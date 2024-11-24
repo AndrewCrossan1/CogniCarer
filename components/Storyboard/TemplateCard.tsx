@@ -21,8 +21,9 @@ export function TemplateCard({template}: { template: Template }) {
                 width: 0,
                 height: 2,
             },
-            shadowOpacity: 0.25,
+            shadowOpacity: 0.3,
             shadowRadius: 4,
+            shadowColor: "#000",
             elevation: 5,
         },
         content: {
@@ -50,7 +51,7 @@ export function TemplateCard({template}: { template: Template }) {
 
 
     return (
-        <View style={styles.container} className={"border dark:bg-neutral-900 rounded-lg my-2 p-4"}>
+        <View style={styles.container} className={"dark:border bg-neutral-200 dark:bg-neutral-900 rounded-lg my-2 p-4"}>
             {/* Title and description */}
             <View>
                 <Text className={"font-bold dark:text-white text-lg"}>{template.name}</Text>
@@ -59,14 +60,15 @@ export function TemplateCard({template}: { template: Template }) {
             </View>
             <View style={styles.content}>
                 {/* Display the content with the {inputs}  highlighted */}
-                <Text className={"dark:text-white mt-2"}>
+                <Text className={"dark:text-white mt-2"}>"
                     {contentArray.map((item, index) => {
                         if (inputs && inputs.includes(`{${item}}`)) {
-                            return <Text key={index} className={"dark:text-blue-500"}>{"{" + item + "}"}</Text>
+                            return <Text key={index} className={"text-blue-500"}>{"{" + item + "}"}</Text>
                         } else {
                             return <Text key={index} className={"dark:text-white"}>{item}</Text>
                         }
                     })}
+                    "
                 </Text>
                 <Text className={"text-blue-500 mt-2"}>
                     0 responses
