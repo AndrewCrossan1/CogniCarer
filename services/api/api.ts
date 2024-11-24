@@ -1,5 +1,5 @@
 import axios, {AxiosInstance, AxiosResponse, InternalAxiosRequestConfig} from 'axios';
-import {ApiError, LoginRequest, LoginResponse, User} from "@/services/api/types";
+import {ApiError, LoginRequest, LoginResponse, Template, User} from "@/services/api/types";
 import * as SecureStore from "expo-secure-store";
 
 // Define the API class
@@ -79,6 +79,16 @@ export class API {
 
         // Remove the token from storage
         await SecureStore.deleteItemAsync('token');
+    }
+
+    // GET /storyboard/templates/
+    public async getTemplates(uuid?: string): Promise<Template[]> {
+        if (uuid) {
+            return await this.client.get(`/storyboard/templates/${uuid}/`).then((response) =>
+                response.data);
+        }
+        return await this.client.get('/storyboard/templates/').then((response) =>
+                response.data);
     }
 }
 
