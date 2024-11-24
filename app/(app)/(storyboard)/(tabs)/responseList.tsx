@@ -4,13 +4,11 @@ export default function ResponseList() {
     const styles = StyleSheet.create({
         container: {
             flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
         }
     });
 
     return (
-        <View style={styles.container} className={"dark:bg-neutral-800"}>
+        <View style={styles.container} className={"dark:bg-neutral-800 p-4"}>
             <Text className={"dark:text-white"}>Responses will be shown here.</Text>
         </View>
     )
