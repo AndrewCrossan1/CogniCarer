@@ -22,7 +22,7 @@ export default function TemplateList() {
 
     useEffect(() => {
         if (!mounted) return;
-        getTemplates().then(() => {
+        getTemplates().then((templates) => {
             setTemplates(templates);
         });
     }, [mounted]);
@@ -40,11 +40,9 @@ export default function TemplateList() {
             <SearchInput placeholder={"Search for templates..."} onSearch={handleSearch}/>
             <ScrollView style={{flex: 1}}>
                 <View style={styles.container} className={"p-1"}>
-                    {loading ? (<ActivityIndicator size={"large"} color={theme.primary}/>)
-                        : Templates.map((template: Template) => {
-                            return <TemplateCard key={template.uuid} template={template}/>
-                        })
-                    }
+                    {loading ? <ActivityIndicator size={"large"} color={theme.primary}/> : templates.map((template: Template) => {
+                        return <TemplateCard key={template.uuid} template={template}/>
+                    })}
                 </View>
             </ScrollView>
         </View>
