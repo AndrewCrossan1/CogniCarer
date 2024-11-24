@@ -17,7 +17,7 @@ export default function TemplateList() {
     const [Templates, setTemplates] = useState([] as Template[]);
 
     useEffect(() => {
-        getTemplates().then(r => {
+        getTemplates().then(() => {
             setTemplates(templates);
         });
     }, []);
