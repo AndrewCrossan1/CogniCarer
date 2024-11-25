@@ -17,14 +17,14 @@ export function TemplateCard({template}: { template: Template }) {
         container: {
             flex: 1,
             justifyContent: "space-between",
-            shadowOffset: {
-                width: 0,
-                height: 2,
-            },
-            shadowOpacity: 0.3,
-            shadowRadius: 4,
-            shadowColor: "#000",
-            elevation: 5,
+            //shadowOffset: {
+            //    width: 0,
+            //    height: 2,
+            //},
+            //shadowOpacity: 0.3,
+            //shadowRadius: 4,
+            //shadowColor: "#000",
+            //elevation: 5,
         },
         content: {
             overflow: "hidden",
@@ -51,10 +51,10 @@ export function TemplateCard({template}: { template: Template }) {
 
 
     return (
-        <View style={styles.container} className={"dark:border bg-neutral-200 dark:bg-neutral-900 rounded-lg my-2 p-4"}>
+        <View style={styles.container} className={"border-solid border dark:bg-neutral-900 bg-neutral-200 dark:border-none dark:shadow-md border-neutral-300 rounded-lg my-2 p-4"}>
             {/* Title and description */}
             <View>
-                <Text className={"font-bold dark:text-white text-lg"}>{template.name}</Text>
+                <Text className={"font-bold dark:text-white text-black text-lg"}>{template.name}</Text>
                 <Text className={"dark:text-gray-400 text-sm"}>{created_at()}</Text>
                 <Text className={"dark:text-white mt-2"} numberOfLines={2}>{template.description}</Text>
             </View>
