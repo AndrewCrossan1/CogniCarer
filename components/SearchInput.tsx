@@ -1,4 +1,4 @@
-import {View, TextInput, StyleSheet, TouchableOpacity, Modal, Text, SafeAreaView} from "react-native";
+import {View, TextInput, StyleSheet, TouchableOpacity, SafeAreaView} from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {useThemeColor} from "@/hooks/useThemeColor";
 import {useState} from "react";

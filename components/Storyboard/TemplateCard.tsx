@@ -71,7 +71,7 @@ export function TemplateCard({template}: { template: Template }) {
                     "
                 </Text>
                 <Text className={"text-blue-500 mt-2"}>
-                    0 responses
+                    {template.response_count} Responses
                 </Text>
             </View>
             {/* Image and response count */}

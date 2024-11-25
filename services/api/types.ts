@@ -40,4 +40,5 @@ export interface Template {
     content: string;
     created_at: string;
     updated_at: string;
+    response_count: number;
 }
