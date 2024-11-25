@@ -17,18 +17,10 @@ export function TemplateCard({template}: { template: Template }) {
         container: {
             flex: 1,
             justifyContent: "space-between",
-            //shadowOffset: {
-            //    width: 0,
-            //    height: 2,
-            //},
-            //shadowOpacity: 0.3,
-            //shadowRadius: 4,
-            //shadowColor: "#000",
-            //elevation: 5,
         },
         content: {
             overflow: "hidden",
-            maxHeight: isExpanded ? "auto" : 10,
+            maxHeight: isExpanded ? "auto" : 0,
         }
     });
 
@@ -49,21 +41,32 @@ export function TemplateCard({template}: { template: Template }) {
         return `${day} ${month} ${date}, ${year} ${time}`;
     }
 
+    /** Render a component based on response count */
+    const responseHandler = () => {
+        if (template.response_count === 0) {
+            return <Text className={"dark:text-gray-400"}>No responses yet</Text>
+        } else if (template.response_count === 1) {
+            return <Text className={"text-blue-500"}>1 Response</Text>
+        } else {
+            return <Text className={"text-blue-500"}>{template.response_count} Responses</Text>
+        }
+    }
+
 
     return (
-        <View style={styles.container} className={"border-solid border dark:bg-neutral-900 bg-neutral-200 dark:border-none dark:shadow-md border-neutral-300 rounded-lg my-2 p-4"}>
+        <View style={styles.container} className={"border-solid border bg-neutral-200 dark:bg-neutral-900 dark:border-neutral-900 dark:shadow-md border-neutral-300 rounded-lg my-2 p-4"}>
             {/* Title and description */}
             <View>
                 <Text className={"font-bold dark:text-white text-black text-lg"}>{template.name}</Text>
                 <Text className={"dark:text-gray-400 text-sm"}>{created_at()}</Text>
-                <Text className={"dark:text-white mt-2"} numberOfLines={2}>{template.description}</Text>
+                <Text className={"dark:text-gray-400 mt-2"} numberOfLines={2}>{template.description}</Text>
             </View>
             <View style={styles.content}>
                 {/* Display the content with the {inputs}  highlighted */}
                 <Text className={"dark:text-white mt-2"}>"
                     {contentArray.map((item, index) => {
                         if (inputs && inputs.includes(`{${item}}`)) {
-                            return <Text key={index} className={"text-blue-500"}>{"{" + item + "}"}</Text>
+                            return <Text key={index} className={"text-blue-500 font-bold"}>{"{" + item + "}"}</Text>
                         } else {
                             return <Text key={index} className={"dark:text-white"}>{item}</Text>
                         }
@@ -71,7 +74,7 @@ export function TemplateCard({template}: { template: Template }) {
                     "
                 </Text>
                 <Text className={"text-blue-500 mt-2"}>
-                    {template.response_count} Responses
+                    {responseHandler()}
                 </Text>
             </View>
             {/* Image and response count */}
