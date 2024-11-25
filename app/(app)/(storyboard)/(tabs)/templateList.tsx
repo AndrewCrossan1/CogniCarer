@@ -1,16 +1,16 @@
-import {ActivityIndicator, Modal, ScrollView, StyleSheet, Text, View} from "react-native";
+import {Modal, RefreshControl, ScrollView, StyleSheet, Text, View} from "react-native";
 import {SearchInput} from "@/components/SearchInput";
-import {useGetTemplates} from "@/hooks/storyboard/useGetTemplates";
+import {useTemplates} from "@/hooks/storyboard/useTemplates";
 import {useThemeColor} from "@/hooks/useThemeColor";
 import {useEffect, useState} from "react";
 import {Template} from "@/services/api/types";
 import {TemplateCard} from "@/components/Storyboard/TemplateCard";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {BlurView} from "expo-blur";
+import colors from "tailwindcss/colors";
 
 export default function TemplateList() {
     const styles = StyleSheet.create({
-        container: {},
         modalView: {
             shadowColor: '#000',
             shadowOffset: {
@@ -23,12 +23,13 @@ export default function TemplateList() {
         },
     });
 
-    const {getTemplates, templates, loading} = useGetTemplates();
+    const {getTemplates, templates, loading} = useTemplates();
     const theme = useThemeColor();
     const [Templates, setTemplates] = useState([] as Template[]);
     const [mounted, setMounted] = useState(false);
     const [filtered, setFiltered] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
 
     useEffect(() => {
         setMounted(true);
@@ -46,6 +47,14 @@ export default function TemplateList() {
             setTemplates(templates);
         });
     }, [mounted]);
+
+    const onRefresh = () => {
+        setRefreshing(true);
+        getTemplates().then((templates) => {
+            setTemplates(templates);
+            setRefreshing(false);
+        });
+    }
 
     const handleSearch = (s: string) => {
         // Filter the templates based on the search string
@@ -86,9 +95,11 @@ export default function TemplateList() {
                 </View>
 
             </Modal>
-            <ScrollView style={{flex: 1}}>
-                <View style={styles.container} className={"p-1"}>
-                    {loading && <ActivityIndicator color={theme.primary} size={"large"}/>}
+            <ScrollView style={{flex: 1}}
+                        refreshControl={
+                            <RefreshControl title={"Refreshing..."} titleColor={colors.neutral[400]} tintColor={colors.neutral[400]} refreshing={refreshing} onRefresh={onRefresh}/>
+                        }>
+                <View className={"p-1"}>
                     {!loading && Templates.map((template: Template) => {
                         return <TemplateCard key={template.uuid} template={template}/>
                     })}
