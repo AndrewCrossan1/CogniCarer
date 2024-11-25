@@ -2,7 +2,7 @@ import API from '@/services/api/api'
 import {useState} from "react";
 import {Template} from "@/services/api/types";
 
-export const useGetTemplates = () => {
+export const useTemplates = () => {
 
     const [loading, setLoading] = useState(false);
     const [templates, setTemplates] = useState([] as Template[]);
