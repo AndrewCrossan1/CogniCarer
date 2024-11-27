@@ -1,4 +1,4 @@
-import {Modal, RefreshControl, ScrollView, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, Modal, RefreshControl, ScrollView, StyleSheet, Text, View} from "react-native";
 import {SearchInput} from "@/components/SearchInput";
 import {useTemplates} from "@/hooks/storyboard/useTemplates";
 import {useThemeColor} from "@/hooks/useThemeColor";
@@ -8,6 +8,7 @@ import {TemplateCard} from "@/components/Storyboard/TemplateCard";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {BlurView} from "expo-blur";
 import colors from "tailwindcss/colors";
+import * as Haptics from "expo-haptics";
 
 export default function TemplateList() {
     const styles = StyleSheet.create({
@@ -21,6 +22,12 @@ export default function TemplateList() {
             shadowRadius: 4,
             elevation: 5,
         },
+        searchContainer: {
+            flexDirection: "row",
+            alignItems: "center",
+            borderRadius: 5,
+            elevation: 5,
+        }
     });
 
     const {getTemplates, templates, loading} = useTemplates();
@@ -45,14 +52,19 @@ export default function TemplateList() {
         if (!mounted) return;
         getTemplates().then((templates) => {
             setTemplates(templates);
+            // Sort templates by name
+            setTemplates(templates.sort((a: Template, b: Template) => a.name.localeCompare(b.name)));
         });
     }, [mounted]);
 
     const onRefresh = () => {
         setRefreshing(true);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         getTemplates().then((templates) => {
             setTemplates(templates);
             setRefreshing(false);
+            // Sort templates by name
+            setTemplates(templates.sort((a: Template, b: Template) => a.name.localeCompare(b.name)));
         });
     }
 
@@ -66,8 +78,11 @@ export default function TemplateList() {
     }
 
     return (
-        <View style={{flex: 1}} className={"dark:bg-neutral-800 p-4"}>
-            <SearchInput placeholder={"Search for templates..."} onSearch={handleSearch} modalVisible={modalVisible} modalVisibleFun={() => setModalVisible(!modalVisible)}/>
+        <View style={{flex: 1}} className={"dark:bg-neutral-800"}>
+            <View style={styles.searchContainer} className={"p-4"}>
+                <SearchInput placeholder={"Search for templates..."} onSearch={handleSearch} modalVisible={modalVisible}
+                             modalVisibleFun={() => setModalVisible(!modalVisible)}/>
+            </View>
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -95,15 +110,20 @@ export default function TemplateList() {
                 </View>
 
             </Modal>
-            <ScrollView style={{flex: 1}}
+            <ScrollView style={{flex: 1}} className={"px-4"}
                         refreshControl={
-                            <RefreshControl title={"Refreshing..."} titleColor={colors.neutral[400]} tintColor={colors.neutral[400]} refreshing={refreshing} onRefresh={onRefresh}/>
+                            <RefreshControl title={"Refreshing..."} titleColor={colors.neutral[400]}
+                                            tintColor={colors.neutral[400]} refreshing={refreshing}
+                                            onRefresh={onRefresh}/>
                         }>
-                <View className={"p-1"}>
+                <View className={""}>
+                    {loading && <ActivityIndicator size={"large"} className={`${refreshing ? 'invisible' : 'visible'}`}
+                                                   color={theme.primary}/>}
                     {!loading && Templates.map((template: Template) => {
                         return <TemplateCard key={template.uuid} template={template}/>
                     })}
-                    {filtered && Templates.length === 0 && <Text className={"text-center text-lg text-neutral-500"}>No templates found</Text>}
+                    {filtered && Templates.length === 0 &&
+                        <Text className={"text-center text-lg text-neutral-500"}>No templates found</Text>}
                 </View>
             </ScrollView>
         </View>
