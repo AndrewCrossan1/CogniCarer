@@ -50,6 +50,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         // Clear the token from the state
         setKey(null);
         setUser(null);
+        console.debug("[AuthContext] User logged out");
 
         // Redirect to the login page
         router.push("/(auth)/login");
@@ -65,10 +66,12 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 const user = await get();
                 if (user) {
                     setUser(user);
+                    console.debug("[AuthContext] User data loaded from token: ", user);
                     // Push to home page
                     router.push("/(app)");
                 }
             } else {
+                console.debug("[AuthContext] No token found, redirecting to login");
                 router.push("/(auth)/login");
             }
         }
@@ -78,6 +81,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         const updatedUser = await update(email, firstName, lastName);
         if (updatedUser) {
             setUser(updatedUser);
+            console.debug("[AuthContext] User data updated: ", updatedUser);
             return true;
         }
         return false;
