@@ -1,4 +1,12 @@
-import {ActivityIndicator, Modal, RefreshControl, ScrollView, StyleSheet, Text, View} from "react-native";
+import {
+    ActivityIndicator,
+    Modal,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View
+} from "react-native";
 import {SearchInput} from "@/components/SearchInput";
 import {useThemeColor} from "@/hooks/useThemeColor";
 import {useCallback, useEffect, useState} from "react";
@@ -8,12 +16,11 @@ import {BlurView} from "expo-blur";
 import {useResponses} from "@/hooks/storyboard/useResponses";
 import {ResponseCard} from "@/components/Storyboard/ResponseCard";
 import colors from "tailwindcss/colors";
+import * as Haptics from "expo-haptics";
 
 export default function TemplateList() {
     const styles = StyleSheet.create({
-        container: {
-
-        },
+        container: {},
         modalView: {
             shadowColor: '#000',
             shadowOffset: {
@@ -24,6 +31,12 @@ export default function TemplateList() {
             shadowRadius: 4,
             elevation: 5,
         },
+        searchContainer: {
+            flexDirection: "row",
+            alignItems: "center",
+            borderRadius: 5,
+            elevation: 5,
+        }
     });
 
     const {getResponses, responses, loading} = useResponses();
@@ -49,14 +62,19 @@ export default function TemplateList() {
         if (!mounted) return;
         getResponses().then((responses) => {
             setResponses(responses);
+            // Sort responses by template name
+            setResponses(responses.sort((a: Response, b: Response) => a.template.name.localeCompare(b.template.name)));
         });
     }, [mounted]);
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         getResponses().then((responses) => {
             setResponses(responses);
             setRefreshing(false);
+            // Sort responses by template name
+            setResponses(responses.sort((a: Response, b: Response) => a.template.name.localeCompare(b.template.name)));
         });
     }, []);
 
@@ -73,8 +91,11 @@ export default function TemplateList() {
     }
 
     return (
-        <View style={{flex: 1}} className={"dark:bg-neutral-800 p-4"}>
-            <SearchInput placeholder={"Search for responses..."} onSearch={handleSearch} modalVisible={modalVisible} modalVisibleFun={() => setModalVisible(!modalVisible)}/>
+        <View style={{flex: 1}} className={"dark:bg-neutral-800"}>
+            <View style={styles.searchContainer} className={"p-4"}>
+                <SearchInput placeholder={"Search for responses..."} onSearch={handleSearch} modalVisible={modalVisible}
+                             modalVisibleFun={() => setModalVisible(!modalVisible)}/>
+            </View>
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -102,17 +123,21 @@ export default function TemplateList() {
                 </View>
 
             </Modal>
-            <ScrollView style={{flex: 1}}
+            <ScrollView style={{flex: 1}} className={"px-4"}
                         refreshControl={
                             <View>
-                                <RefreshControl title={"Refreshing..."} titleColor={colors.neutral[400]} tintColor={colors.neutral[400]} refreshing={refreshing} onRefresh={onRefresh}/>
+                                <RefreshControl title={"Refreshing..."} titleColor={colors.neutral[400]}
+                                                tintColor={colors.neutral[400]} refreshing={refreshing}
+                                                onRefresh={onRefresh}/>
                             </View>
                         }>
-                <View style={styles.container} className={"p-1"}>
+                <View style={styles.container} className={"pb-4"}>
+                    {loading && <ActivityIndicator size={"large"} className={`${refreshing ? 'invisible' : 'visible'}`} color={theme.primary}/>}
                     {!loading && Responses.map((response: Response) => {
                         return <ResponseCard key={response.uuid} response={response}/>
                     })}
-                    {filtered && Responses.length === 0 && <Text className={"text-center text-lg text-neutral-500"}>No responses found</Text>}
+                    {filtered && Responses.length === 0 &&
+                        <Text className={"text-center text-lg text-neutral-500"}>No responses found</Text>}
                 </View>
             </ScrollView>
         </View>
