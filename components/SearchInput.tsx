@@ -20,7 +20,6 @@ export function SearchInput({placeholder, onSearch, modalVisibleFun}: { placehol
             alignItems: "center",
             padding: 10,
             borderRadius: 5,
-            marginBottom: 10,
         },
         icon: {
             marginRight: 10,
@@ -28,7 +27,7 @@ export function SearchInput({placeholder, onSearch, modalVisibleFun}: { placehol
         input: {
             flex: 1,
             color: theme.text,
-        },
+        }
     })
 
     const onInputFocus = () => {
@@ -41,7 +40,7 @@ export function SearchInput({placeholder, onSearch, modalVisibleFun}: { placehol
     }
 
     return (
-        <SafeAreaView>
+        <SafeAreaView className={"w-full"}>
             <View style={styles.container}
                   className={`dark:bg-neutral-900 w-full border ${borderColor} transition ease-linear`}>
                 <FontAwesome style={{marginRight: 10}} name={"search"} size={16} color={iconColor}/>
