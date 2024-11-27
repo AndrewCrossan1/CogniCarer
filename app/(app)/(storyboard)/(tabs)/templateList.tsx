@@ -52,6 +52,7 @@ export default function TemplateList() {
         if (!mounted) return;
         getTemplates().then((templates) => {
             setTemplates(templates);
+            console.debug("Templates Loaded: " + templates.length);
             // Sort templates by name
             setTemplates(templates.sort((a: Template, b: Template) => a.name.localeCompare(b.name)));
         });
@@ -63,6 +64,7 @@ export default function TemplateList() {
         getTemplates().then((templates) => {
             setTemplates(templates);
             setRefreshing(false);
+            console.debug("Templates Refreshed: " + templates.length);
             // Sort templates by name
             setTemplates(templates.sort((a: Template, b: Template) => a.name.localeCompare(b.name)));
         });

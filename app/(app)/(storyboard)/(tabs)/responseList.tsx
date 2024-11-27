@@ -62,6 +62,7 @@ export default function TemplateList() {
         if (!mounted) return;
         getResponses().then((responses) => {
             setResponses(responses);
+            console.debug("Responses Loaded: " + responses.length);
             // Sort responses by template name
             setResponses(responses.sort((a: Response, b: Response) => a.template.name.localeCompare(b.template.name)));
         });
@@ -73,6 +74,7 @@ export default function TemplateList() {
         getResponses().then((responses) => {
             setResponses(responses);
             setRefreshing(false);
+            console.debug("Responses Refreshed: " + responses.length);
             // Sort responses by template name
             setResponses(responses.sort((a: Response, b: Response) => a.template.name.localeCompare(b.template.name)));
         });
