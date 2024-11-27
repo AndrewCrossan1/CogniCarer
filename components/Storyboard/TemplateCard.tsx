@@ -54,7 +54,7 @@ export function TemplateCard({template}: { template: Template }) {
 
 
     return (
-        <View style={styles.container} className={"border-solid border bg-neutral-200 dark:bg-neutral-900 dark:border-neutral-900 dark:shadow-md border-neutral-300 rounded-lg my-2 p-4"}>
+        <View style={styles.container} className={"border-solid border bg-neutral-200 dark:bg-neutral-900 dark:border-neutral-900 dark:shadow-sm border-neutral-300 rounded-lg my-2 p-4"}>
             {/* Title and description */}
             <View>
                 <Text className={"font-bold dark:text-white text-black text-lg"}>{template.name}</Text>

@@ -32,7 +32,7 @@ export function ResponseCard({response}: { response: Response }) {
     }
 
     return (
-        <View style={styles.container} className={"border-solid border dark:bg-neutral-900 bg-neutral-200 dark:border-neutral-900 dark:shadow-md border-neutral-300 rounded-lg my-2 p-4"}>
+        <View style={styles.container} className={"border-solid border dark:bg-neutral-900 bg-neutral-200 dark:border-neutral-900 dark:shadow-sm border-neutral-300 rounded-lg my-2 p-4"}>
             <View>
                 <Text className={"font-bold dark:text-white text-black text-lg"}>{response.template.name} - {response.patient.first_name} {response.patient.last_name}</Text>
                 <Text className={"dark:text-gray-400 text-sm"}>{created_at()}</Text>
