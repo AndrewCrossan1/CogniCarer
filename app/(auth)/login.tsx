@@ -75,6 +75,7 @@ export default function LoginScreen() {
                     shake(passwordShakeAnim);
                     setLocalVisible(true);
                 }
+                console.debug(`[Login] Form has errors: password: ${password.length === 0}, email: ${email.length === 0}`);
                 return;
             }
 
@@ -84,11 +85,13 @@ export default function LoginScreen() {
             if (!valid) {
                 shake(emailShakeAnim);
                 shake(passwordShakeAnim);
+                console.debug(`[Login] Invalid login`);
             } else {
                 // Reset the error
                 setError(null);
                 setHasErrors(false);
                 setLoading(false);
+                console.debug(`[Login] Login successful: ${email}`);
 
                 // Redirect to the home page
                 router.push("/(app)");
