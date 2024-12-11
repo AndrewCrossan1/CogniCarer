@@ -1,6 +1,6 @@
 import {Image, View, Text, TextInput, TouchableOpacity, ActivityIndicator, StyleSheet, Animated} from "react-native";
 import { Checkbox } from "react-native-paper";
-import {useEffect, useRef, useState} from "react";
+import {useRef, useState} from "react";
 import {useRouter} from "expo-router";
 import colors from "tailwindcss/colors";
 import {useAuth} from "@/context/AuthContext";
@@ -12,16 +12,16 @@ export default function LoginScreen() {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
     const [passwordErrVisible, setPasswordErrVisible] = useState(false);
     const [emailErrVisible, setEmailErrVisible] = useState(false);
     const refPasswordInput = useRef(null);
 
-    const { loginUser } = useAuth();
+    const { login, error, loading } = useAuth();
 
     const focusOnPassword = () => {
         if (refPasswordInput && refPasswordInput.current) {
+            // @ts-ignore
             refPasswordInput.current.focus();
         }
     };
@@ -30,8 +30,6 @@ export default function LoginScreen() {
         // Reset the error messages
         setEmailErrVisible(false);
         setPasswordErrVisible(false);
-
-        setLoading(true);
         // Validate the email and password
         if (email.length === 0) {
             setEmailErrVisible(true);
@@ -47,22 +45,14 @@ export default function LoginScreen() {
 
         // If there are no errors call the login function
         if (email.length > 0 && password.length > 0) {
-            // Sleep for 1 second to show the loading spinner
-            const response = await loginUser(email, password);
-            if (response) {
-                // Redirect to the home page
-                router.push("/(app)");
-                setLoading(false);
-                return;
-            } else {
+            const response = await login(email, password, checked);
+            if (!response) {
                 setShowAlert(true);
-                setLoading(false);
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
                 return;
             }
+            router.push("/(app)");
         }
-        setLoading(false);
-        return;
     };
 
     const styles = StyleSheet.create({
@@ -88,8 +78,8 @@ export default function LoginScreen() {
 
     return (
         <View className={"flex-1 w-full dark:bg-neutral-900 bg-neutral-100"}>
-            <Image source={require("@/assets/images/layered-waves-haikei.png")} className={"h-40"} />
-            <Image source={require("@/assets/images/logo.png")} className={"mx-auto mt-8"}/>
+            <Image source={require("@/assets/images/layered-waves-haikei.png")} className={"h-40 android:h-20"} />
+            <Image source={require("@/assets/images/logo.png")} className={"mx-auto mt-8"} style={{resizeMode: "contain"}}/>
             {/* Header */}
             <View className={"mt-5"}>
                 <Text className={"text-4xl dark:text-white font-bold text-center"}>Welcome Back</Text>
@@ -105,7 +95,7 @@ export default function LoginScreen() {
                 <FontAwesome name={"close"} size={20} className={"ml-4"} color={colors.red[500]} onPress={() => setShowAlert(!showAlert)}/>
             </View>
             {/* Form */}
-            <View className={"pb-8 px-8 pt-4"}>
+            <View className={"pb-8 px-8 pt-4 android:pb-2 android:px-8 android:pt-1"}>
                 <Animated.View style={{transform: [{translateX: emailShakeAnim}]}}>
                     <Text className={"mb-2 text-lg dark:text-white font-bold"}>Email Address</Text>
                     <TextInput key={"email"} onSubmitEditing={focusOnPassword} value={email} onChangeText={(e) => setEmail(e)} placeholder={"joebloggs@bloggs.com"} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border-b-4 dark:text-white border-b-gray-300 focus:border-b-blue-500 transition-all ease-linear"}/>
@@ -113,7 +103,7 @@ export default function LoginScreen() {
                         This field is required
                     </Text>
                 </Animated.View>
-                <Animated.View className={"mt-10"} style={{transform: [{translateX: passwordShakeAnim}]}}>
+                <Animated.View className={"mt-10 android:mt-1"} style={{transform: [{translateX: passwordShakeAnim}]}}>
                     <Text className={"mb-2 text-lg dark:text-white font-bold"}>Password</Text>
                     <TextInput ref={refPasswordInput} key={"password"} placeholder={"Password"} value={password} onChangeText={(p) => setPassword(p)} secureTextEntry={true} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 dark:text-white border-b-4 border-b-gray-300 focus:border-b-blue-500 transition-all ease-linear"}/>
                     <Text style={styles.error} className={`mt-2 ${passwordErrVisible ? 'visible' : 'invisible'}`}>
