@@ -5,12 +5,12 @@ import { DrawerContentComponentProps, DrawerContentScrollView, DrawerItemList } 
 import { View, Image, Text } from 'react-native';
 import { StyleSheet } from 'react-native';
 import {useThemeColor} from "@/hooks/useThemeColor";
-import {useAuth} from "@/context/AuthContext";
+import { useAppSelector} from "@/hooks/store/hooks";
 
 export default function Layout() {
     const theme = useThemeColor();
 
-    const { user } = useAuth();
+    const user = useAppSelector(state => state.user.user);
 
     const styles = StyleSheet.create({
         profileContainer: {
@@ -49,8 +49,8 @@ export default function Layout() {
                         style={styles.profilePicture}
                     />
                     <View style={styles.profileInfo}>
-                        <Text style={styles.profileName}>{user?.first_name + " " + user?.last_name}</Text>
-                        <Text style={styles.profileLink}>
+                        <Text style={styles.profileName} className={"dark:text-white"}>{user?.first_name + " " + user?.last_name}</Text>
+                        <Text style={styles.profileLink} className={"dark:text-white"}>
                             {user?.staff_role}
                         </Text>
                     </View>
@@ -72,7 +72,7 @@ export default function Layout() {
                     headerTintColor: theme.text,
                     drawerInactiveTintColor: theme.text,
                     headerStyle: { backgroundColor: theme.light, shadowColor: theme.drawerBottomBorderColor },
-                    drawerStyle: { backgroundColor: theme.light },
+                    drawerStyle: { backgroundColor: theme.TabBackgroundColor, borderBottomColor: theme.drawerBottomBorderColor }
                 }}
                 drawerContent={CustomDrawerContent}>
                 <Drawer.Screen name="index"
@@ -81,10 +81,15 @@ export default function Layout() {
                                    title: 'Home',
                                }}/>
                 <Drawer.Screen name="myaccount"
-                                 options={{
-                                      drawerIcon: ({ color }) => <FontAwesome name="user" size={24} color={color} />,
-                                      title: 'My Account',
-                                 }}/>
+                               options={{
+                                   drawerIcon: ({ color }) => <FontAwesome name="user" size={24} color={color} />,
+                                   title: 'My Account',
+                               }}/>
+                <Drawer.Screen name="(storyboard)"
+                               options={{
+                                   drawerIcon: ({ color }) => <FontAwesome name="book" size={24} color={color} />,
+                                   title: 'Storyboard',
+                               }}/>
             </Drawer>
         </GestureHandlerRootView>
     )

@@ -31,3 +31,37 @@ export interface ErrorResponse {
     errorMessage: string;
     errorCode: number;
 }
+
+// Patient Types
+export interface Patient {
+    uuid: string;
+    first_name: string;
+    last_name: string;
+    date_of_birth: string;
+    gender: string;
+    room_number: string;
+    conditions: string[];
+    created_at: string;
+}
+
+// Storyboard Types
+export interface Template {
+    uuid: string;
+    name: string;
+    description: string;
+    content: string;
+    created_at: string;
+    updated_at: string;
+    response_count: number;
+}
+
+export interface Response {
+    uuid: string;
+    template: Template
+    patient: Patient
+    staff_user: string // Will be User object later
+    response: object;
+    response_content: string;
+    created_at: string;
+    updated_at: string;
+}

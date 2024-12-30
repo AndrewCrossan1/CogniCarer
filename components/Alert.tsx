@@ -1,6 +1,5 @@
 import {View, Text, TouchableOpacity, Animated, SafeAreaView} from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {useEffect, useRef} from "react";
 
 export function Alert({ message, type, visible, onPress}: { message: string, type: "error" | "success", visible: boolean, onPress: () => void }) {
 
@@ -11,7 +10,7 @@ export function Alert({ message, type, visible, onPress}: { message: string, typ
     return (
         <SafeAreaView className={"flex-1 inset-x-0 top-0"} style={{ zIndex: 1000}}>
             <Animated.View
-                className={`transition ease-linear ${visible ? "visible" : "invisible" } absolute top-6 left-4 right-4 mx-auto border-1-4 rounded-lg ${alertColors} shadow  p-4`}
+                className={`transition ease-linear ${visible ? "visible" : "invisible" } absolute top-6 left-4 right-4 mx-auto border-1-4 rounded-lg ${alertColors} p-4`}
                 style={{ zIndex: 1000 }}>
                 <TouchableOpacity onPress={onPress} className={"absolute top-2 right-2"}>
                     <FontAwesome name={"close"} size={30} color={"#000"}/>

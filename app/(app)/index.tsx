@@ -7,11 +7,10 @@ import {Button} from "react-native-paper";
 export default function Index() {
   const themeColor = useThemeColor();
 
-  const { logoutUser } = useAuth();
+  const { logout } = useAuth();
 
   const styles = StyleSheet.create({
     container: {
-      backgroundColor: themeColor.dark,
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
@@ -21,9 +20,9 @@ export default function Index() {
     }
   });
   return (
-    <View style={styles.container}>
+    <View style={styles.container} className={"dark:bg-neutral-800"}>
       <Text style={styles.text}>Edit app/index.tsx to edit this screen.</Text>
-      <Button onPress={logoutUser}>Logout</Button>
+      <Button onPress={logout}>Logout</Button>
     </View>
   );
 }
