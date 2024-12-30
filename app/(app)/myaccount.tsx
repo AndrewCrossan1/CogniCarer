@@ -9,10 +9,10 @@ import {useEffect, useRef, useState} from "react";
 import {useRouter} from "expo-router";
 import {ErrorResponse} from "@/services/api/types";
 import {useThemeColor} from "@/hooks/useThemeColor";
+import {useAppSelector} from "@/hooks/store/hooks";
 
 export default function MyAccount() {
-    const { user } = useAuth();
-
+    const user = useAppSelector(state => state.user.user);
     const [editing, setEditing] = useState(false);
     const [email, setEmail] = useState("");
     const [firstName, setFirstName] = useState("");
@@ -58,7 +58,7 @@ export default function MyAccount() {
         ]).start();
     }
 
-    const {updateUser} = useAuth();
+    const {update} = useAuth();
 
     const validateForm = () => {
         let errors = false;
@@ -119,7 +119,7 @@ export default function MyAccount() {
 
             // Call the update function
             setLoading(true);
-            const valid = await updateUser(email, firstName, lastName);
+            const valid = await update(email, firstName, lastName);
             if (!valid) {
                 shake(emailShakeAnim);
                 shake(firstNameShakeAnim);

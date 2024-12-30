@@ -46,13 +46,12 @@ export class API {
 
     // Token Retrieval
     private async getToken(): Promise<string | null> {
-        // Check if the token is stored in the secure store
-        let token = await SecureStore.getItemAsync('token');
-        if (!token) {
-            // Check if the token is in the redux store
-            token = store.getState().token.token;
+        // Get the token from the store
+        const token = this.store.getState().token.token;
+        if (token) {
+            return token;
         }
-        return token;
+        return null;
     }
 
     // GET /storyboard/templates/

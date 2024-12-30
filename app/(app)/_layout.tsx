@@ -5,12 +5,12 @@ import { DrawerContentComponentProps, DrawerContentScrollView, DrawerItemList } 
 import { View, Image, Text } from 'react-native';
 import { StyleSheet } from 'react-native';
 import {useThemeColor} from "@/hooks/useThemeColor";
-import {useAuth} from "@/context/AuthContext";
+import { useAppSelector} from "@/hooks/store/hooks";
 
 export default function Layout() {
     const theme = useThemeColor();
 
-    const { user } = useAuth();
+    const user = useAppSelector(state => state.user.user);
 
     const styles = StyleSheet.create({
         profileContainer: {

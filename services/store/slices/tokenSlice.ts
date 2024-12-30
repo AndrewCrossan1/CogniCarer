@@ -1,5 +1,4 @@
 import {createSlice} from "@reduxjs/toolkit";
-import * as SecureStore from 'expo-secure-store';
 
 const initialState = {
     token: null,

@@ -1,19 +1,17 @@
 import { createContext, useContext, useState, ReactNode, FC } from "react";
-import {LoginResponse, User} from "@/services/api/types";
+import {User} from "@/services/api/types";
 import {useRouter} from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import API from "@/services/api/api";
 import {useDispatch} from "react-redux";
 import {setToken} from "@/services/store/slices/tokenSlice";
+import { useUser } from "@/hooks/store/user";
 
 // Define the shape of the context
 interface AuthContextType {
-    key: string | null;
-    user: User | null;
     login: (email: string, password: string, remember: boolean) => Promise<boolean>;
     logout: () => Promise<boolean>;
     update: (email: string, firstName: string, lastName: string) => Promise<boolean>
-    remembered: () => Promise<boolean>;
     loading: boolean;
     error: string | null;
 }
@@ -23,13 +21,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Define the provider component
 export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
-    const [key, setKey] = useState<string | null>(null);
-    const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const router = useRouter();
     const dispatch = useDispatch();
+    const {setUser} = useUser();
 
     /**
      * Log in a user using the provided email and password
@@ -54,20 +51,13 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 return false;
             }
 
-            setKey(response.key);
             // Store the token in the redux store
             dispatch(setToken(response.key));
 
-            // Store the token in the secure store
-            if (remember) {
-                await SecureStore.setItemAsync("remember", "true");
-                await SecureStore.setItemAsync("token", response.key);
-                console.debug("Token stored in secure store");
-            }
-
             // Request the user data (The key should be set in the API client)
-            const user = await API.get("/auth/user/");
+            const user: User = await API.get("/auth/user/");
             setUser(user);
+
             setLoading(false);
             return true;
         } catch (e) {
@@ -98,7 +88,6 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             }
             // Remove the user data
             setUser(null);
-            setKey(null);
 
             // Remove the token from the redux store
             dispatch(setToken(null));
@@ -116,29 +105,6 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         }
         return false;
     };
-
-    /**
-     * Check if a user has a valid token stored in the secure store
-     * If they do, log them in (This only happens when remember me was checked)
-     * @returns A boolean indicating the success of the operation
-     */
-    const remembered = async () => {
-        // Used to log user in using FaceID and stored information (If they chose remember me and the token is still valid)
-        const token = await SecureStore.getItemAsync("token");
-
-        // Check the validity of the token by calling the user endpoint
-        if (token) {
-            const user : User = await API.get("/auth/user/"); // We do this to update the user data
-            if (user) {
-                setUser(user);
-                setKey(token);
-                dispatch(setToken(token));
-                return true;
-            }
-            return false;
-        }
-        return false;
-    }
 
     /**
      * Update the user's information
@@ -172,7 +138,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ key, user, login, logout, update, remembered, loading, error }}>
+        <AuthContext.Provider value={{ login, logout, update, loading, error }}>
             {children}
         </AuthContext.Provider>
     );
