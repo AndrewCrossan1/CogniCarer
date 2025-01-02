@@ -110,14 +110,14 @@ export default function LoginScreen() {
                 <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8"}>
                     <Animated.View style={{transform: [{translateX: emailShakeAnim}]}}>
                         <Text className={"mb-2 dark:text-white font-bold  sm:text-sm md:text-base lg:text-lg"}>Email Address</Text>
-                        <TextInput key={"email"} onSubmitEditing={focusOnPassword} value={email} onChangeText={(e) => setEmail(e)} placeholder={"joebloggs@bloggs.com"} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border-b-4 dark:text-white border-b-gray-300 focus:border-b-blue-500 transition-all ease-linear"}/>
+                        <TextInput key={"email"} value={email} onSubmitEditing={focusOnPassword} onChangeText={(e) => setEmail(e)} placeholder={"joebloggs@bloggs.com"} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear input"}/>
                         <Text style={styles.error} className={`mt-2 ${emailErrVisible ? 'visible' : 'invisible'}`}>
                             This field is required
                         </Text>
                     </Animated.View>
                     <Animated.View style={{transform: [{translateX: passwordShakeAnim}]}}>
                         <Text className={"mb-2 dark:text-white font-bold  sm:text-sm md:text-base lg:text-lg"}>Password</Text>
-                        <TextInput ref={refPasswordInput} key={"password"} placeholder={"Password"} value={password} onChangeText={(p) => setPassword(p)} secureTextEntry={true} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 dark:text-white border-b-4 border-b-gray-300 focus:border-b-blue-500 transition-all ease-linear"}/>
+                        <TextInput ref={refPasswordInput} key={"password"} placeholder={"Password"} value={password} onChangeText={(p) => setPassword(p)} secureTextEntry={true} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear input"}/>
                         <Text style={styles.error} className={`mt-2 ${passwordErrVisible ? 'visible' : 'invisible'}`}>
                             This field is required
                         </Text>
@@ -139,9 +139,14 @@ export default function LoginScreen() {
                         </TouchableOpacity>
                     }
 
-                    <Text className={"text-center xs:mt-1 sm:mt-3 md:mt-5 lg:mt-7 text-xl dark:text-white"}>
-                        Not a member? <Text className={"underline"}>Register now</Text>
-                    </Text>
+                    <View className={"xs:mt-1 sm:mt-3 md:mt-5 lg:mt-7 flex-row items-center"}>
+                        <Text className={"text-xl dark:text-white font-bold"}>
+                            Not a member?
+                        </Text>
+                        <TouchableOpacity onPress={() => router.push("/(auth)/register")}>
+                            <Text className={"dark:text-blue-500 sm:text-sm md:text-base lg:text-lg ml-4"}>Register</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </ScrollView>
             :
@@ -166,23 +171,19 @@ export default function LoginScreen() {
                 <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8"}>
                     <Animated.View style={{transform: [{translateX: emailShakeAnim}]}}>
                         <Text className={"mb-2 dark:text-white font-bold  sm:text-sm md:text-base lg:text-lg"}>Email Address</Text>
-                        <TextInput key={"email"} onSubmitEditing={focusOnPassword} value={email} onChangeText={(e) => setEmail(e)} placeholder={"joebloggs@bloggs.com"} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border-b-4 dark:text-white border-b-gray-300 focus:border-b-blue-500 transition-all ease-linear"}/>
+                        <TextInput key={"email"} value={email} onSubmitEditing={focusOnPassword} onChangeText={(e) => setEmail(e)} placeholder={"joebloggs@bloggs.com"} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear input"}/>
                         <Text style={styles.error} className={`mt-2 ${emailErrVisible ? 'visible' : 'invisible'}`}>
                             This field is required
                         </Text>
                     </Animated.View>
                     <Animated.View style={{transform: [{translateX: passwordShakeAnim}]}}>
                         <Text className={"mb-2 dark:text-white font-bold  sm:text-sm md:text-base lg:text-lg"}>Password</Text>
-                        <TextInput ref={refPasswordInput} key={"password"} placeholder={"Password"} value={password} onChangeText={(p) => setPassword(p)} secureTextEntry={true} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 dark:text-white border-b-4 border-b-gray-300 focus:border-b-blue-500 transition-all ease-linear"}/>
+                        <TextInput ref={refPasswordInput} key={"password"} placeholder={"Password"} value={password} onChangeText={(p) => setPassword(p)} secureTextEntry={true} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear input"}/>
                         <Text style={styles.error} className={`mt-2 ${passwordErrVisible ? 'visible' : 'invisible'}`}>
                             This field is required
                         </Text>
                     </Animated.View>
                     <Text className={"underline dark:text-white ml-2"}>Forgot your password?</Text>
-                    <View className={"flex flex-row items-center xs:mt-0 sm:mt-1 md:mt-2 lg:mt-6"}>
-                        <Checkbox.Android status={checked ? 'checked' : 'unchecked'} onPress={() => setChecked(!checked)} color={"#3B82F6"} className={"dark:text-white"}/>
-                        <Text className={"dark:text-white ml-2"}>Remember me</Text>
-                    </View>
 
                     {/* Login Button */}
                     {loading ?
@@ -194,10 +195,15 @@ export default function LoginScreen() {
                             </Text>
                         </TouchableOpacity>
                     }
+                    <View className={"xs:mt-1 sm:mt-3 md:mt-5 lg:mt-7 flex-row items-center"}>
+                        <Text className={"text-xl dark:text-white font-bold"}>
+                            Not a member?
+                        </Text>
+                        <TouchableOpacity onPress={() => router.push("/(auth)/register")}>
+                            <Text className={"dark:text-blue-500 sm:text-sm md:text-base lg:text-lg ml-4"}>Register</Text>
+                        </TouchableOpacity>
+                    </View>
 
-                    <Text className={"text-center xs:mt-1 sm:mt-3 md:mt-5 lg:mt-7 text-xl dark:text-white"}>
-                        Not a member? <Text className={"underline"}>Register now</Text>
-                    </Text>
                 </View>
             </View>
     )
