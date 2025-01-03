@@ -9,7 +9,7 @@ import { useUser } from "@/hooks/store/user";
 
 // Define the shape of the context
 interface AuthContextType {
-    login: (email: string, password: string, remember: boolean) => Promise<boolean>;
+    login: (email: string, password: string) => Promise<boolean>;
     logout: () => Promise<boolean>;
     update: (email: string, firstName: string, lastName: string) => Promise<boolean>
     loading: boolean;
@@ -33,10 +33,9 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
      * If remember is true, store the token in the secure store
      * @param email The email of the user
      * @param password The password of the user
-     * @param remember Whether to remember the user or not
      * @returns A boolean indicating the success of the operation
      */
-    const login = async (email: string, password: string, remember: boolean): Promise<boolean> => {
+    const login = async (email: string, password: string): Promise<boolean> => {
         setLoading(true);
         setError(null);
         try {
