@@ -1,9 +1,10 @@
-import {Text, View, Image, TextInput, TouchableOpacity, ScrollView, Platform} from "react-native";
+import {Text, View, TextInput, TouchableOpacity, ScrollView, Platform} from "react-native";
 import {useState} from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {Checkbox} from "react-native-paper";
 import {useRouter} from "expo-router";
+import InputField from "@/components/InputField";
 
 export default function Index() {
     const [activeForm, setActiveForm] = useState("personal");
@@ -78,8 +79,6 @@ export default function Index() {
 
     return (
         <ScrollView className={"flex-1 w-full dark:bg-neutral-900 bg-neutral-100"}>
-            <Image source={require("@/assets/images/layered-waves-haikei.png")} className={"xs:h-8 sm:h-16 md:h-32 lg:h-40"} />
-            <Image source={require("@/assets/images/logo.png")} className={"mx-auto xs:mt-2 sm:mt-4 md:mt-6 lg:mt-8"}/>
             {/* Header */}
             <View className={"xs:mt-1 sm:mt-2 md:mt-4 lg:mt-6"}>
                 <Text className={"dark:text-white font-bold text-center xs:text-base sm:text-xl md:text-2xl lg:text-4xl"}>Create an account</Text>
@@ -110,21 +109,12 @@ export default function Index() {
             {activeForm === "personal" ?
                 <View>
                     <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8 xs:mt-0 sm:mt-1 md:mt-2 lg:mt-3 xl:mt-4"}>
-                        <View>
-                            <Text className={"mb-2 dark:text-white font-bold  sm:text-sm md:text-base lg:text-lg"}>Email Address</Text>
-                            <TextInput key={"email"} value={email} onChangeText={(e) => setEmail(e)} placeholder={"joebloggs@bloggs.com"} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear input"}/>
-                        </View>
+                        <InputField value={email} password={false} onChangeText={(e) => setEmail(e)} placeholder={"joebloggs@bloggs.com"} placeholderTextColor={"#AAAAA5"} label={"Email Address"} key={"email"}/>
                     </View>
                     {/* First and last name */}
                     <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8 flex-row justify-between"}>
-                        <View className={"w-5/12"}>
-                            <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>First Name</Text>
-                            <TextInput key={"first_name"} value={firstName} onChangeText={(s) => setFirstName(s)} placeholder={"Joe"} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear"}/>
-                        </View>
-                        <View className={"w-5/12"}>
-                            <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>Last Name</Text>
-                            <TextInput key={"last_name"} value={lastName} onChangeText={(s) => setLastName(s)} placeholder={"Bloggs"} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear"}/>
-                        </View>
+                        <InputField value={firstName} password={false} width={"w-5/12"} onChangeText={(s) => setFirstName(s)} placeholder={"Joe"} placeholderTextColor={"#AAAAA5"} label={"First Name"} key={"first_name"}/>
+                        <InputField value={lastName} password={false} width={"w-5/12"} onChangeText={(s) => setLastName(s)} placeholder={"Bloggs"} placeholderTextColor={"#AAAAA5"} label={"Last Name"} key={"last_name"}/>
                     </View>
                     {/* Date of Birth */}
                     {Platform.OS === "android" ? null :
@@ -169,20 +159,14 @@ export default function Index() {
                             <FontAwesome name={specialChar ? "check" : "close"} size={24} color={specialChar ? "#3B82F6" : "#EF5350"}/>
                             <Text className={"ml-2 dark:text-white"}>At least one special character</Text>
                         </View>
-                        <View className={"flex-row items-center"}>
+                        <View className={"flex-row items-center mb-5"}>
                             <FontAwesome name={password === confirmPassword ? "check" : "close"} size={24} color={password === confirmPassword ? "#3B82F6" : "#EF5350"}/>
                             <Text className={"ml-2 dark:text-white"}>Passwords match</Text>
                         </View>
-                        <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg mt-5"}>Password</Text>
-                        <TextInput key={"password"} placeholder={"Enter your password"} value={password} onChangeText={(p) => validatePassword(p       )} secureTextEntry={true}
-                                   placeholderTextColor={"#AAAAA5"}
-                                   className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear input"}/>
-                        <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg mt-5"}>Confirm Password</Text>
-                        <TextInput key={"confirm_password"} placeholder={"Confirm your password"} value={confirmPassword} onChangeText={(p) => matchPasswords(p)} secureTextEntry={true}
-                                   placeholderTextColor={"#AAAAA5"}
-                                   className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear input"}/>
-                        <TouchableOpacity
-                            className={"w-full bg-blue-500 text-white p-2.5 rounded-md xs:mt-3 sm:mt-4 md:mt-5 lg:mt-6"}>
+                        <InputField value={password} onChangeText={(s) => validatePassword(s)} placeholder={"********"} placeholderTextColor={"#AAAAA5"} label={"Enter Password"} password={true}/>
+                        <View className={"my-2"}/>
+                        <InputField value={confirmPassword} password={true} label={"Confirm Password"} onChangeText={(s) => matchPasswords(s)} placeholder={"********"} placeholderTextColor={"#AAAAAA5"}/>
+                        <TouchableOpacity className={"w-full bg-blue-500 text-white p-2.5 rounded-md xs:mt-3 sm:mt-4 md:mt-5 lg:mt-6"}>
                             <Text className={"text-center text-white text-lg"}>
                                 Register
                             </Text>
