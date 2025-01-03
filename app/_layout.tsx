@@ -30,15 +30,10 @@ export default function RootLayout() {
                                       gestureEnabled: false,
                                   }}
                     />
-                    <Stack.Screen name="(auth)/login"
-                                  options={{
-                                      gestureEnabled: false
-                                  }}
-                    />
-                    <Stack.Screen name="(auth)/register"
-                                  options={{
-                                      gestureEnabled: false
-                                  }}
+                    <Stack.Screen name="(auth)"
+                                    options={{
+                                        gestureEnabled: false,
+                                    }}
                     />
                 </Stack>
         </AuthProvider>
