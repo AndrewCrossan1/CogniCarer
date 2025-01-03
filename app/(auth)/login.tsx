@@ -10,16 +10,15 @@ import {
     Animated,
     ScrollView
 } from "react-native";
-import { Checkbox } from "react-native-paper";
 import {useRef, useState} from "react";
 import {useRouter} from "expo-router";
 import colors from "tailwindcss/colors";
 import {useAuth} from "@/context/AuthContext";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import * as Haptics from "expo-haptics";
+import InputField from "@/components/InputField";
 
 export default function LoginScreen() {
-    const [checked, setChecked] = useState(false);
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -56,7 +55,7 @@ export default function LoginScreen() {
 
         // If there are no errors call the login function
         if (email.length > 0 && password.length > 0) {
-            const response = await login(email, password, checked);
+            const response = await login(email, password);
             if (!response) {
                 setShowAlert(true);
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -90,8 +89,6 @@ export default function LoginScreen() {
     return (
         Platform.OS === "android" ?
             <ScrollView className={"flex-1 w-full dark:bg-neutral-900 bg-neutral-100"}>
-                <Image source={require("@/assets/images/layered-waves-haikei.png")} className={"xs:h-8 sm:h-16 md:h-32 lg:h-40"} />
-                <Image source={require("@/assets/images/logo.png")} className={"mx-auto xs:mt-2 sm:mt-4 md:mt-6 lg:mt-8"}/>
                 {/* Header */}
                 <View className={"xs:mt-1 sm:mt-2 md:mt-4 lg:mt-6"}>
                     <Text className={"dark:text-white font-bold text-center xs:text-base sm:text-xl md:text-2xl lg:text-4xl"}>Welcome Back</Text>
@@ -116,18 +113,14 @@ export default function LoginScreen() {
                         </Text>
                     </Animated.View>
                     <Animated.View style={{transform: [{translateX: passwordShakeAnim}]}}>
-                        <Text className={"mb-2 dark:text-white font-bold  sm:text-sm md:text-base lg:text-lg"}>Password</Text>
-                        <TextInput ref={refPasswordInput} key={"password"} placeholder={"Password"} value={password} onChangeText={(p) => setPassword(p)} secureTextEntry={true} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear input"}/>
+                        <InputField ref={refPasswordInput} onChangeText={(p) => setPassword(p)} label={"Password"} value={password} placeholder={"Password"} password={true} placeholderTextColor={"#AAAAA5"} />
                         <Text style={styles.error} className={`mt-2 ${passwordErrVisible ? 'visible' : 'invisible'}`}>
                             This field is required
                         </Text>
                     </Animated.View>
-                    <Text className={"underline dark:text-white ml-2"}>Forgot your password?</Text>
-                    <View className={"flex flex-row items-center xs:mt-0 sm:mt-1 md:mt-2 lg:mt-6"}>
-                        <Checkbox.Android status={checked ? 'checked' : 'unchecked'} onPress={() => setChecked(!checked)} color={"#3B82F6"} className={"dark:text-white"}/>
-                        <Text className={"dark:text-white ml-2"}>Remember me</Text>
-                    </View>
-
+                    <TouchableOpacity onPress={() => router.push("/(auth)/forgot-password")}>
+                        <Text className={"underline dark:text-white ml-2"}>Forgot your password?</Text>
+                    </TouchableOpacity>
                     {/* Login Button */}
                     {loading ?
                         <ActivityIndicator size={"large"} className={"dark:text-white text-blue-500 mt-10"}/> :
@@ -151,8 +144,6 @@ export default function LoginScreen() {
             </ScrollView>
             :
             <View className={"flex-1 w-full dark:bg-neutral-900 bg-neutral-100"}>
-                <Image source={require("@/assets/images/layered-waves-haikei.png")} className={"xs:h-8 sm:h-16 md:h-32 lg:h-40"} />
-                <Image source={require("@/assets/images/logo.png")} className={"mx-auto xs:mt-2 sm:mt-4 md:mt-6 lg:mt-8"}/>
                 {/* Header */}
                 <View className={"xs:mt-1 sm:mt-2 md:mt-4 lg:mt-6"}>
                     <Text className={"dark:text-white font-bold text-center xs:text-base sm:text-xl md:text-2xl lg:text-4xl"}>Welcome Back</Text>
@@ -183,7 +174,9 @@ export default function LoginScreen() {
                             This field is required
                         </Text>
                     </Animated.View>
-                    <Text className={"underline dark:text-white ml-2"}>Forgot your password?</Text>
+                    <TouchableOpacity onPress={() => router.push("/(auth)/forgot-password")}>
+                        <Text className={"underline dark:text-white ml-2"}>Forgot your password?</Text>
+                    </TouchableOpacity>
 
                     {/* Login Button */}
                     {loading ?
