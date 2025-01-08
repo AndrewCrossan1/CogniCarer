@@ -1,14 +1,15 @@
 import {ActivityIndicator, Modal, RefreshControl, ScrollView, StyleSheet, Text, View} from "react-native";
 import {SearchInput} from "@/components/SearchInput";
-import {useTemplates} from "@/hooks/storyboard/useTemplates";
 import {useThemeColor} from "@/hooks/useThemeColor";
 import {useEffect, useState} from "react";
-import {Template} from "@/services/api/types";
+import {Response, Template} from "@/services/api/types";
 import {TemplateCard} from "@/components/Storyboard/TemplateCard";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {BlurView} from "expo-blur";
 import colors from "tailwindcss/colors";
 import * as Haptics from "expo-haptics";
+import {useStoryboard} from "@/hooks/storyboard/useStoryboard";
+import {ResponseCard} from "@/components/Storyboard/ResponseCard";
 
 export default function TemplateList() {
     const styles = StyleSheet.create({
@@ -30,7 +31,7 @@ export default function TemplateList() {
         }
     });
 
-    const {getTemplates, templates, loading} = useTemplates();
+    const {getTemplates, templates, loading} = useStoryboard();
     const theme = useThemeColor();
     const [Templates, setTemplates] = useState([] as Template[]);
     const [mounted, setMounted] = useState(false);
@@ -50,23 +51,23 @@ export default function TemplateList() {
 
     useEffect(() => {
         if (!mounted) return;
-        getTemplates().then((templates) => {
-            setTemplates(templates);
+        getTemplates().then((valid) => {
+            if (!valid) return;
             console.debug("Templates Loaded: " + templates.length);
             // Sort templates by name
-            setTemplates(templates.sort((a: Template, b: Template) => a.name.localeCompare(b.name)));
+            templates.sort((a: Template, b: Template) => a.name.localeCompare(b.name));
         });
     }, [mounted]);
 
     const onRefresh = () => {
         setRefreshing(true);
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        getTemplates().then((templates) => {
-            setTemplates(templates);
+        getTemplates().then((valid) => {
+            if (!valid) return;
             setRefreshing(false);
             console.debug("Templates Refreshed: " + templates.length);
             // Sort templates by name
-            setTemplates(templates.sort((a: Template, b: Template) => a.name.localeCompare(b.name)));
+            templates.sort((a: Template, b: Template) => a.name.localeCompare(b.name));
         });
     }
 
@@ -119,13 +120,15 @@ export default function TemplateList() {
                                             onRefresh={onRefresh}/>
                         }>
                 <View className={""}>
-                    {loading && <ActivityIndicator size={"large"} className={`${refreshing ? 'invisible' : 'visible'}`}
-                                                   color={theme.primary}/>}
-                    {!loading && Templates.map((template: Template) => {
+                    {loading && <ActivityIndicator size={"large"} className={`${refreshing ? 'invisible' : 'visible'}`} color={theme.primary}/>}
+                    {!filtered && !loading && templates.map((template: Template) => {
+                        return <TemplateCard key={template.uuid} template={template}/>
+                    })}
+                    {filtered && Templates.length > 0 && Templates.map((template: Template) => {
                         return <TemplateCard key={template.uuid} template={template}/>
                     })}
                     {filtered && Templates.length === 0 &&
-                        <Text className={"text-center text-lg text-neutral-500"}>No templates found</Text>}
+                      <Text className={"text-center text-lg text-neutral-500"}>No templates found</Text>}
                 </View>
             </ScrollView>
         </View>
