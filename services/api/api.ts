@@ -1,6 +1,5 @@
 import axios, {AxiosInstance, AxiosResponse, InternalAxiosRequestConfig} from 'axios';
 import {ApiError, Template, Response, Patient} from "@/services/api/types";
-import * as SecureStore from "expo-secure-store";
 import {store} from "@/services/store/store";
 
 // Define the API class
