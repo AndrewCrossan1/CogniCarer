@@ -1,16 +1,25 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Drawer from 'expo-router/drawer';
-import { DrawerContentComponentProps, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import {
+    DrawerContentComponentProps,
+    DrawerContentScrollView,
+    DrawerItem,
+    DrawerItemList
+} from '@react-navigation/drawer';
 import { View, Image, Text } from 'react-native';
 import { StyleSheet } from 'react-native';
 import {useThemeColor} from "@/hooks/useThemeColor";
 import { useAppSelector} from "@/hooks/store/hooks";
+import {MaterialIcons} from "@expo/vector-icons";
+import colors from "tailwindcss/colors";
+import {useAuth} from "@/context/AuthContext";
 
 export default function Layout() {
     const theme = useThemeColor();
 
     const user = useAppSelector(state => state.user.user);
+    const { logout } = useAuth();
 
     const styles = StyleSheet.create({
         profileContainer: {
@@ -55,6 +64,12 @@ export default function Layout() {
                         </Text>
                     </View>
                 </View>
+                <DrawerItem label={"Logout"} onPress={logout}
+                            icon={() => <MaterialIcons name={"logout"} size={24} color={colors.red[500]} />}
+                            labelStyle={{ color: colors.red[500] }}
+                            style={{ backgroundColor: theme.TabBackgroundColor, borderBottomColor: theme.drawerBottomBorderColor }}
+                            pressOpacity={0.8}
+                />
                 {/* Separator */}
                 <View style={{ flex: 1, borderBottomWidth: 1, borderBottomColor: theme.drawerBottomBorderColor, marginBottom: 5, marginHorizontal: 12 }}/>
                 {/* Drawer Items */}
