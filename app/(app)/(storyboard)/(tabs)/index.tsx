@@ -1,19 +1,16 @@
 import {View, Text, StyleSheet, TouchableOpacity, Image, SafeAreaView, ScrollView, Pressable} from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {useThemeColor} from "@/hooks/useThemeColor";
-import {useAuth} from "@/context/AuthContext";
 import {useEffect, useState} from "react";
 import {useTemplates} from "@/hooks/storyboard/useTemplates";
 import {useResponses} from "@/hooks/storyboard/useResponses";
 import {Template, Response} from "@/services/api/types";
-import {ResponseCard} from "@/components/Storyboard/ResponseCard";
+import {useAppSelector} from "@/hooks/store/hooks";
 
 type IconName = "chevron-up" | "chevron-down";
 
 
 export default function Storyboard() {
-    const theme = useThemeColor();
-    const {user} = useAuth();
+    const user = useAppSelector(state => state.user.user);
     const [templateIcon, setTemplateIcon] = useState<IconName>("chevron-up");
     const [templateExpanded, setTemplateExpanded] = useState(true);
     const [responseIcon, setResponseIcon] = useState<IconName>("chevron-up");
@@ -105,7 +102,7 @@ export default function Storyboard() {
                             </Text>
                         </View>
                         <Image
-                            source={{uri: 'https://randomuser.me/api/portraits/men/41.jpg'}}
+                            source={{uri: user?.profile_image }}
                             style={{width: 75, height: 75, borderRadius: 50}}
                         />
                     </View>
