@@ -19,10 +19,10 @@ export default function Layout() {
             padding: 20
         },
         profilePicture: {
+            borderRadius: 50,
             width: 50,
             height: 50,
-            borderRadius: 25,
-            marginRight: 15,
+            marginRight: 10,
         },
         profileInfo: {
             flexDirection: 'column',
@@ -45,13 +45,13 @@ export default function Layout() {
                 <View style={styles.profileContainer}>
                     {/* Profile Picture */}
                     <Image
-                        source={{ uri: 'https://randomuser.me/api/portraits/men/41.jpg' }}
+                        source={{ uri: user?.profile_image }}
                         style={styles.profilePicture}
                     />
                     <View style={styles.profileInfo}>
                         <Text style={styles.profileName} className={"dark:text-white"}>{user?.first_name + " " + user?.last_name}</Text>
                         <Text style={styles.profileLink} className={"dark:text-white"}>
-                            {user?.staff_role}
+                            {user?.email}
                         </Text>
                     </View>
                 </View>
