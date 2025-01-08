@@ -51,7 +51,7 @@ export interface Response {
     uuid: string;
     template: Template
     patient: Patient
-    staff_user: string // Will be User object later
+    user: User
     response: object;
     response_content: string;
     created_at: string;
