@@ -13,7 +13,7 @@ import {useCallback, useEffect, useState} from "react";
 import {Response} from "@/services/api/types";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {BlurView} from "expo-blur";
-import {useResponses} from "@/hooks/storyboard/useResponses";
+import {useStoryboard} from "@/hooks/storyboard/useStoryboard";
 import {ResponseCard} from "@/components/Storyboard/ResponseCard";
 import colors from "tailwindcss/colors";
 import * as Haptics from "expo-haptics";
@@ -39,12 +39,12 @@ export default function TemplateList() {
         }
     });
 
-    const {getResponses, responses, loading} = useResponses();
+    const {loading, responses, getResponses} = useStoryboard();
     const theme = useThemeColor();
-    const [Responses, setResponses] = useState([] as Response[]);
     const [mounted, setMounted] = useState(false);
     const [filtered, setFiltered] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
+    const [Responses, setResponses] = useState(responses);
     const [refreshing, setRefreshing] = useState(false);
 
 
@@ -60,25 +60,25 @@ export default function TemplateList() {
 
     useEffect(() => {
         if (!mounted) return;
-        getResponses().then((responses) => {
-            setResponses(responses);
+        getResponses().then((valid) => {
+            if (!valid) return;
             console.debug("Responses Loaded: " + responses.length);
             // Sort responses by template name
-            setResponses(responses.sort((a: Response, b: Response) => a.template.name.localeCompare(b.template.name)));
+            responses.sort((a: Response, b: Response) => a.template.name.localeCompare(b.template.name));
         });
     }, [mounted]);
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        getResponses().then((responses) => {
-            setResponses(responses);
+        getResponses().then((valid) => {
+            if (!valid) return;
             setRefreshing(false);
             console.debug("Responses Refreshed: " + responses.length);
             // Sort responses by template name
-            setResponses(responses.sort((a: Response, b: Response) => a.template.name.localeCompare(b.template.name)));
+            responses.sort((a: Response, b: Response) => a.template.name.localeCompare(b.template.name));
         });
-    }, []);
+    }, [getResponses, responses]);
 
     const handleSearch = (s: string) => {
         // Filter the templates based on the search string
@@ -135,7 +135,10 @@ export default function TemplateList() {
                         }>
                 <View style={styles.container} className={"pb-4"}>
                     {loading && <ActivityIndicator size={"large"} className={`${refreshing ? 'invisible' : 'visible'}`} color={theme.primary}/>}
-                    {!loading && Responses.map((response: Response) => {
+                    {!filtered && !loading && responses.map((response: Response) => {
+                        return <ResponseCard key={response.uuid} response={response}/>
+                    })}
+                    {filtered && Responses.length > 0 && Responses.map((response: Response) => {
                         return <ResponseCard key={response.uuid} response={response}/>
                     })}
                     {filtered && Responses.length === 0 &&
