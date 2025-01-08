@@ -1,10 +1,9 @@
 import {View, Text, StyleSheet, TouchableOpacity, Image, SafeAreaView, ScrollView, Pressable} from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {useEffect, useState} from "react";
-import {useTemplates} from "@/hooks/storyboard/useTemplates";
-import {useResponses} from "@/hooks/storyboard/useResponses";
 import {Template, Response} from "@/services/api/types";
 import {useAppSelector} from "@/hooks/store/hooks";
+import {useStoryboard} from "@/hooks/storyboard/useStoryboard";
 
 type IconName = "chevron-up" | "chevron-down";
 
@@ -20,34 +19,30 @@ export default function Storyboard() {
     const [mounted, setMounted] = useState(false);
 
     // Getting Template and Response Data
-    const {getTemplates} = useTemplates();
-
-    const {getResponses} = useResponses();
+    const {getTemplates, getResponses, responses, templates} = useStoryboard()
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
     useEffect(() => {
-        getTemplates().then((data) => {
-            setTemplateData(data);
-            // Sort the data by created_at
-            setTemplateData(data.sort((a, b) => {
+        getTemplates().then((valid) => {
+            if (!valid) return;
+            setTemplateData(templates.sort((a, b) => {
                 return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
             }));
 
             // Limit the number of templates to 5
-            setTemplateData(data.slice(0, 5));
+            setTemplateData(templates.slice(0, 5));
         });
-        getResponses().then((data) => {
-            setResponseData(data);
-            // Sort the data by created_at
-            setResponseData(data.sort((a, b) => {
+        getResponses().then((valid) => {
+            if (!valid) return;
+            setResponseData(responses.sort((a, b) => {
                 return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
             }));
 
             // Limit the number of responses to 5
-            setResponseData(data.slice(0, 5));
+            setResponseData(responses.slice(0, 5));
         });
     }, [mounted]);
 
@@ -214,7 +209,7 @@ export default function Storyboard() {
                         {responseData.map((response, index) => (
                             <View key={response.uuid} className={"my-1 p-2"}>
                                 <Text className={"text-white"}>
-                                    {response.template.name} {response.patient.first_name} {response.patient.last_name}
+                                    {response.template.name} - {response.patient.first_name} {response.patient.last_name}
                                 </Text>
                                 <Text className={"text-gray-400"}>
                                     Created at: {new Date(response.created_at).toLocaleString()}
