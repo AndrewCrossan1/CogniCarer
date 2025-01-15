@@ -11,6 +11,19 @@ interface InputFieldProps {
     password: boolean;
 }
 
+/**
+ * InputField component
+ * @param value The value of the input field
+ * @param onChangeText The function to call when the input field changes
+ * @param ref The reference to the input field
+ * @param placeholder The placeholder text
+ * @param placeholderTextColor The color of the placeholder text
+ * @param width The width of the input field
+ * @param label The label of the input field
+ * @param password Whether the input field is a password field
+ * @constructor
+ * @deprecated This component is being replaced by the Input component
+ */
 const InputField = ({value, onChangeText, ref, placeholder, placeholderTextColor, width, label, password} : InputFieldProps) => {
     return (
         <View className={width === null ? "" : width}>
