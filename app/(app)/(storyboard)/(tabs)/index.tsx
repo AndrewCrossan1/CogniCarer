@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import {Template, Response} from "@/services/api/types";
 import {useAppSelector} from "@/hooks/store/hooks";
 import {useStoryboard} from "@/hooks/storyboard/useStoryboard";
+import {useRouter} from "expo-router";
 
 type IconName = "chevron-up" | "chevron-down";
 
@@ -16,35 +17,42 @@ export default function Storyboard() {
     const [responseExpanded, setResponseExpanded] = useState(true);
     const [templateData, setTemplateData] = useState([] as Template[]);
     const [responseData, setResponseData] = useState([] as Response[]);
-    const [mounted, setMounted] = useState(false);
+    const router = useRouter();
 
     // Getting Template and Response Data
-    const {getTemplates, getResponses, responses, templates} = useStoryboard()
+    const {getTemplates, getResponses, responses, templates, error: storyboardError} = useStoryboard()
 
     useEffect(() => {
-        setMounted(true);
+        const fetch = async () => {
+            const validResponses = await getResponses();
+            const validTemplates = await getTemplates();
+
+            if (!validResponses || !validTemplates) {
+                console.error(storyboardError)
+                return;
+            }
+
+            setResponseData([...responses]);
+            setTemplateData([...templates]);
+        }
+
+        fetch();
     }, []);
 
     useEffect(() => {
-        getTemplates().then((valid) => {
-            if (!valid) return;
-            setTemplateData(templates.sort((a, b) => {
-                return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-            }));
+        setTemplateData(templates.sort((a, b) => {
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        }));
+        setResponseData(responses.sort((a, b) => {
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        }));
 
-            // Limit the number of templates to 5
-            setTemplateData(templates.slice(0, 5));
-        });
-        getResponses().then((valid) => {
-            if (!valid) return;
-            setResponseData(responses.sort((a, b) => {
-                return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-            }));
+        // Limit the number of responses to 5
+        setResponseData(responses.slice(0, 5));
 
-            // Limit the number of responses to 5
-            setResponseData(responses.slice(0, 5));
-        });
-    }, [mounted]);
+        // Limit the number of templates to 5
+        setTemplateData(templates.slice(0, 5));
+    }, [responses, templates]);
 
     const styles = StyleSheet.create({
         container: {},
@@ -134,7 +142,7 @@ export default function Storyboard() {
                                 </Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.btn} onPress={submitResponse} className={"ml-2"}>
+                        <TouchableOpacity style={styles.btn} onPress={() => router.push("/(app)/(storyboard)/newResponse")} className={"ml-2"}>
                             <View className={"flex-row items-center justify-center bg-white p-2 rounded-lg"}>
                                 <FontAwesome name={"plus"} size={26} color={"#3B82F6"} className={"text-center mr-2"}/>
                                 <Text className={"text-center mt-1"}>
@@ -165,9 +173,9 @@ export default function Storyboard() {
                 </View>
 
                 {/* Main Content */}
-                <View className={"p-4 mt-5 bg-neutral-900 mx-3 rounded-md"}>
+                <View className={"p-4 mt-5 dark:bg-neutral-900 dark:shadow-sm bg-neutral-200 mx-3 rounded-md border dark:border-neutral-900 border-neutral-300"}>
                     <View className={"flex-row items-center justify-between mb-2"}>
-                        <Text className={"text-xl dark:text-white"}>
+                        <Text className={"text-xl dark:text-white text-black font-bold"}>
                             Recently Created Templates
                         </Text>
                         <Pressable onPress={() => invokeExpansion("templates")} className={"flex-row items-center"}>
@@ -181,20 +189,23 @@ export default function Storyboard() {
                     <ScrollView style={styles.templateContainer}>
                         {templateData.map((template, index) => (
                             <View key={template.uuid} className={"my-1 p-2"}>
-                                <Text className={"text-white"}>
+                                <Text className={"dark:text-white text-black"}>
                                     {template.name}
                                 </Text>
-                                <Text className={"text-gray-400"}>
+                                <Text className={"dark:text-gray-400 text-gray-500"}>
                                     Created at: {new Date(template.created_at).toLocaleString()}
+                                </Text>
+                                <Text className={"text-blue-500 mt-1"}>
+                                    {template.response_count} responses
                                 </Text>
                             </View>
                         ))}
                     </ScrollView>
                 </View>
 
-                <View className={"p-4 mt-5 bg-neutral-900 mx-3 rounded-md mb-4"}>
+                <View className={"p-4 mt-5 dark:bg-neutral-900 dark:shadow-sm bg-neutral-200 border border-neutral-300 dark:border-neutral-900 mx-3 rounded-md mb-4"}>
                     <View className={"flex-row items-center justify-between mb-2"}>
-                        <Text className={"text-xl dark:text-white"}>
+                        <Text className={"text-xl dark:text-white text-black font-bold"}>
                             Recently Created Responses
                         </Text>
                         <Pressable onPress={() => invokeExpansion("responses")} className={"flex-row items-center"}>
@@ -208,11 +219,14 @@ export default function Storyboard() {
                     <ScrollView style={styles.responseContainer}>
                         {responseData.map((response, index) => (
                             <View key={response.uuid} className={"my-1 p-2"}>
-                                <Text className={"text-white"}>
+                                <Text className={"dark:text-white text-black"}>
                                     {response.template.name} - {response.patient.first_name} {response.patient.last_name}
                                 </Text>
-                                <Text className={"text-gray-400"}>
+                                <Text className={"dark:text-gray-400 text-gray-500"}>
                                     Created at: {new Date(response.created_at).toLocaleString()}
+                                </Text>
+                                <Text className={"text-blue-500 mt-1"}>
+                                    Supervised by: {response.user.first_name} {response.user.last_name}
                                 </Text>
                             </View>
                         ))}
