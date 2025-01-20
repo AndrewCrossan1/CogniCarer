@@ -37,5 +37,5 @@ export const usePatients = () => {
         return true;
     }
 
-    return {loading, patients, error, getPatients};
+    return {loading, patients, error, getPatients, getPatient};
 }

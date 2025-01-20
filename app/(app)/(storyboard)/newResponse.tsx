@@ -2,12 +2,11 @@ import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import { useStoryboard } from "@/hooks/storyboard/useStoryboard";
 import { usePatients } from "@/hooks/patients/usePatients";
 import { useEffect, useState } from "react";
-import {Patient, Template, User} from "@/services/api/types";
+import {Patient, Template} from "@/services/api/types";
 import {useAppSelector} from "@/hooks/store/hooks";
-import {Router, useRouter} from "expo-router";
+import {useRouter} from "expo-router";
 import {MaterialIcons} from "@expo/vector-icons";
 import {SearchInput} from "@/components/SearchInput";
-import Input from "@/components/Input";
 
 const NewResponse = () => {
     const {templates, getTemplates, error: storyboardError, responses, getResponses} = useStoryboard();
@@ -19,7 +18,6 @@ const NewResponse = () => {
     const [filteredTemplates, setFilteredTemplates] = useState<Template[]>([]);
     const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
-    const [continueResponse, setContinueResponse] = useState(false);
 
     useEffect(() => {
         const fetch = async () => {
@@ -94,16 +92,20 @@ const NewResponse = () => {
             return;
         }
 
-        // Set continue to true
-        setContinueResponse(true);
+        // Navigate to the response creation screen
+        router.push({
+            pathname: "(app)/(storyboard)/(responses)/new",
+            params: {
+                template: selectedTemplate?.uuid,
+                patient: selectedPatient?.uuid
+            }
+        })
     }
 
     return (
         <ScrollView className={"flex-1 dark:bg-neutral-800"}>
             {/* If no template and patient are selected, show the selection screen */}
-
-            {!continueResponse &&
-              <>
+            <>
                 <View className={"bg-blue-500 py-6"}>
                     <View className={"flex-row justify-between items-center p-4"}>
                         {/* Name and Profile Picture */}
@@ -141,30 +143,30 @@ const NewResponse = () => {
                     <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg mb-2"}>Templates</Text>
                     <SearchInput placeholder={"Search for a template..."} onSearch={(s) => search(s, "Template")} modalVisible={modalVisible} modalVisibleFun={() => {}}/>
                     {selectedTemplate &&
-                      <View className={"flex-row items-center justify-between p-4 dark:bg-neutral-900 bg-neutral-300 rounded-md my-2"}>
-                        <View className={"w-3/4"}>
-                          <Text className={"dark:text-white font-bold text-lg"}>{selectedTemplate?.name}</Text>
-                          <Text className={"dark:text-gray-400"} numberOfLines={1}>{selectedTemplate?.description}</Text>
+                        <View className={"flex-row items-center justify-between p-4 dark:bg-neutral-900 bg-neutral-300 rounded-md my-2"}>
+                            <View className={"w-3/4"}>
+                                <Text className={"dark:text-white font-bold text-lg"}>{selectedTemplate?.name}</Text>
+                                <Text className={"dark:text-gray-400"} numberOfLines={1}>{selectedTemplate?.description}</Text>
+                            </View>
+                            <TouchableOpacity onPress={() => setSelected("Template", selectedTemplate)}>
+                                <Text className={`${selectedTemplate?.uuid === selectedTemplate?.uuid ? "text-neutral-500" : "text-blue-500"}`}>{selectedTemplate?.uuid === selectedTemplate?.uuid ? "Unselect" : "Select"}</Text>
+                            </TouchableOpacity>
                         </View>
-                        <TouchableOpacity onPress={() => setSelected("Template", selectedTemplate)}>
-                          <Text className={`${selectedTemplate?.uuid === selectedTemplate?.uuid ? "text-neutral-500" : "text-blue-500"}`}>{selectedTemplate?.uuid === selectedTemplate?.uuid ? "Unselect" : "Select"}</Text>
-                        </TouchableOpacity>
-                      </View>
                     }
                     {!selectedTemplate &&
-                      <ScrollView className={"h-48"}>
-                          {filteredTemplates.map((t) => (
-                              <View key={t.uuid} className={"flex-row items-center justify-between p-4 dark:bg-neutral-900 bg-neutral-300 rounded-md my-2"}>
-                                  <View className={"w-3/4"}>
-                                      <Text className={"dark:text-white font-bold text-lg"}>{t.name}</Text>
-                                      <Text className={"dark:text-gray-400"} numberOfLines={1}>{t.description}</Text>
-                                  </View>
-                                  <TouchableOpacity onPress={() => setSelectedTemplate(t)}>
-                                      <Text className={"text-blue-500"}>Select</Text>
-                                  </TouchableOpacity>
-                              </View>
-                          ))}
-                      </ScrollView>
+                        <ScrollView className={"h-48"}>
+                            {filteredTemplates.map((t) => (
+                                <View key={t.uuid} className={"flex-row items-center justify-between p-4 dark:bg-neutral-900 bg-neutral-300 rounded-md my-2"}>
+                                    <View className={"w-3/4"}>
+                                        <Text className={"dark:text-white font-bold text-lg"}>{t.name}</Text>
+                                        <Text className={"dark:text-gray-400"} numberOfLines={1}>{t.description}</Text>
+                                    </View>
+                                    <TouchableOpacity onPress={() => setSelectedTemplate(t)}>
+                                        <Text className={"text-blue-500"}>Select</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            ))}
+                        </ScrollView>
                     }
                 </View>
 
@@ -173,30 +175,30 @@ const NewResponse = () => {
                     <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg mb-2"}>Patients</Text>
                     <SearchInput placeholder={"Search for a patient..."} onSearch={(s) => search(s, "Patient")} modalVisible={modalVisible} modalVisibleFun={() => {}}/>
                     {selectedPatient &&
-                      <View className={"flex-row items-center justify-between p-4 dark:bg-neutral-900 bg-neutral-300 rounded-md my-2"}>
-                        <View>
-                          <Text className={"dark:text-white font-bold text-lg"}>{selectedPatient.first_name} {selectedPatient.last_name}</Text>
-                          <Text className={"dark:text-gray-400"}>{selectedPatient.date_of_birth}</Text>
+                        <View className={"flex-row items-center justify-between p-4 dark:bg-neutral-900 bg-neutral-300 rounded-md my-2"}>
+                            <View>
+                                <Text className={"dark:text-white font-bold text-lg"}>{selectedPatient.first_name} {selectedPatient.last_name}</Text>
+                                <Text className={"dark:text-gray-400"}>{selectedPatient.date_of_birth}</Text>
+                            </View>
+                            <TouchableOpacity onPress={() => setSelected("Patient", selectedPatient)}>
+                                <Text className={`${selectedPatient?.uuid === selectedPatient.uuid ? "text-neutral-500" : "text-blue-500"}`}>{selectedPatient?.uuid === selectedPatient.uuid ? "Unselect" : "Select"}</Text>
+                            </TouchableOpacity>
                         </View>
-                        <TouchableOpacity onPress={() => setSelected("Patient", selectedPatient)}>
-                          <Text className={`${selectedPatient?.uuid === selectedPatient.uuid ? "text-neutral-500" : "text-blue-500"}`}>{selectedPatient?.uuid === selectedPatient.uuid ? "Unselect" : "Select"}</Text>
-                        </TouchableOpacity>
-                      </View>
                     }
                     {!selectedPatient &&
-                      <ScrollView className={"h-48"}>
-                          {filteredPatients.map((p) => (
-                              <View key={p.uuid} className={"flex-row items-center justify-between p-4 dark:bg-neutral-900 bg-neutral-300 rounded-md my-2"}>
-                                  <View>
-                                      <Text className={"dark:text-white font-bold text-lg"}>{p.first_name} {p.last_name}</Text>
-                                      <Text className={"dark:text-gray-400"}>{p.date_of_birth}</Text>
-                                  </View>
-                                  <TouchableOpacity onPress={() => setSelectedPatient(p)}>
-                                      <Text className={"text-blue-500"}>Select</Text>
-                                  </TouchableOpacity>
-                              </View>
-                          ))}
-                      </ScrollView>
+                        <ScrollView className={"h-48"}>
+                            {filteredPatients.map((p) => (
+                                <View key={p.uuid} className={"flex-row items-center justify-between p-4 dark:bg-neutral-900 bg-neutral-300 rounded-md my-2"}>
+                                    <View>
+                                        <Text className={"dark:text-white font-bold text-lg"}>{p.first_name} {p.last_name}</Text>
+                                        <Text className={"dark:text-gray-400"}>{p.date_of_birth}</Text>
+                                    </View>
+                                    <TouchableOpacity onPress={() => setSelectedPatient(p)}>
+                                        <Text className={"text-blue-500"}>Select</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            ))}
+                        </ScrollView>
                     }
 
                     {/* Button to continue */}
@@ -209,72 +211,7 @@ const NewResponse = () => {
                     </TouchableOpacity>
                 </View>
             </>
-            }
-
-            {/* If a template and patient are selected, show the response screen */}
-            {continueResponse &&
-              <>
-                {selectedTemplate && selectedPatient &&
-                  ResponseScreen(selectedPatient, selectedTemplate, user, router)
-                }
-              </>
-            }
         </ScrollView>
-    )
-}
-
-const ResponseScreen = (patient: Patient, template: Template, user: User | null, router: Router) => {
-
-    const createInput = (text: string) => {
-        {/* Display everything not wrapped in {} as Text, but when content inside {} is reached, return an Input with no styling */}
-        return (
-            <>
-                {text.split("{").map((t, i) => {
-                    if (t.includes("}")) {
-                        return <Input key={i} placeholder={"Enter here"} />;
-                    } else {
-                        return <Text key={i}>{t}</Text>;
-                    }
-                })}
-            </>
-        )
-    }
-
-    return (
-        <View className={"flex-1"}>
-            {/* Return button */}
-            <TouchableOpacity className={"bg-red-500 text-white rounded-md w-1/4 p-1.5"} onPress={() => router.dismiss(1)}>
-                <View className={"flex-row items-center justify-center rounded-lg"}>
-                    <MaterialIcons name={"arrow-back"} className={"mr-3"} size={24} color={"white"}/>
-                    <Text className={"text-center text-white text-lg"}>
-                        Cancel
-                    </Text>
-                </View>
-            </TouchableOpacity>
-            {/* Title of template */}
-            <Text className={"dark:text-white font-bold text-2xl"}>{template.name}</Text>
-            {/* Description */}
-            <Text className={"dark:text-gray-400"}>{template.description}</Text>
-            {/* Caregiver and Client names */}
-            <Text className={"dark:text-white font-bold text-lg"}>{patient.first_name} {patient.last_name}</Text>
-            <Text className={"dark:text-gray-400"}>Overseen by {user?.first_name} {user?.last_name}</Text>
-            {/* Sentence with blanks (Picture implemented after) */}
-            <Text className={"dark:text-white font-bold text-lg"}>Fill in the blanks</Text>
-            <Text className={"dark:text-gray-400"}>Complete the sentence below</Text>
-            {/* Sentence */}
-            <View className={"p-4"}>
-                {createInput(template.content)}
-            </View>
-
-            {/* Submit button */}
-            <TouchableOpacity onPress={() => {}} className={"bg-blue-500 text-white rounded-md w-full p-2 mt-4"}>
-                <View className={"flex-row items-center justify-center rounded-lg"}>
-                    <Text className={"text-center text-white text-lg"}>
-                        Submit
-                    </Text>
-                </View>
-            </TouchableOpacity>
-        </View>
     )
 }
 
