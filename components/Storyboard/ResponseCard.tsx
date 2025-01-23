@@ -30,13 +30,14 @@ export function ResponseCard({response}: { response: Response }) {
         const time = d.toLocaleTimeString('default', {hour: '2-digit', minute: '2-digit'});
         return `${day} ${month} ${date}, ${year} ${time}`;
     }
+    console.log(response.template.name);
 
     return (
         <View style={styles.container} className={"border-solid border dark:bg-neutral-900 bg-neutral-200 dark:border-neutral-900 dark:shadow-sm border-neutral-300 rounded-lg my-2 p-4"}>
             <View>
                 <Text className={"font-bold dark:text-white text-black text-lg"}>{response.template.name} - {response.patient.first_name} {response.patient.last_name}</Text>
                 <Text className={"dark:text-gray-400 text-sm"}>{created_at()}</Text>
-                <Text className={"dark:text-gray-400 text-sm"}>Overseen by {response.staff_user}</Text>
+                <Text className={"dark:text-gray-400 text-sm"}>Overseen by {response.user.first_name + " " + response.user.last_name}</Text>
             </View>
 
             <View style={styles.content}>

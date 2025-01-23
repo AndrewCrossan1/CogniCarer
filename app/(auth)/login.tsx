@@ -1,5 +1,4 @@
 import {
-    Image,
     View,
     Text,
     TextInput,
@@ -10,16 +9,15 @@ import {
     Animated,
     ScrollView
 } from "react-native";
-import { Checkbox } from "react-native-paper";
 import {useRef, useState} from "react";
 import {useRouter} from "expo-router";
 import colors from "tailwindcss/colors";
 import {useAuth} from "@/context/AuthContext";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import * as Haptics from "expo-haptics";
+import InputField from "@/components/InputField";
 
 export default function LoginScreen() {
-    const [checked, setChecked] = useState(false);
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -56,7 +54,7 @@ export default function LoginScreen() {
 
         // If there are no errors call the login function
         if (email.length > 0 && password.length > 0) {
-            const response = await login(email, password, checked);
+            const response = await login(email, password);
             if (!response) {
                 setShowAlert(true);
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -90,8 +88,6 @@ export default function LoginScreen() {
     return (
         Platform.OS === "android" ?
             <ScrollView className={"flex-1 w-full dark:bg-neutral-900 bg-neutral-100"}>
-                <Image source={require("@/assets/images/layered-waves-haikei.png")} className={"xs:h-8 sm:h-16 md:h-32 lg:h-40"} />
-                <Image source={require("@/assets/images/logo.png")} className={"mx-auto xs:mt-2 sm:mt-4 md:mt-6 lg:mt-8"}/>
                 {/* Header */}
                 <View className={"xs:mt-1 sm:mt-2 md:mt-4 lg:mt-6"}>
                     <Text className={"dark:text-white font-bold text-center xs:text-base sm:text-xl md:text-2xl lg:text-4xl"}>Welcome Back</Text>
@@ -110,24 +106,20 @@ export default function LoginScreen() {
                 <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8"}>
                     <Animated.View style={{transform: [{translateX: emailShakeAnim}]}}>
                         <Text className={"mb-2 dark:text-white font-bold  sm:text-sm md:text-base lg:text-lg"}>Email Address</Text>
-                        <TextInput key={"email"} onSubmitEditing={focusOnPassword} value={email} onChangeText={(e) => setEmail(e)} placeholder={"joebloggs@bloggs.com"} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border-b-4 dark:text-white border-b-gray-300 focus:border-b-blue-500 transition-all ease-linear"}/>
+                        <TextInput key={"email"} value={email} onSubmitEditing={focusOnPassword} onChangeText={(e) => setEmail(e)} placeholder={"joebloggs@bloggs.com"} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear input"}/>
                         <Text style={styles.error} className={`mt-2 ${emailErrVisible ? 'visible' : 'invisible'}`}>
                             This field is required
                         </Text>
                     </Animated.View>
                     <Animated.View style={{transform: [{translateX: passwordShakeAnim}]}}>
-                        <Text className={"mb-2 dark:text-white font-bold  sm:text-sm md:text-base lg:text-lg"}>Password</Text>
-                        <TextInput ref={refPasswordInput} key={"password"} placeholder={"Password"} value={password} onChangeText={(p) => setPassword(p)} secureTextEntry={true} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 dark:text-white border-b-4 border-b-gray-300 focus:border-b-blue-500 transition-all ease-linear"}/>
+                        <InputField ref={refPasswordInput} onChangeText={(p) => setPassword(p)} label={"Password"} value={password} placeholder={"Password"} password={true} placeholderTextColor={"#AAAAA5"} />
                         <Text style={styles.error} className={`mt-2 ${passwordErrVisible ? 'visible' : 'invisible'}`}>
                             This field is required
                         </Text>
                     </Animated.View>
-                    <Text className={"underline dark:text-white ml-2"}>Forgot your password?</Text>
-                    <View className={"flex flex-row items-center xs:mt-0 sm:mt-1 md:mt-2 lg:mt-6"}>
-                        <Checkbox.Android status={checked ? 'checked' : 'unchecked'} onPress={() => setChecked(!checked)} color={"#3B82F6"} className={"dark:text-white"}/>
-                        <Text className={"dark:text-white ml-2"}>Remember me</Text>
-                    </View>
-
+                    <TouchableOpacity onPress={() => router.push("/(auth)/forgot-password")}>
+                        <Text className={"underline dark:text-white ml-2"}>Forgot your password?</Text>
+                    </TouchableOpacity>
                     {/* Login Button */}
                     {loading ?
                         <ActivityIndicator size={"large"} className={"dark:text-white text-blue-500 mt-10"}/> :
@@ -139,15 +131,18 @@ export default function LoginScreen() {
                         </TouchableOpacity>
                     }
 
-                    <Text className={"text-center xs:mt-1 sm:mt-3 md:mt-5 lg:mt-7 text-xl dark:text-white"}>
-                        Not a member? <Text className={"underline"}>Register now</Text>
-                    </Text>
+                    <View className={"xs:mt-1 sm:mt-3 md:mt-5 lg:mt-7 flex-row items-center"}>
+                        <Text className={"text-xl dark:text-white font-bold"}>
+                            Not a member?
+                        </Text>
+                        <TouchableOpacity onPress={() => router.push("/(auth)/register")}>
+                            <Text className={"dark:text-blue-500 sm:text-sm md:text-base lg:text-lg ml-4"}>Register</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </ScrollView>
             :
             <View className={"flex-1 w-full dark:bg-neutral-900 bg-neutral-100"}>
-                <Image source={require("@/assets/images/layered-waves-haikei.png")} className={"xs:h-8 sm:h-16 md:h-32 lg:h-40"} />
-                <Image source={require("@/assets/images/logo.png")} className={"mx-auto xs:mt-2 sm:mt-4 md:mt-6 lg:mt-8"}/>
                 {/* Header */}
                 <View className={"xs:mt-1 sm:mt-2 md:mt-4 lg:mt-6"}>
                     <Text className={"dark:text-white font-bold text-center xs:text-base sm:text-xl md:text-2xl lg:text-4xl"}>Welcome Back</Text>
@@ -166,23 +161,21 @@ export default function LoginScreen() {
                 <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8"}>
                     <Animated.View style={{transform: [{translateX: emailShakeAnim}]}}>
                         <Text className={"mb-2 dark:text-white font-bold  sm:text-sm md:text-base lg:text-lg"}>Email Address</Text>
-                        <TextInput key={"email"} onSubmitEditing={focusOnPassword} value={email} onChangeText={(e) => setEmail(e)} placeholder={"joebloggs@bloggs.com"} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border-b-4 dark:text-white border-b-gray-300 focus:border-b-blue-500 transition-all ease-linear"}/>
+                        <TextInput key={"email"} value={email} onSubmitEditing={focusOnPassword} onChangeText={(e) => setEmail(e)} placeholder={"joebloggs@bloggs.com"} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear input"}/>
                         <Text style={styles.error} className={`mt-2 ${emailErrVisible ? 'visible' : 'invisible'}`}>
                             This field is required
                         </Text>
                     </Animated.View>
                     <Animated.View style={{transform: [{translateX: passwordShakeAnim}]}}>
                         <Text className={"mb-2 dark:text-white font-bold  sm:text-sm md:text-base lg:text-lg"}>Password</Text>
-                        <TextInput ref={refPasswordInput} key={"password"} placeholder={"Password"} value={password} onChangeText={(p) => setPassword(p)} secureTextEntry={true} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 dark:text-white border-b-4 border-b-gray-300 focus:border-b-blue-500 transition-all ease-linear"}/>
+                        <TextInput ref={refPasswordInput} key={"password"} placeholder={"Password"} value={password} onChangeText={(p) => setPassword(p)} secureTextEntry={true} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear input"}/>
                         <Text style={styles.error} className={`mt-2 ${passwordErrVisible ? 'visible' : 'invisible'}`}>
                             This field is required
                         </Text>
                     </Animated.View>
-                    <Text className={"underline dark:text-white ml-2"}>Forgot your password?</Text>
-                    <View className={"flex flex-row items-center xs:mt-0 sm:mt-1 md:mt-2 lg:mt-6"}>
-                        <Checkbox.Android status={checked ? 'checked' : 'unchecked'} onPress={() => setChecked(!checked)} color={"#3B82F6"} className={"dark:text-white"}/>
-                        <Text className={"dark:text-white ml-2"}>Remember me</Text>
-                    </View>
+                    <TouchableOpacity onPress={() => router.push("/(auth)/forgot-password")}>
+                        <Text className={"underline dark:text-white ml-2"}>Forgot your password?</Text>
+                    </TouchableOpacity>
 
                     {/* Login Button */}
                     {loading ?
@@ -194,10 +187,15 @@ export default function LoginScreen() {
                             </Text>
                         </TouchableOpacity>
                     }
+                    <View className={"xs:mt-1 sm:mt-3 md:mt-5 lg:mt-7 flex-row items-center"}>
+                        <Text className={"text-xl dark:text-white font-bold"}>
+                            Not a member?
+                        </Text>
+                        <TouchableOpacity onPress={() => router.push("/(auth)/register")}>
+                            <Text className={"dark:text-blue-500 sm:text-sm md:text-base lg:text-lg ml-4"}>Register</Text>
+                        </TouchableOpacity>
+                    </View>
 
-                    <Text className={"text-center xs:mt-1 sm:mt-3 md:mt-5 lg:mt-7 text-xl dark:text-white"}>
-                        Not a member? <Text className={"underline"}>Register now</Text>
-                    </Text>
                 </View>
             </View>
     )

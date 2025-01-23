@@ -1,23 +1,15 @@
-// Define a type for login request payload
-export interface LoginRequest {
-    email: string;
-    password: string;
-}
-
 // Define a type for User
 export interface User {
     pk: string;
     email: string;
     first_name: string;
     last_name: string;
-    staff_role: string;
     date_joined: string;
-}
-
-// Define a type for login response payload
-export interface LoginResponse {
-    key: string;
-    user: User;
+    date_of_birth: string;
+    profile_image: string;
+    prof_carer: boolean;
+    family_carer: boolean;
+    number_of_clients: number;
 }
 
 // Define a type for API error
@@ -59,7 +51,7 @@ export interface Response {
     uuid: string;
     template: Template
     patient: Patient
-    staff_user: string // Will be User object later
+    user: User
     response: object;
     response_content: string;
     created_at: string;

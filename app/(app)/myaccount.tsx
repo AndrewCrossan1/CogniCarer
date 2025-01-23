@@ -200,12 +200,12 @@ export default function MyAccount() {
                     <View className={"android:mt-safe ios:mt-2"} style={{zIndex: 0}}>
                         <View className={"items-center"}>
                             <Image
-                                source={{uri: 'https://randomuser.me/api/portraits/men/13.jpg'}} // This is a placeholder image
+                                source={{uri: user.profile_image }} // This is a placeholder image
                                 style={styles.profilePicture}
                             />
                             <Text
                                 className={"font-bold text-4xl dark:text-white mt-5"}>{user?.first_name + " " + user?.last_name}</Text>
-                            <Text className={"text-lg dark:text-white mt-1"}>{user?.staff_role}</Text>
+                            <Text className={"text-lg dark:text-white mt-1"}>{user.email}</Text>
                         </View>
 
                         {/* Other account details */}
@@ -279,9 +279,9 @@ export default function MyAccount() {
                                 autoCorrect={false}
                                 editable={false}
                                 placeholder={"Date Joined"}
-                                placeholderTextColor={"gray"}>
+                                placeholderTextColor={"gray"}
                                 value={new Date(user.date_joined).toLocaleDateString()}
-                            </TextInput>
+                            />
                         </View>
                         <View className={"p-4"}>
                             {loading ? <ActivityIndicator size={"large"} className={"dark:text-white text-blue-500"}/> :

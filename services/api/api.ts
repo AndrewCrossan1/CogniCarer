@@ -1,6 +1,5 @@
 import axios, {AxiosInstance, AxiosResponse, InternalAxiosRequestConfig} from 'axios';
-import {ApiError, Template, Response, Patient} from "@/services/api/types";
-import * as SecureStore from "expo-secure-store";
+import {ApiError} from "@/services/api/types";
 import {store} from "@/services/store/store";
 
 // Define the API class
@@ -52,51 +51,6 @@ export class API {
             return token;
         }
         return null;
-    }
-
-    // GET /storyboard/templates/
-    public async getTemplates(uuid?: string): Promise<Template[]> {
-        if (uuid) {
-            return await this.client.get(`/storyboard/templates/${uuid}/`).then((response) =>
-                response.data);
-        }
-        return await this.client.get('/storyboard/templates/').then((response) =>
-                response.data);
-    }
-
-    // GET /patients/
-    public async getPatients(uuid?: string): Promise<Patient[]> {
-        if (uuid) {
-            return await this.client.get(`/patients/${uuid}/`).then((response) =>
-                response.data);
-        }
-        return await this.client.get('/patients/').then((response) =>
-                response.data);
-    }
-
-    /**
-     * Endpoint: /storyboard/responses/
-     * @param uuid
-     * @returns {Promise<Response[]>}
-     * @description Get all responses or a single response by UUID
-     * @example
-     * // Get all responses
-     * const responses = await api.getResponses();
-     * // Get a single response by UUID
-     * const response = await api.getResponses('343ad3b3-3b3b-3b3b-3b3b-3b3b3b3b3b3b');
-     */
-    public async getResponses(uuid?: string): Promise<Response[]> {
-        return await this.client.get('/storyboard/responses/')
-            .then(async (response) => {
-                // Get the patient and template data for each response
-                for (let i = 0; i < response.data.length; i++) {
-                    const patient = await this.getPatients(response.data[i].patient);
-                    const template = await this.getTemplates(response.data[i].template);
-                    response.data[i].patient = patient;
-                    response.data[i].template = template;
-                }
-                return response.data;
-            });
     }
 
     /**
