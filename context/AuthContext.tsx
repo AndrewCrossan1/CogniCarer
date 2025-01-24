@@ -1,11 +1,13 @@
 import { createContext, useContext, useState, ReactNode, FC } from "react";
-import {User} from "@/services/api/types";
+import {Quote, User} from "@/services/api/types";
 import {useRouter} from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import API from "@/services/api/api";
 import {useDispatch} from "react-redux";
 import {setToken} from "@/services/store/slices/tokenSlice";
 import { useUser } from "@/hooks/store/user";
+import {setQuote} from "@/services/store/slices/quoteSlice";
+import {useQuote} from "@/hooks/useQuote";
 
 // Define the shape of the context
 interface AuthContextType {
@@ -30,6 +32,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const router = useRouter();
     const dispatch = useDispatch();
     const {setUser} = useUser();
+    const { getQuote, loading: quoteLoading } = useQuote();
 
     /**
      * Log in a user using the provided email and password
@@ -59,6 +62,14 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             // Request the user data (The key should be set in the API client)
             const user: User = await API.get("/auth/user/");
             setUser(user);
+
+            // Retrieve the quote of the day
+            const quote: Quote = await getQuote();
+            if (quote !== null) {
+                dispatch(setQuote(quote));
+            } else {
+                console.error("Failed to get the quote of the day");
+            }
 
             setLoading(false);
             return true;
