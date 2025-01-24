@@ -51,29 +51,45 @@ export default function Layout() {
     function CustomDrawerContent(props: DrawerContentComponentProps) {
         return (
             <DrawerContentScrollView {...props}>
-                <View style={styles.profileContainer}>
-                    {/* Profile Picture */}
-                    <Image
-                        source={{ uri: user?.profile_image }}
-                        style={styles.profilePicture}
-                    />
-                    <View style={styles.profileInfo}>
-                        <Text style={styles.profileName} className={"dark:text-white"}>{user?.first_name + " " + user?.last_name}</Text>
-                        <Text style={styles.profileLink} className={"dark:text-white"}>
-                            {user?.email}
-                        </Text>
+                <View className={"flex-1 justify-between"}>
+                    <View>
+                        <View style={styles.profileContainer}>
+                            {/* Profile Picture */}
+                            <Image
+                                source={{ uri: user?.profile_image }}
+                                style={styles.profilePicture}
+                            />
+                            <View style={styles.profileInfo}>
+                                <Text style={styles.profileName} className={"dark:text-white"}>{user?.first_name + " " + user?.last_name}</Text>
+                                <Text style={styles.profileLink} className={"dark:text-white"}>
+                                    {user?.email}
+                                </Text>
+                            </View>
+                        </View>
+                        <DrawerItem label={"Logout"} onPress={logout}
+                                    icon={() => <MaterialIcons name={"logout"} size={24} color={colors.red[500]} />}
+                                    labelStyle={{ color: colors.red[500] }}
+                                    style={{ backgroundColor: theme.TabBackgroundColor, borderBottomColor: theme.drawerBottomBorderColor }}
+                                    pressOpacity={0.8}
+                        />
+                        {/* Separator */}
+                        <View style={{ flex: 1, borderBottomWidth: 1, borderBottomColor: theme.drawerBottomBorderColor, marginBottom: 5, marginHorizontal: 12 }}/>
+                    </View>s
+                    {/* Drawer Items */}
+                    <DrawerItemList {...props} />
+
+                    <View className={"flex-1"}>
+                        {/* Separator */}
+                        <View style={{ flex: 1, borderBottomWidth: 1, borderBottomColor: theme.drawerBottomBorderColor, marginTop: 5, marginHorizontal: 12 }}/>
+
+                        <DrawerItem label={"Settings"} onPress={() => {}}
+                                    icon={() => <MaterialIcons name={"settings"} size={24} color={colors.blue[500]} />}
+                                    labelStyle={{ color: colors.blue[500] }}
+                                    style={{ backgroundColor: theme.TabBackgroundColor, borderBottomColor: theme.drawerBottomBorderColor }}
+                                    pressOpacity={0.8}
+                        />
                     </View>
                 </View>
-                <DrawerItem label={"Logout"} onPress={logout}
-                            icon={() => <MaterialIcons name={"logout"} size={24} color={colors.red[500]} />}
-                            labelStyle={{ color: colors.red[500] }}
-                            style={{ backgroundColor: theme.TabBackgroundColor, borderBottomColor: theme.drawerBottomBorderColor }}
-                            pressOpacity={0.8}
-                />
-                {/* Separator */}
-                <View style={{ flex: 1, borderBottomWidth: 1, borderBottomColor: theme.drawerBottomBorderColor, marginBottom: 5, marginHorizontal: 12 }}/>
-                {/* Drawer Items */}
-                <DrawerItemList {...props} />
             </DrawerContentScrollView>
         );
     }
@@ -106,10 +122,10 @@ export default function Layout() {
                                    title: 'Storyboard',
                                }}/>
                 <Drawer.Screen name="(reminisce)"
-                                 options={{
-                                      drawerIcon: ({ color }) => <FontAwesome name="history" size={24} color={color} />,
-                                      title: 'Reminisce',
-                                 }}/>
+                               options={{
+                                   drawerIcon: ({ color }) => <FontAwesome name="history" size={24} color={color} />,
+                                   title: 'Reminisce',
+                               }}/>
             </Drawer>
         </GestureHandlerRootView>
     )
