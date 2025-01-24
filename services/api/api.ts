@@ -1,5 +1,5 @@
 import axios, {AxiosInstance, AxiosResponse, InternalAxiosRequestConfig} from 'axios';
-import {ApiError} from "@/services/api/types";
+import {ApiError, Quote} from "@/services/api/types";
 import {store} from "@/services/store/store";
 
 // Define the API class
@@ -122,6 +122,11 @@ export class API {
     public async delete(endpoint: string): Promise<boolean> {
         return await this.client.delete(endpoint).then((response) =>
             response.data);
+    }
+
+    public async quote(): Promise<Quote> {
+        return await this.client.get('https://zenquotes.io/api/today').then((response) =>
+            response.data[0]);
     }
 }
 
