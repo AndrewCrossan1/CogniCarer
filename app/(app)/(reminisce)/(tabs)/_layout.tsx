@@ -2,6 +2,7 @@ import {Tabs} from "expo-router";
 import {StyleSheet} from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {useThemeColor} from "@/hooks/useThemeColor";
+import colors from "tailwindcss/colors";
 
 export default function Layout() {
 
@@ -10,14 +11,17 @@ export default function Layout() {
     const styles = StyleSheet.create({
         tabBar: {
             backgroundColor: theme.TabBackgroundColor,
-            borderTopColor: theme.drawerBottomBorderColor,
+            borderTopColor: colors.neutral[600],
         }
     });
 
     return (
-        <Tabs screenOptions={{
-            headerShown: false, tabBarStyle: styles.tabBar, tabBarActiveTintColor: theme.primary
-        }}>
+        <Tabs
+            screenOptions={{
+                headerShown: false, tabBarStyle: styles.tabBar, tabBarActiveTintColor: theme.primary
+            }}
+            initialRouteName={'index'}
+        >
             <Tabs.Screen name="Albums"
                          options={{
                              title: 'Albums',
