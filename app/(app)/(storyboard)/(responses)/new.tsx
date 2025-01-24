@@ -2,15 +2,13 @@ import {ActivityIndicator, Text, View} from "react-native";
 import Input from "@/components/Input";
 import {useEffect, useState} from "react";
 import {useLocalSearchParams} from "expo-router";
-import {useAppSelector} from "@/hooks/store/hooks";
 import {useStoryboard} from "@/hooks/storyboard/useStoryboard";
 import {usePatients} from "@/hooks/patients/usePatients";
 import {Patient, Template} from "@/services/api/types";
 
 const newResponseCreate = () => {
-    const user = useAppSelector(state => state.user.user);
-    const { templates, getTemplates, loading, error } = useStoryboard();
-    const { patients, getPatients, loading: patientLoading, error: patientError } = usePatients();
+    const { templates, getTemplates, loading } = useStoryboard();
+    const { patients, getPatients, loading: patientLoading} = usePatients();
     const { template: templateParam, patient: patientParam } = useLocalSearchParams();
     const [template, setTemplate] = useState<Template | null>(null);
     const [patient, setPatient] = useState<Patient | null>(null);
@@ -26,8 +24,8 @@ const newResponseCreate = () => {
             if (!valid) {
                 console.error("Error fetching patients");
             }
-            const foundTemplate = templates.find(t => t.id === templateParam);
-            const foundPatient = patients.find(p => p.id === patientParam);
+            const foundTemplate = templates.find(t => t.uuid === templateParam);
+            const foundPatient = patients.find(p => p.uuid === patientParam);
             if (foundTemplate) {
                 setTemplate(foundTemplate);
             }
