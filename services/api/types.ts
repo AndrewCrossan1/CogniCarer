@@ -57,3 +57,10 @@ export interface Response {
     created_at: string;
     updated_at: string;
 }
+
+// Define a type for random quote
+export interface Quote {
+    q: string;
+    a: string;
+    h: string;
+}
