@@ -94,7 +94,7 @@ const NewResponse = () => {
 
         // Navigate to the response creation screen
         router.push({
-            pathname: "(app)/(storyboard)/(responses)/new",
+            pathname: "/(app)/(storyboard)/(responses)/new",
             params: {
                 template: selectedTemplate?.uuid,
                 patient: selectedPatient?.uuid
