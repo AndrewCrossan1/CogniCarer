@@ -22,19 +22,19 @@ export const usePatients = () => {
         return true;
     }
 
-    const getPatient = async (id: string): Promise<boolean> => {
+    const getPatient = async (id: string): Promise<Patient | null> => {
         setLoading(true);
         const response = await API.get(`patients/${id}/`);
 
         if (!response) {
             setError("An error occurred while fetching patient");
             setLoading(false);
-            return false;
+            return null;
         }
 
         setPatients([response]);
         setLoading(false);
-        return true;
+        return response;
     }
 
     return {loading, patients, error, getPatients, getPatient};
