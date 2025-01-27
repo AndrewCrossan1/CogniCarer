@@ -74,7 +74,7 @@ export default function Layout() {
                         />
                         {/* Separator */}
                         <View style={{ flex: 1, borderBottomWidth: 1, borderBottomColor: theme.drawerBottomBorderColor, marginBottom: 5, marginHorizontal: 12 }}/>
-                    </View>s
+                    </View>
                     {/* Drawer Items */}
                     <DrawerItemList {...props} />
 
