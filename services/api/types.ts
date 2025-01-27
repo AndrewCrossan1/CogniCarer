@@ -64,3 +64,42 @@ export interface Quote {
     a: string;
     h: string;
 }
+
+// Define reminiscence types
+export interface ReminisceEntry {
+    uuid: string;
+    patient: string;
+    user: string;
+    picture: string;
+    title: string;
+    notes: string;
+    date_taken: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface UserAlbum {
+    user: string;
+    patient: string;
+    uuid: string;
+    title: string;
+    description: string;
+    patientActual?: Patient;
+    created_at: string;
+    updated_at: string;
+    album_path: string;
+    picture_count: number;
+}
+
+export interface Picture {
+    readonly user: string;
+    readonly patient: string;
+    album: string;
+    albumActual?: UserAlbum;
+    uuid: string;
+    title: string;
+    description: string;
+    readonly image_url: string;
+    readonly created_at: string;
+    updated_at: string;
+}
