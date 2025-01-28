@@ -119,7 +119,7 @@ export class API {
      * // Delete the patient by UUID
      * const patient = await api.delete('patients/343ad3b3-3b3b-3b3b-3b3b-3b3b3b3b3b3b');
      **/
-    public async delete(endpoint: string): Promise<boolean> {
+    public async delete(endpoint: string): Promise<any> {
         return await this.client.delete(endpoint).then((response) =>
             response.data);
     }
