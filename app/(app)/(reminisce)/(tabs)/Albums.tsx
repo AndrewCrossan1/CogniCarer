@@ -42,7 +42,7 @@ const Albums = () => {
         console.debug("Selected albums: ", selected.map(album => album.title));
     }
 
-    const { albums: responseAlbums, getAlbums, loading } = useReminisce()
+    const {getAlbums, deleteItem, loading } = useReminisce()
 
     const albumCover = require('@/assets/images/yes.png');
 
@@ -82,6 +82,18 @@ const Albums = () => {
             // Delete albums
             console.debug("Deleting albums: ", selected.map(album => album.title));
             setConfirmVisible(false);
+
+            // For each selected album, delete it
+            selected.forEach(async (album) => {
+                await deleteItem({type: "user-albums", id: album.uuid});
+
+                getAlbums().then((valid) => {
+                    if (!valid) return;
+                    console.debug("Albums updated, found: ", valid.length);
+                    setAlbums(valid);
+                });
+            })
+
             setSelected([]);
             setMessage("Albums deleted");
             setAlertType("success");
@@ -209,7 +221,7 @@ const Albums = () => {
                 {/* Every 2 albums (Columns) create a new row */}
                 {!loading &&
                   <View className={"w-full p-4"}>
-                    <View className={"flex-row flex-wrap justify-center"}>
+                    <View className={"flex-row flex-wrap justify-start"}>
                         {albums.map((album, index) => (
                             <TouchableOpacity
                                 key={album.uuid}
@@ -288,9 +300,12 @@ const Albums = () => {
                     <Text className={"dark:text-gray-400 mt-2"}>
                         Are you sure you want to delete the selected albums?
                     </Text>
+                    <Text className={"text-red-500 mt-2"}>
+                        This action is irreversible, any pictures in the album will not be affected.
+                    </Text>
                     {selected.map((album, index) => (
-                        <View className={"mt-2 p-4"}>
-                            <Text className={"dark:text-gray-400 mt-2"}>
+                        <View className={"p-2 dark:bg-black bg-neutral-100 mt-2 rounded-lg"} key={"selected" + album.uuid}>
+                            <Text className={"dark:text-white"}>
                                 {index + 1}. {album.title}
                             </Text>
                         </View>
@@ -306,7 +321,12 @@ const Albums = () => {
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            onPress={() => setConfirmVisible(!confirmVisible)}
+                            onPress={() => {
+                                setConfirmVisible(!confirmVisible)
+                                // Deselect all albums
+                                setSelected([]);
+                                setCanSelect(false);
+                            }}
                             className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50"}>
                             <MaterialIcons name="cancel" size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
