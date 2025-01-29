@@ -3,14 +3,13 @@ import {
     RefreshControl,
     ScrollView,
     StyleSheet,
-    Text, TextInput,
+    Text,
     TouchableOpacity,
     useColorScheme,
     View
 } from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
 import {Alert} from "@/components/Alert";
-import {Dropdown} from "@/components/Dropdown";
 import {useCallback, useEffect, useState} from "react";
 import colors from "tailwindcss/colors";
 import {useReminisce} from "@/hooks/useReminisce";
@@ -19,6 +18,7 @@ import * as Haptics from "expo-haptics";
 import Animated, {Easing, useAnimatedStyle, useSharedValue, withTiming} from "react-native-reanimated";
 import {BlurView} from "expo-blur";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import {NewAlbum} from "@/components/reminisce/NewAlbum";
 
 const Albums = () => {
 
@@ -32,6 +32,7 @@ const Albums = () => {
     const [canSelect, setCanSelect] = useState(false);
     const [confirmVisible, setConfirmVisible] = useState(false);
     const [alertType, setAlertType] = useState<"success" | "error">("error");
+    const [newAlbumVisible, setNewAlbumVisible] = useState(false);
 
     const onSelectPress = () => {
         if (!canSelect) {
@@ -58,7 +59,6 @@ const Albums = () => {
                 setVisible(true);
             }
         }
-
         fetchAlbums();
     }, []);
 
@@ -117,6 +117,16 @@ const Albums = () => {
         }
     }, [visible]);
 
+    const onSubmitted = () => {
+        // Fetch albums again
+        getAlbums().then((valid) => {
+            if (!valid) return;
+            console.debug("Albums updated, found: ", valid.length);
+            setAlbums(valid);
+        });
+        setNewAlbumVisible(false);
+    };
+
     // Selected Animations
     const maxHeight = useSharedValue(0)
 
@@ -170,7 +180,10 @@ const Albums = () => {
                     </View>
                     <View className={"flex-row items-center justify-center gap-5 w-full"}>
                         <TouchableOpacity
-                            className="flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50">
+                            className="flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50"
+                            onPress={() => {
+                                setNewAlbumVisible(true);
+                            }}>
                             <MaterialIcons name="add" size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
                                 Create Album
@@ -337,29 +350,7 @@ const Albums = () => {
                     </View>
                 </View>
             </Modal>
-            {/* New Album Pop-up */}
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={true}>
-                <BlurView intensity={75} style={[StyleSheet.absoluteFill, styles.modalView]}/>
-                <View className={"mt-safe mx-safe-or-4 dark:bg-neutral-900 bg-white rounded-lg elevation-md p-4"}>
-                    <View className={"flex-row justify-start items-center"}>
-                        <FontAwesome name={"close"} size={30} color={"red"}/>
-                        <Text className={"text-lg ml-4 dark:text-white font-bold w-full"}>Create a new album</Text>
-                    </View>
-                    <View style={{flex: 1, borderBottomWidth: 1, borderBottomColor: "white", marginVertical: 5}}/>
-                    <Text className={"dark:text-gray-400 mt-2"}>
-                        Create a new album to sort your pictures together.
-                    </Text>
-                    <Text className={"mb-2 mt-4 dark:text-white font-bold  sm:text-sm md:text-base lg:text-lg"}>Album Name</Text>
-                    <TextInput key={"album_name"} placeholder={"Holidays..."} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear input"}/>
-                    <Text className={"mb-2 mt-4 dark:text-white font-bold  sm:text-sm md:text-base lg:text-lg"}>Patient</Text>
-                    <Dropdown options={["Burgers", "Chips", "Apples"]} onSelect={(obj: any) => console.log(obj)}/>
-                    <Text className={"mb-2 mt-4 dark:text-white font-bold  sm:text-sm md:text-base lg:text-lg"}>Description</Text>
-                    <TextInput scrollEnabled={true} key={"description"} placeholder={"A collection of holiday pictures..."} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear input"}/>
-                </View>
-            </Modal>
+            <NewAlbum visible={newAlbumVisible} onSubmitted={onSubmitted} onClose={() => setNewAlbumVisible(!newAlbumVisible)}/>
         </ScrollView>
     )
 }
