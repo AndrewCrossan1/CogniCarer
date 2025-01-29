@@ -9,13 +9,14 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/logo.png",
-      "resizeMode": "contain"
+      "image": "./assets/images/splash.jpg",
+      "resizeMode": "cover"
     },
     "ios": {
       "infoPlist": {
         "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID."
-      }
+      },
+      "bundleIdentifier": "com.andrewcrossan1.dementiarehab"
     },
     "android": {
       "adaptiveIcon": {
