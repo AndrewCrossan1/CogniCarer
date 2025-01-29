@@ -105,6 +105,29 @@ const Pictures = () => {
         opacity: maxHeight.value > 0 ? 1 : 0
     }))
 
+    const deletePicture = useCallback(() => {
+        if (selected.length === 0) {
+            setMessage("No Pictures selected");
+            setVisible(true);
+            return;
+        }
+        if (confirmVisible) {
+            // Delete albums
+            console.debug("Deleting pictures: ", selected.map(picture => picture.title));
+            setConfirmVisible(false);
+            setSelected([]);
+            setMessage("Picture(s) deleted");
+            setAlertType("success");
+            setVisible(true);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            setCanSelect(false);
+            return;
+        } else {
+            setConfirmVisible(true);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        }
+    }, [confirmVisible, selected]);
+
     return (
         <ScrollView style={{backgroundColor: mode === 'dark' ? colors.neutral[800] : colors.white}} contentContainerStyle={{flexGrow: 1}}
                     refreshControl={
@@ -191,7 +214,7 @@ const Pictures = () => {
                     <View className={"flex-row flex-wrap justify-start"}>
                         {pictures.map((picture, index) => (
                             <TouchableOpacity
-                                key={picture.uuid}
+                                key={picture.title + index}
                                 activeOpacity={0.8}
                                 onPress={() => {
                                     if (!canSelect) return;
@@ -222,17 +245,18 @@ const Pictures = () => {
                                         <Image
                                             className={"rounded-t-lg border-t-2 border-l-2 border-r-2 border-gray-100"}
                                             source={{uri: picture.image_url}}
+                                            loadingIndicatorSource={require('@/assets/images/undraw_loading_65y2.png')}
                                             style={{width: "100%", height: 175}}
                                         />
                                     </View>
                                     <View className={"rounded-b-lg bg-neutral-100 dark:bg-neutral-900 p-4"}>
                                         <View className={"flex-row items-center justify-between"}>
-                                            <Text className={"dark:text-white text-lg font-bold"}>
+                                            <Text numberOfLines={1} className={"dark:text-white text-lg font-bold"}>
                                                 {picture.title}
                                             </Text>
                                         </View>
                                         <Text className={"text-blue-500 text-sm"}>
-                                            {picture.albumActual ? picture.albumActual.title : "No Album"}
+                                            {picture.albumActual ? picture.albumActual.title : "No Album"} - {picture.patientActual?.first_name} {picture.patientActual?.last_name}
                                         </Text>
                                         <Text className={"text-xs text-neutral-500"}>
                                             Uploaded: {new Date(picture.created_at).toDateString()}
@@ -257,21 +281,25 @@ const Pictures = () => {
                     <View className={"flex-row justify-start items-center"}>
                         <FontAwesome name={"close"} size={30} color={"red"}
                                      onPress={() => setConfirmVisible(!confirmVisible)}/>
-                        <Text className={"text-lg ml-4 dark:text-white font-bold w-full"}>Delete Albums</Text>
+                        <Text className={"text-lg ml-4 dark:text-white font-bold w-full"}>Delete Pictures</Text>
                     </View>
                     <View style={{flex: 1, borderBottomWidth: 1, borderBottomColor: "white", marginVertical: 5}}/>
                     <Text className={"dark:text-gray-400 mt-2"}>
-                        Are you sure you want to delete the selected albums?
+                        Are you sure you want to delete the selected pictures?
                     </Text>
-                    {selected.map((album, index) => (
-                        <View className={"mt-2 p-4"}>
-                            <Text className={"dark:text-gray-400 mt-2"}>
-                                {index + 1}. {album.title}
+                    <Text className={"dark:text-red-500 mt-2"}>
+                        This action is irreversible, all selected pictures will be deleted.
+                    </Text>
+                    {selected.map((picture, index) => (
+                        <View className={"p-2 dark:bg-black bg-neutral-100 mt-2 rounded-lg"} key={picture.title}>
+                            <Text className={"dark:text-gray-400"}>
+                                {index + 1}. {picture.title}
                             </Text>
                         </View>
                     ))}
                     <View className={"flex flex-row justify-center gap-2"}>
                         <TouchableOpacity
+                            onPress={deletePicture}
                             className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-red-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50"}>
                             <MaterialIcons name="delete" size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
@@ -280,7 +308,12 @@ const Pictures = () => {
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            onPress={() => setConfirmVisible(!confirmVisible)}
+                            onPress={() => {
+                                setConfirmVisible(!confirmVisible)
+                                // Deselect all albums
+                                setSelected([]);
+                                setCanSelect(false);
+                            }}
                             className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50"}>
                             <MaterialIcons name="cancel" size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
@@ -290,7 +323,6 @@ const Pictures = () => {
                     </View>
                 </View>
             </Modal>
-
         </ScrollView>
     )
 }
