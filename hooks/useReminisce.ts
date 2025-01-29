@@ -132,5 +132,17 @@ export const useReminisce = () => {
         return response;
     }
 
-    return { entries, getEntries, albums, getAlbums, pictures, deleteItem, getPictures, loading, error, getAlbumName };
+    const newAlbum = async (data: { title: string, description: string, patient: string, user: string }) => {
+        const response = await API.POST("reminisce/user-albums/", data);
+
+        if (response) {
+            setAlbums([...albums, response]);
+        } else {
+            console.error("Error creating album");
+        }
+
+        return response;
+    }
+
+    return { entries, getEntries, albums, getAlbums, pictures, deleteItem, getPictures, loading, error, getAlbumName, newAlbum };
 }
