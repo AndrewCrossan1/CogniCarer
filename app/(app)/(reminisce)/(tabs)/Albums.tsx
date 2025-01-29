@@ -3,13 +3,14 @@ import {
     RefreshControl,
     ScrollView,
     StyleSheet,
-    Text,
+    Text, TextInput,
     TouchableOpacity,
     useColorScheme,
     View
 } from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
 import {Alert} from "@/components/Alert";
+import {Dropdown} from "@/components/Dropdown";
 import {useCallback, useEffect, useState} from "react";
 import colors from "tailwindcss/colors";
 import {useReminisce} from "@/hooks/useReminisce";
@@ -334,6 +335,29 @@ const Albums = () => {
                             </Text>
                         </TouchableOpacity>
                     </View>
+                </View>
+            </Modal>
+            {/* New Album Pop-up */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={true}>
+                <BlurView intensity={75} style={[StyleSheet.absoluteFill, styles.modalView]}/>
+                <View className={"mt-safe mx-safe-or-4 dark:bg-neutral-900 bg-white rounded-lg elevation-md p-4"}>
+                    <View className={"flex-row justify-start items-center"}>
+                        <FontAwesome name={"close"} size={30} color={"red"}/>
+                        <Text className={"text-lg ml-4 dark:text-white font-bold w-full"}>Create a new album</Text>
+                    </View>
+                    <View style={{flex: 1, borderBottomWidth: 1, borderBottomColor: "white", marginVertical: 5}}/>
+                    <Text className={"dark:text-gray-400 mt-2"}>
+                        Create a new album to sort your pictures together.
+                    </Text>
+                    <Text className={"mb-2 mt-4 dark:text-white font-bold  sm:text-sm md:text-base lg:text-lg"}>Album Name</Text>
+                    <TextInput key={"album_name"} placeholder={"Holidays..."} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear input"}/>
+                    <Text className={"mb-2 mt-4 dark:text-white font-bold  sm:text-sm md:text-base lg:text-lg"}>Patient</Text>
+                    <Dropdown options={["Burgers", "Chips", "Apples"]} onSelect={(obj: any) => console.log(obj)}/>
+                    <Text className={"mb-2 mt-4 dark:text-white font-bold  sm:text-sm md:text-base lg:text-lg"}>Description</Text>
+                    <TextInput scrollEnabled={true} key={"description"} placeholder={"A collection of holiday pictures..."} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear input"}/>
                 </View>
             </Modal>
         </ScrollView>
