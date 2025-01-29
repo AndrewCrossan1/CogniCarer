@@ -69,8 +69,11 @@ export interface Quote {
 export interface ReminisceEntry {
     uuid: string;
     patient: string;
+    patientActual?: Patient;
     user: string;
+    userActual?: User;
     picture: string;
+    pictureActual?: Picture;
     title: string;
     notes: string;
     date_taken: string;
@@ -92,14 +95,15 @@ export interface UserAlbum {
 }
 
 export interface Picture {
-    readonly user: string;
-    readonly patient: string;
+    user: string;
+    patient: string;
+    patientActual?: Patient;
     album: string;
     albumActual?: UserAlbum;
     uuid: string;
     title: string;
     description: string;
-    readonly image_url: string;
-    readonly created_at: string;
+    image_url: string;
+    created_at: string;
     updated_at: string;
 }
