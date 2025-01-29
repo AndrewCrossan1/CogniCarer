@@ -7,19 +7,19 @@ export const usePatients = () => {
     const [patients, setPatients] = useState([] as Patient[]);
     const [error, setError] = useState<string | null>(null);
 
-    const getPatients = async (): Promise<boolean> => {
+    const getPatients = async (): Promise<Patient[] | null> => {
         setLoading(true);
         const response = await API.get("patients/");
 
         if (!response) {
             setError("An error occurred while fetching patients");
             setLoading(false);
-            return false;
+            return null;
         }
 
         setPatients(response);
         setLoading(false);
-        return true;
+        return response;
     }
 
     const getPatient = async (id: string): Promise<Patient | null> => {
