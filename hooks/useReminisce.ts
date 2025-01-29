@@ -1,7 +1,8 @@
 import {useState} from "react";
-import {ReminisceEntry, Picture, UserAlbum} from "@/services/api/types";
+import {Picture, ReminisceEntry, UserAlbum} from "@/services/api/types";
 import API from "@/services/api/api";
 import {usePatients} from "@/hooks/patients/usePatients";
+import {useAppSelector} from "@/hooks/store/hooks";
 
 export const useReminisce = () => {
     const [loading, setLoading] = useState(false);
@@ -9,19 +10,36 @@ export const useReminisce = () => {
     const [albums, setAlbums] = useState([] as UserAlbum[]);
     const [pictures, setPictures] = useState([] as Picture[]);
     const [error, setError] = useState<string | null>(null);
+    const user = useAppSelector(state => state.user.user);
 
     const { getPatient } = usePatients();
 
-    const getEntries = async (): Promise<ReminisceEntry> => {
+    const getEntries = async (): Promise<ReminisceEntry[] | null> => {
         setLoading(true);
 
         const response = await API.get("reminisce/entries/");
 
-        setEntries(response);
-        setLoading(false);
+        if (response) {
+            setEntries(response);
+            for (const entry of response) {
+                getPatient(entry.patient).then((patient) => {
+                    // @ts-ignore
+                    entry.patientActual = patient;
+                });
+                getPictures().then((pictures) => {
+                    // @ts-ignore
+                    entry.pictureActual = pictures.find((picture) => picture.uuid === entry.picture);
+                });
+                // @ts-ignore
+                entry.userActual = user;
+            }
+            setLoading(false);
+            return response;
+        }
 
-        // Convert the response to a ReminisceEntry object
-        return response;
+        setLoading(false);
+        setError("No entries found");
+        return null;
     }
 
     const getAlbums = async (): Promise<UserAlbum[] | null> => {
@@ -75,6 +93,10 @@ export const useReminisce = () => {
                 if (album) {
                     picture.albumActual = album;
                 }
+                getPatient(picture.patient).then((patient) => {
+                    // @ts-ignore
+                    picture.patientActual = patient;
+                });
             });
         }
 
@@ -86,5 +108,29 @@ export const useReminisce = () => {
         return response;
     }
 
-    return { entries, getEntries, albums, getAlbums, pictures, getPictures, loading, error, getAlbumName };
+    interface DeleteProps {
+        type: "entries" | "user-albums" | "pictures";
+        id: string;
+    }
+
+    const deleteItem = async ({ type, id }: DeleteProps) => {
+        const response = await API.delete(`reminisce/${type}/${id}/`);
+
+        if (response) {
+            switch (type) {
+                case "entries":
+                    setEntries(entries.filter((entry) => entry.uuid !== id));
+                    break;
+                case "user-albums":
+                    setAlbums(albums.filter((album) => album.uuid !== id));
+                    break;
+                case "pictures":
+                    setPictures(pictures.filter((picture) => picture.uuid !== id));
+                    break;
+            }
+        }
+        return response;
+    }
+
+    return { entries, getEntries, albums, getAlbums, pictures, deleteItem, getPictures, loading, error, getAlbumName };
 }
