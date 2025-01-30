@@ -4,7 +4,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {Checkbox} from "react-native-paper";
 import {useRouter} from "expo-router";
-import InputField from "@/components/InputField";
+import InputGroup from "@/components/forms/InputGroup";
 
 export default function Index() {
     const [activeForm, setActiveForm] = useState("personal");
@@ -31,6 +31,13 @@ export default function Index() {
     const [patientCount, setPatientCount] = useState("");
     const [struggle, setStruggle] = useState(false);
     const [preferNot, setPreferNot] = useState(false);
+
+    {/* Errors */}
+    const [emailErr, setEmailErr] = useState(false);
+    const [passwordErr, setPasswordErr] = useState(false);
+    const [confirmPasswordErr, setConfirmPasswordErr] = useState(false);
+    const [firstNameErr, setFirstNameErr] = useState(false);
+    const [lastNameErr, setLastNameErr] = useState(false);
 
     const validatePassword = (p: string) => {
         // Check if password is at least 10 characters
@@ -86,6 +93,7 @@ export default function Index() {
                 {activeForm === "occupation" ? <Text className={"dark:text-white text-center xs:text-xs sm:text-sm md:text-base lg:text-lg"}>Occupation Details</Text> : null}
                 {activeForm === "password" ? <Text className={"dark:text-white text-center xs:text-xs sm:text-sm md:text-base lg:text-lg"}>Setting your password</Text> : null}
             </View>
+
             {/* Progress Icons */}
             <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8 xs:mt-2 sm:mt-3 md:mt-4 lg:mt-5"}>
                 <View className={"flex-row justify-between items-center"}>
@@ -105,16 +113,17 @@ export default function Index() {
                     </TouchableOpacity>
                 </View>
             </View>
+
             {/* Personal Details */}
-            {activeForm === "personal" ?
+            {activeForm === "personal" &&
                 <View>
-                    <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8 xs:mt-0 sm:mt-1 md:mt-2 lg:mt-3 xl:mt-4"}>
-                        <InputField value={email} password={false} onChangeText={(e) => setEmail(e)} placeholder={"joebloggs@bloggs.com"} placeholderTextColor={"#AAAAA5"} label={"Email Address"} key={"email"}/>
+                    <View className={"px-8"}>
+                        <InputGroup value={email} errorMessage={"This field is required"} error={emailErr} onChangeText={(e) => setEmail(e)} placeholder={"joe.bloggs@cognicarer.com"} label={"Email Address"} />
                     </View>
                     {/* First and last name */}
-                    <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8 flex-row justify-between"}>
-                        <InputField value={firstName} password={false} width={"w-5/12"} onChangeText={(s) => setFirstName(s)} placeholder={"Joe"} placeholderTextColor={"#AAAAA5"} label={"First Name"} key={"first_name"}/>
-                        <InputField value={lastName} password={false} width={"w-5/12"} onChangeText={(s) => setLastName(s)} placeholder={"Bloggs"} placeholderTextColor={"#AAAAA5"} label={"Last Name"} key={"last_name"}/>
+                    <View className={"px-8 gap-4 flex-row justify-between"}>
+                        <InputGroup label={"First Name"} errorMessage={"This field is required"} error={firstNameErr} size={"1/2"} value={firstName} onChangeText={(s) => setFirstName(s)} placeholder={"Joe"} />
+                        <InputGroup label={"Last name"} errorMessage={"This field is required"} error={lastNameErr} size={"1/2"} value={lastName} onChangeText={(s) => setLastName(s)} placeholder={"Bloggs"} />
                     </View>
                     {/* Date of Birth */}
                     {Platform.OS === "android" ? null :
@@ -132,10 +141,10 @@ export default function Index() {
                             <Text className={"dark:text-blue-500 sm:text-sm md:text-base lg:text-lg ml-4"}>Sign in</Text>
                         </TouchableOpacity>
                     </View>
-                </View>
-                : null}
+                </View>}
+
             {/* Password */}
-            {activeForm === "password" ?
+            {activeForm === "password" &&
                 <View>
                     <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8 xs:mt-0 sm:mt-1 md:mt-2 lg:mt-3 xl:mt-4"}>
                         <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>Your password must meet the following requirements:</Text>
@@ -163,9 +172,11 @@ export default function Index() {
                             <FontAwesome name={password === confirmPassword ? "check" : "close"} size={24} color={password === confirmPassword ? "#3B82F6" : "#EF5350"}/>
                             <Text className={"ml-2 dark:text-white"}>Passwords match</Text>
                         </View>
-                        <InputField value={password} onChangeText={(s) => validatePassword(s)} placeholder={"********"} placeholderTextColor={"#AAAAA5"} label={"Enter Password"} password={true}/>
-                        <View className={"my-2"}/>
-                        <InputField value={confirmPassword} password={true} label={"Confirm Password"} onChangeText={(s) => matchPasswords(s)} placeholder={"********"} placeholderTextColor={"#AAAAAA5"}/>
+
+                        <InputGroup secureTextEntry={true} label={"Password"} errorMessage={"This field is required"} error={passwordErr} value={password} onChangeText={(s) => validatePassword(s)} placeholder={"********"} />
+
+                        <InputGroup secureTextEntry={true} label={"Confirm Password"} errorMessage={"This field is required"} error={confirmPasswordErr} value={confirmPassword} onChangeText={(s) => matchPasswords(s)} placeholder={"********"} />
+
                         <TouchableOpacity className={"w-full bg-blue-500 text-white p-2.5 rounded-md xs:mt-3 sm:mt-4 md:mt-5 lg:mt-6"}>
                             <Text className={"text-center text-white text-lg"}>
                                 Register
@@ -179,10 +190,10 @@ export default function Index() {
                             <Text className={"dark:text-blue-500 sm:text-sm md:text-base lg:text-lg ml-4"}>Sign in</Text>
                         </TouchableOpacity>
                     </View>
-                </View>
-                : null}
+                </View>}
+
             {/* Occupation */}
-            {activeForm === "occupation" ?
+            {activeForm === "occupation" &&
                 <View>
                     <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8 xs:mt-0 sm:mt-1 md:mt-2 lg:mt-3 xl:mt-4"}>
                         <View className={"flex-row justify-between"}>
@@ -271,7 +282,7 @@ export default function Index() {
                             <Text className={"dark:text-blue-500 sm:text-sm md:text-base lg:text-lg ml-4"}>Sign in</Text>
                         </TouchableOpacity>
                     </View>
-                </View> : null}
+                </View>}
         </ScrollView>
     );
 }
