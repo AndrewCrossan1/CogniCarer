@@ -34,7 +34,7 @@ const index = () => {
     const [newAlbumVisible, setNewAlbumVisible] = useState(false);
     const [newPictureVisible, setNewPictureVisible] = useState(false);
 
-    const {getAlbums, loading, getPictures} = useReminisce()
+    const {getAlbums, loading} = useReminisce()
     const albumCover = require('@/assets/images/yes.png');
 
     useEffect(() => {
@@ -118,7 +118,7 @@ const index = () => {
                     </View>
                     <View className={"flex-row items-center justify-between"}>
                         <TouchableOpacity
-                            className="flex-row items-center mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50">
+                            className="flex-row items-center mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900">
                             <MaterialIcons name="add" size={24} color="white" className={"mr-1"}/>
                             <Text className="text-white">
                                 New Entry
@@ -126,7 +126,7 @@ const index = () => {
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={() => setNewPictureVisible(true)}
-                            className="flex-row items-center mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50">
+                            className="flex-row items-center mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900">
                             <MaterialIcons name="upload" size={24} color="white" className={"mr-1"}/>
                             <Text className="text-white">
                                 Upload Picture
@@ -134,7 +134,7 @@ const index = () => {
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={() => setNewAlbumVisible(true)}
-                            className="flex-row items-center mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50">
+                            className="flex-row items-center mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900">
                             <MaterialIcons name="list" size={24} color="white" className={"mr-1"}/>
                             <Text className="text-white">
                                 Create Album
@@ -144,7 +144,7 @@ const index = () => {
                 </View>
                 <View className={"px-4"}>
                     <View
-                        className={"mt-4 border bg-neutral-100 dark:bg-neutral-900 dark:shadow-sm dark:border-neutral-900 border-neutral-300 rounded-lg p-4"}>
+                        className={"mt-4 border bg-neutral-100 dark:bg-neutral-900 dark:border-neutral-900 border-neutral-300 rounded-lg p-4"}>
                         <View key={"subtasks"}>
                             <Text className={"text-lg font-bold dark:text-white"}>
                                 Quote of the Day
@@ -163,7 +163,7 @@ const index = () => {
                     </View>
                     <View className={"flex-row gap-4 justify-between w-full mt-4"} key={"albums"}>
                         <View
-                            className={"flex-1 border bg-neutral-100 dark:bg-neutral-900 dark:border-neutral-900 dark:shadow-sm border-neutral-300 rounded-lg pt-4 px-4 pb-2"}>
+                            className={"flex-1 border bg-neutral-100 dark:bg-neutral-900 dark:border-neutral-900 border-neutral-300 rounded-lg pt-4 px-4 pb-2"}>
                             <Text className={"dark:text-white font-bold"}>
                                 Albums
                             </Text>
@@ -213,7 +213,7 @@ const index = () => {
                     </View>
                     <View className={"flex-row gap-4 justify-between w-full mt-4"} key={"dates"}>
                         <View
-                            className={"flex-1 border bg-neutral-100 dark:bg-neutral-900 dark:border-neutral-900 dark:shadow-sm border-neutral-300 rounded-lg p-4"}>
+                            className={"flex-1 border bg-neutral-100 dark:bg-neutral-900 dark:border-neutral-900 border-neutral-300 rounded-lg p-4"}>
                             <Text className={"dark:text-white text-lg mb-2 font-bold"}>
                                 See when you've reminisced
                             </Text>

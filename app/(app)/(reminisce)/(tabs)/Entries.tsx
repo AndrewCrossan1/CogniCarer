@@ -8,7 +8,6 @@ import {
     useColorScheme,
     View
 } from "react-native";
-import { useThemeColor} from "@/hooks/useThemeColor";
 import {useAppSelector} from "@/hooks/store/hooks";
 import {MaterialIcons} from "@expo/vector-icons";
 import colors from "tailwindcss/colors";
@@ -172,7 +171,7 @@ const Entries = () => {
                     </View>
                     <View className={"flex-row items-center gap-2 justify-between w-full"}>
                         <TouchableOpacity
-                            className="flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50">
+                            className="flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900">
                             <MaterialIcons name="add" size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
                                 Create Entry
@@ -182,7 +181,7 @@ const Entries = () => {
                             onPress={() => {
                                 onSelectPress();
                             }}
-                            className={`flex-row items-center mt-3 w-1/2 rounded-lg p-2 ${canSelect ? 'bg-amber-500' : 'bg-blue-600'} dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50`}>
+                            className={`flex-row items-center mt-3 w-1/2 rounded-lg p-2 ${canSelect ? 'bg-amber-500' : 'bg-blue-600'} dark:bg-neutral-900`}>
                             <MaterialIcons name={canSelect ? 'cancel' : 'edit'} size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
                                 {canSelect ? "Cancel" : "Select Entries"}
@@ -209,7 +208,7 @@ const Entries = () => {
                                     onPress={() => {
                                         deleteEntry();
                                     }}
-                                    className="flex-row items-center mt-3 w-full rounded-lg p-2 bg-red-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50">
+                                    className="flex-row items-center mt-3 w-full rounded-lg p-2 bg-red-600 dark:bg-neutral-900">
                                     <MaterialIcons name="delete" size={24} color="white" className={"mr-1"} />
                                     <Text className="text-white">
                                         Delete
@@ -315,7 +314,7 @@ const Entries = () => {
                             onPress={() => {
                                 deleteEntry();
                             }}
-                            className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-red-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50"}>
+                            className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-red-600 dark:bg-neutral-900"}>
                             <MaterialIcons name="delete" size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
                                 Delete
@@ -329,7 +328,7 @@ const Entries = () => {
                                 setSelected([]);
                                 setCanSelect(false);
                             }}
-                            className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50"}>
+                            className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900"}>
                             <MaterialIcons name="cancel" size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
                                 Cancel
