@@ -47,12 +47,6 @@ export default function Layout() {
                              tabBarIcon: ({ color }) => <FontAwesome name="image" size={24} color={color} />,
                          }}
             />
-            <Tabs.Screen name="NewEntry"
-                            options={{
-                                title: 'New Entry',
-                                tabBarIcon: ({ color }) => <FontAwesome name="plus" size={24} color={color} />,
-                            }}
-            />
         </Tabs>
     )
 }
