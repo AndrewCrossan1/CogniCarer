@@ -10,6 +10,8 @@ import {Dropdown} from "@/components/forms/Dropdown";
 import {MaterialIcons} from "@expo/vector-icons";
 import {useReminisce} from "@/hooks/useReminisce";
 import * as ImagePicker from 'expo-image-picker';
+import {ImagePickerResult} from "expo-image-picker";
+import ImageViewer from "@/components/ImageViewer";
 
 /**
  * NewAlbumProps interface
@@ -33,7 +35,7 @@ interface NewAlbumProps {
 const NewPictureForm = (props: NewAlbumProps) => {
     // Hooks
     const {getPatients} = usePatients();
-    const {getAlbums, getAlbum} = useReminisce();
+    const {getAlbums, newPicture} = useReminisce();
     const {visible, onSubmitted} = props;
     const user = useAppSelector(state => state.user.user);
 
@@ -44,6 +46,9 @@ const NewPictureForm = (props: NewAlbumProps) => {
     const [album, setAlbum] = useState("");
     const [albumOptions, setAlbumsOptions] = useState([] as { value: string, display: string }[]);
     const [albums, setAlbums] = useState<UserAlbum[]>([]);
+    const [picture, setPicture] = useState<ImagePickerResult | null>(null);
+    const [pictureString, setPictureString] = useState<string | undefined>(undefined);
+    const [errors, setErrors] = useState(false);
 
     // Error states
     const [titleError, setTitleError] = useState(false);
@@ -64,7 +69,6 @@ const NewPictureForm = (props: NewAlbumProps) => {
                     }
                 });
                 setPatients(patients);
-                console.debug("[NewAlbumForm] Patients fetched, found: ", fetchedPatients.length);
             }
         }
 
@@ -72,7 +76,6 @@ const NewPictureForm = (props: NewAlbumProps) => {
             const fetchedAlbums = await getAlbums();
             if (fetchedAlbums) {
                 setAlbums(fetchedAlbums);
-                console.debug("[NewAlbumForm] Albums fetched, found: ", fetchedAlbums.length);
             }
         }
 
@@ -107,12 +110,47 @@ const NewPictureForm = (props: NewAlbumProps) => {
      */
     const submit = (): void => {
         console.debug("[NewAlbumForm] Submitting new picture");
-        console.debug("Data: ", {
-            title: title,
-            patient: patient,
-            album: album,
-            user: user?.pk
-        })
+
+        // Validate
+        if (title === "") {
+            setTitleError(true);
+            titleRef.current?.shake();
+            return;
+        }
+        if (patient === "") {
+            setErrors(true);
+            return;
+        }
+        if (album === "") {
+            setErrors(true);
+            return;
+        }
+        if (picture === null || user === null) {
+            setErrors(true);
+            return;
+        }
+
+        // Upload
+        newPicture({title: title, patient: patient, album: album, user: user.pk}, picture).then(
+            () => {
+                reset().then(
+                    () => {
+                        // Close the modal
+                        onSubmitted();
+                    }
+                )
+            }
+        )
+    }
+
+    const reset = async () => {
+        setTitleError(false);
+        setTitle("");
+        setPatient("");
+        setAlbum("");
+        setPicture(null);
+        setErrors(false);
+        setPictureString(undefined);
     }
 
     const onChangeText = (s: string) => {
@@ -182,24 +220,38 @@ const NewPictureForm = (props: NewAlbumProps) => {
                     <TouchableOpacity
                         onPress={async () => {
                             let result = await ImagePicker.launchImageLibraryAsync({
-                                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                                mediaTypes: ['images'],
                                 allowsEditing: true,
                                 aspect: [4, 3],
                                 quality: 1,
                             });
 
-                            console.log(result);
+                            setPicture(result);
 
                             if (!result.canceled) {
-                                console.log(result);
+                                setPictureString(result.assets[0].uri);
                             }
                         }}
-                        className={"flex-row items-center w-full mt-3 rounded-lg p-2 bg-blue-500"}>
+                        className={"flex-row items-center w-full mb-4 rounded-lg p-2 bg-blue-500"}>
                         <MaterialIcons name="add" size={24} color="white" className={"mr-1"}/>
                         <Text className="text-white">
                             Choose Picture
                         </Text>
                     </TouchableOpacity>
+                    <View>
+                        {pictureString !== undefined && (
+                            <ImageViewer source={pictureString}/>
+                        )}
+                    </View>
+
+                    {errors && (
+                        <View className={"flex-row items-center justify-center"}>
+                            <MaterialIcons name={"error"} size={24} color={"red"} className={"mr-4"}/>
+                            <Text className={"text-red-500 text-xl my-4"}>
+                                There are errors in the form
+                            </Text>
+                        </View>
+                    )}
 
                     {/* Buttons */}
                     <View className={"flex-row justify-center gap-2"}>
@@ -218,6 +270,12 @@ const NewPictureForm = (props: NewAlbumProps) => {
                                 // Reset errors and close the modal
                                 () => {
                                     setTitleError(false);
+                                    setTitle("");
+                                    setPatient("");
+                                    setAlbum("");
+                                    setPicture(null);
+                                    setErrors(false);
+                                    setPictureString(undefined);
                                     props.onClose();
                                 }
                             }
