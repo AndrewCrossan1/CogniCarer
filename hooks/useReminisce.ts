@@ -159,5 +159,18 @@ export const useReminisce = () => {
         return response;
     }
 
-    return { entries, getEntries, albums, getAlbums, pictures, deleteItem, getPictures, loading, error, getAlbumName, newAlbum, getAlbum };
+    const newPicture = async (data: { title: string, patient: string, album?: string, user: string}, image: any) => {
+        //
+        const response = await API.image_post("reminisce/pictures/", data, image);
+
+        if (response) {
+            setPictures([...pictures, response]);
+        } else {
+            console.error("Error creating picture");
+        }
+
+        return response;
+    }
+
+    return { entries, getEntries, albums, getAlbums, pictures, deleteItem, getPictures, loading, error, getAlbumName, newAlbum, getAlbum, newPicture };
 }
