@@ -18,7 +18,7 @@ import * as Haptics from "expo-haptics";
 import Animated, {Easing, useAnimatedStyle, useSharedValue, withTiming} from "react-native-reanimated";
 import {BlurView} from "expo-blur";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {NewAlbum} from "@/components/reminisce/NewAlbum";
+import NewAlbumForm from "@/components/reminisce/NewAlbumForm";
 
 const Albums = () => {
 
@@ -350,7 +350,7 @@ const Albums = () => {
                     </View>
                 </View>
             </Modal>
-            <NewAlbum visible={newAlbumVisible} onSubmitted={onSubmitted} onClose={() => setNewAlbumVisible(!newAlbumVisible)}/>
+            <NewAlbumForm visible={newAlbumVisible} onSubmitted={onSubmitted} onClose={() => setNewAlbumVisible(!newAlbumVisible)}/>
         </ScrollView>
     )
 }
