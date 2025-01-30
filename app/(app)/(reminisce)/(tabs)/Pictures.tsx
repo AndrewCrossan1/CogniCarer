@@ -43,7 +43,6 @@ const Pictures = () => {
             setCanSelect(false);
             setSelected([]);
         }
-        console.debug("Selected Pictures: ", selected.map(picture => picture.title));
     }
 
     const {getPictures, error, loading, getAlbumName} = useReminisce()
@@ -63,7 +62,6 @@ const Pictures = () => {
             const fetchedPictures = await getPictures();
             if (fetchedPictures) {
                 setPictures(fetchedPictures);
-                console.debug("Pictures fetched, found", fetchedPictures.length);
             } else {
                 setMessage("No Pictures found");
                 setVisible(true);
@@ -80,7 +78,6 @@ const Pictures = () => {
         getPictures().then((valid) => {
             if (!valid) return;
             setRefreshing(false);
-            console.debug("Pictures refreshed, found: ", valid.length);
             setPictures(valid);
         });
     }, [getPictures]);
@@ -93,7 +90,6 @@ const Pictures = () => {
         }
         if (confirmVisible) {
             // Delete albums
-            console.debug("Deleting pictures: ", selected.map(picture => picture.title));
             setConfirmVisible(false);
             setSelected([]);
             setMessage("Picture(s) deleted");
@@ -107,6 +103,18 @@ const Pictures = () => {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
         }
     }, [confirmVisible, selected]);
+
+
+    const onSubmitted = () => {
+        // Fetch albums again
+        getPictures().then((valid) => {
+            if (!valid) return;
+            setPictures(valid);
+        });
+
+        // Close the modal
+        setNewPictureVisible(false);
+    };
 
     return (
         <ScrollView style={{backgroundColor: mode === 'dark' ? colors.neutral[800] : colors.white}} contentContainerStyle={{flexGrow: 1}}
@@ -199,7 +207,7 @@ const Pictures = () => {
                                     <View className={"justify-center items-center"}>
                                         {/* Image */}
                                         <Image
-                                            className={"rounded-t-lg border-t-2 border-l-2 border-r-2 border-gray-100"}
+                                            className={"rounded-t-lg"}
                                             source={{uri: picture.image_url}}
                                             loadingIndicatorSource={require('@/assets/images/undraw_loading_65y2.png')}
                                             style={{width: "100%", height: 175}}
@@ -279,7 +287,7 @@ const Pictures = () => {
                     </View>
                 </View>
             </Modal>
-            <NewPictureForm visible={newPictureVisible} onSubmitted={() => {}} onClose={() => setNewPictureVisible(!newPictureVisible)}/>
+            <NewPictureForm visible={newPictureVisible} onSubmitted={onSubmitted} onClose={() => setNewPictureVisible(!newPictureVisible)}/>
         </ScrollView>
     )
 }
