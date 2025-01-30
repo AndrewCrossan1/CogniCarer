@@ -79,6 +79,21 @@ export const useReminisce = () => {
         return null;
     }
 
+    const getAlbum = async (albumName: string): Promise<string | null> => {
+        setLoading(true);
+
+        const response = await API.get(`reminisce/user-albums/${albumName}/`);
+
+        if (response) {
+            setLoading(false);
+            return response;
+        }
+
+        setLoading(false);
+        setError("Album not found");
+        return null;
+    }
+
     const getPictures = async (): Promise<Picture[] | null> => {
         setLoading(true);
 
@@ -144,5 +159,5 @@ export const useReminisce = () => {
         return response;
     }
 
-    return { entries, getEntries, albums, getAlbums, pictures, deleteItem, getPictures, loading, error, getAlbumName, newAlbum };
+    return { entries, getEntries, albums, getAlbums, pictures, deleteItem, getPictures, loading, error, getAlbumName, newAlbum, getAlbum };
 }
