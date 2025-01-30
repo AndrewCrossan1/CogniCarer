@@ -180,7 +180,7 @@ const Albums = () => {
                     </View>
                     <View className={"flex-row items-center justify-center gap-5 w-full"}>
                         <TouchableOpacity
-                            className="flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50"
+                            className="flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900"
                             onPress={() => {
                                 setNewAlbumVisible(true);
                             }}>
@@ -193,7 +193,7 @@ const Albums = () => {
                             onPress={() => {
                                 onSelectPress();
                             }}
-                            className={`flex-row items-center mt-3 w-1/2 rounded-lg p-2 ${canSelect ? 'bg-amber-500' : 'bg-blue-600'} dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50`}>
+                            className={`flex-row items-center mt-3 w-1/2 rounded-lg p-2 ${canSelect ? 'bg-amber-500' : 'bg-blue-600'} dark:bg-neutral-900`}>
                             <MaterialIcons name={canSelect ? 'cancel' : 'edit'} size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
                                 {canSelect ? "Cancel" : "Select Albums"}
@@ -220,7 +220,7 @@ const Albums = () => {
                             onPress={() => {
                                 deleteAlbum();
                             }}
-                            className="flex-row items-center mt-3 w-full rounded-lg p-2 bg-red-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50">
+                            className="flex-row items-center mt-3 w-full rounded-lg p-2 bg-red-600 dark:bg-neutral-900">
                             <MaterialIcons name="delete" size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
                               Delete
@@ -327,7 +327,7 @@ const Albums = () => {
                     <View className={"flex flex-row justify-center gap-2"}>
                         <TouchableOpacity
                             onPress={() => deleteAlbum()}
-                            className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-red-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50"}>
+                            className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-red-600 dark:bg-neutral-900"}>
                             <MaterialIcons name="delete" size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
                                 Delete
@@ -341,7 +341,7 @@ const Albums = () => {
                                 setSelected([]);
                                 setCanSelect(false);
                             }}
-                            className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50"}>
+                            className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900"}>
                             <MaterialIcons name="cancel" size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
                                 Cancel
