@@ -1,7 +1,7 @@
 import {View, TouchableOpacity} from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {useState} from "react";
-import Input from "@/components/Input";
+import Input from "@/components/forms/Input";
 
 export function SearchInput({placeholder, onSearch, modalVisibleFun}: { placeholder: string, onSearch: (s: string) => void, modalVisible: boolean, modalVisibleFun: () => void }) {
     const [searchValue, setSearchValue] = useState("")
