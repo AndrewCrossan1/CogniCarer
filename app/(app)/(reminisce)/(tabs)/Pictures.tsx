@@ -45,7 +45,7 @@ const Pictures = () => {
         }
     }
 
-    const {getPictures, error, loading, getAlbumName} = useReminisce()
+    const {getPictures, loading} = useReminisce()
 
     // Timer to automatically close the alert after 3 seconds
     useEffect(() => {
@@ -150,7 +150,7 @@ const Pictures = () => {
                             onPress={() => {
                                 setNewPictureVisible(!newPictureVisible);
                             }}
-                            className="flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50">
+                            className="flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900">
                             <MaterialIcons name="upload" size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
                                 Add Pictures
@@ -160,7 +160,7 @@ const Pictures = () => {
                             onPress={() => {
                                 onSelectPress();
                             }}
-                            className={`flex-row items-center mt-3 w-1/2 rounded-lg p-2 ${canSelect ? 'bg-amber-500' : 'bg-blue-600'} dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50`}>
+                            className={`flex-row items-center mt-3 w-1/2 rounded-lg p-2 ${canSelect ? 'bg-amber-500' : 'bg-blue-600'} dark:bg-neutral-900`}>
                             <MaterialIcons name={canSelect ? 'cancel' : 'edit'} size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
                                 {canSelect ? "Cancel" : "Select Pictures"}
@@ -264,7 +264,7 @@ const Pictures = () => {
                     <View className={"flex flex-row justify-center gap-2"}>
                         <TouchableOpacity
                             onPress={deletePicture}
-                            className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-red-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50"}>
+                            className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-red-600 dark:bg-neutral-900"}>
                             <MaterialIcons name="delete" size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
                                 Delete
@@ -278,7 +278,7 @@ const Pictures = () => {
                                 setSelected([]);
                                 setCanSelect(false);
                             }}
-                            className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50"}>
+                            className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900"}>
                             <MaterialIcons name="cancel" size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
                                 Cancel
