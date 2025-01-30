@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "dementia-rehab",
-    "slug": "dementia-rehab",
+    "name": "Cognicarer",
+    "slug": "cognicarer",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
