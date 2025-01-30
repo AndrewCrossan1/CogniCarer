@@ -1,5 +1,5 @@
 import {ActivityIndicator, Text, View} from "react-native";
-import Input from "@/components/Input";
+import Input from "@/components/forms/Input";
 import {useEffect, useState} from "react";
 import {useLocalSearchParams} from "expo-router";
 import {useStoryboard} from "@/hooks/storyboard/useStoryboard";
