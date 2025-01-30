@@ -8,11 +8,10 @@ import {
     ActivityIndicator
 } from "react-native";
 import {useRef, useState} from "react";
-import InputField from "@/components/InputField";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {useRouter} from "expo-router";
 import {useAuth} from "@/context/AuthContext";
-import Input from "@/components/Input";
+import Input from "@/components/forms/Input";
 
 // TODO: Implement backend functionality
 
