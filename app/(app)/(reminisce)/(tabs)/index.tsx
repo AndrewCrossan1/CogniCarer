@@ -3,7 +3,7 @@ import {
     Text,
     Image,
     TouchableOpacity,
-    ScrollView, useColorScheme
+    ScrollView, useColorScheme, RefreshControl
 } from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
 import {useAppSelector} from "@/hooks/store/hooks";
@@ -12,13 +12,12 @@ import {Calendar} from "react-native-calendars";
 import colors from "tailwindcss/colors";
 import {useThemeColor} from "@/hooks/useThemeColor";
 import {useReminisce} from "@/hooks/useReminisce";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {UserAlbum} from "@/services/api/types";
 import {Alert} from "@/components/Alert";
 import NewAlbumForm from "@/components/reminisce/NewAlbumForm";
 import NewPictureForm from "@/components/reminisce/NewPictureForm";
-
-// TODO: Retrieve most populated albums, most recent entry and most recent entries.
+import * as Haptics from "expo-haptics";
 
 const index = () => {
 
@@ -33,8 +32,12 @@ const index = () => {
     const [currentAlbum, setCurrentAlbum] = useState<UserAlbum>({} as UserAlbum);
     const [newAlbumVisible, setNewAlbumVisible] = useState(false);
     const [newPictureVisible, setNewPictureVisible] = useState(false);
+    const [entryDates, setEntryDates] = useState<string[]>([] as string[]);
+    const [markedDates, setMarkedDates] = useState({} as any);
+    const [refreshing, setRefreshing] = useState(false);
 
-    const {getAlbums, loading} = useReminisce()
+
+    const {getAlbums, loading, getEntries} = useReminisce()
     const albumCover = require('@/assets/images/yes.png');
 
     useEffect(() => {
@@ -52,8 +55,48 @@ const index = () => {
             }
         }
 
+        const getEntryDates = async () => {
+            const fetchedEntries = await getEntries();
+            if (fetchedEntries) {
+                setEntryDates(fetchedEntries.map((entry) => {
+                    return entry.created_at;
+                }));
+            }
+        }
+
+        const marked = async () => {
+            let markedDates: any = {};
+            entryDates.forEach((date) => {
+                // Format the date to match the calendar format
+                const formattedDate = new Date(date).toISOString().split("T")[0];
+                markedDates[formattedDate] = {selected: true, selectedColor: colors.blue[500]};
+            });
+            console.debug("Marked dates: ", markedDates);
+            setMarkedDates(markedDates);
+        }
+
+        marked();
+        getEntryDates();
         fetchAlbums();
     }, []);
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        getEntries().then((valid) => {
+            if (!valid) return;
+            setRefreshing(false);
+            console.debug("Albums refreshed, found: ", valid.length);
+            setEntryDates(valid.map((entry) => {
+                return entry.created_at;
+            }));
+            entryDates.forEach((date) => {
+                // Format the date to match the calendar format
+                const formattedDate = new Date(date).toISOString().split("T")[0];
+                markedDates[formattedDate] = {selected: true, selectedColor: colors.blue[500]};
+            });
+        });
+    }, [getEntries]);
 
     const backAlbum = () => {
         // Find the index of the current album
@@ -95,7 +138,15 @@ const index = () => {
 
     return (
         <ScrollView style={{backgroundColor: mode === 'dark' ? colors.neutral[800] : colors.white}}
-                    contentContainerStyle={{flexGrow: 1}}>
+                    contentContainerStyle={{flexGrow: 1}}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            colors={[colors.blue[500]]}
+                        />
+                    }
+        >
             <View className={"flex-1 items-center dark:bg-neutral-800 pb-10"}>
                 <View className={"w-full bg-blue-500 dark:bg-neutral-800 p-6"}>
                     <Alert message={message} type={alertType} onPress={() => {
@@ -236,16 +287,17 @@ const index = () => {
                                               calendarBackground: mode === "dark" ? colors.neutral[900] : colors.neutral[100],
                                               textSectionTitleColor: theme.text,
                                               selectedDayBackgroundColor: colors.blue[500],
-                                              selectedDayTextColor: colors.neutral[800],
+                                              selectedDayTextColor: mode === "dark" ? colors.neutral[900] : colors.neutral[100],
                                               todayTextColor: colors.blue[500],
                                               dayTextColor: theme.text,
-                                              textInactiveColor: colors.neutral[400],
+                                              textInactiveColor: colors.neutral[500],
                                               dotColor: colors.blue[500],
                                               textDayStyle: {color: theme.text},
                                               monthTextColor: theme.text,
                                               yearTextColor: theme.text,
                                               arrowColor: colors.blue[500],
                                           }}
+                                            markedDates={markedDates}
                                 />
                             </View>
                         </View>
