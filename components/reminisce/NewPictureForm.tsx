@@ -169,7 +169,7 @@ const NewPictureForm = (props: NewAlbumProps) => {
                 transparent={true}
                 visible={visible}>
                 <BlurView intensity={75} style={[StyleSheet.absoluteFill, styles.modalView]}/>
-                <View className={"mt-safe mx-safe-or-4 dark:bg-neutral-900 bg-white rounded-lg elevation-md p-4"}>
+                <View className={"mt-safe mx-safe-or-4 dark:bg-neutral-900 border dark:border-neutral-800 border-gray-400 bg-white rounded-lg elevation-md p-4"}>
                     <View className={"flex-row justify-start items-center"}>
                         <FontAwesome name={"close"} size={30} color={"red"}
                                      onPress={props.onClose}
