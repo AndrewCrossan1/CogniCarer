@@ -254,7 +254,7 @@ const Entries = () => {
                                         <View className={"justify-center items-center"}>
                                             {/* Image */}
                                             <Image
-                                                className={"rounded-t-lg border-t-2 border-l-2 border-r-2 border-gray-100"}
+                                                className={"rounded-t-lg border-t-2 border-l-2 border-r-2 dark:border-neutral-900 border-gray-100"}
                                                 source={{uri: entry.pictureActual?.image_url}}
                                                 loadingIndicatorSource={require('@/assets/images/undraw_loading_65y2.png')}
                                                 style={{width: "100%", height: 175}}

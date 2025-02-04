@@ -178,7 +178,7 @@ const Albums = () => {
                             </Text>
                         </View>
                     </View>
-                    <View className={"flex-row items-center justify-center gap-5 w-full"}>
+                    <View className={"flex-row items-center justify-between gap-2 w-full"}>
                         <TouchableOpacity
                             className="flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900"
                             onPress={() => {

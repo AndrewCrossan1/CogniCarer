@@ -145,7 +145,7 @@ const Pictures = () => {
                             </Text>
                         </View>
                     </View>
-                    <View className={"flex-row items-center justify-center gap-5 w-full"}>
+                    <View className={"flex-row items-center justify-between gap-2 w-full"}>
                         <TouchableOpacity
                             onPress={() => {
                                 setNewPictureVisible(!newPictureVisible);
@@ -207,7 +207,7 @@ const Pictures = () => {
                                     <View className={"justify-center items-center"}>
                                         {/* Image */}
                                         <Image
-                                            className={"rounded-t-lg"}
+                                            className={"rounded-t-lg border-t-2 border-l-2 border-r-2 dark:border-neutral-900 border-gray-100"}
                                             source={{uri: picture.image_url}}
                                             loadingIndicatorSource={require('@/assets/images/undraw_loading_65y2.png')}
                                             style={{width: "100%", height: 175}}
