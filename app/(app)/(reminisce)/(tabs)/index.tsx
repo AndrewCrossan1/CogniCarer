@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
 import {useAppSelector} from "@/hooks/store/hooks";
-import {Link} from "expo-router";
+import {Link, useRouter} from "expo-router";
 import {Calendar} from "react-native-calendars";
 import colors from "tailwindcss/colors";
 import {useThemeColor} from "@/hooks/useThemeColor";
@@ -38,6 +38,7 @@ const index = () => {
 
 
     const {getAlbums, loading, getEntries} = useReminisce()
+    const router = useRouter();
     const albumCover = require('@/assets/images/yes.png');
 
     useEffect(() => {
@@ -169,6 +170,7 @@ const index = () => {
                     </View>
                     <View className={"flex-row items-center justify-between"}>
                         <TouchableOpacity
+                            onPress={() => router.push("/(app)/(reminisce)/(tabs)/NewEntry")}
                             className="flex-row items-center mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900">
                             <MaterialIcons name="add" size={24} color="white" className={"mr-1"}/>
                             <Text className="text-white">
