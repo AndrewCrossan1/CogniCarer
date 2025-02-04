@@ -98,9 +98,14 @@ export default function LoginScreen() {
 
                 <InputGroup ref={refEmailInput} onSubmitEditing={focusOnPassword} error={emailErrVisible}
                             errorMessage={"This field is required!"} label={"Email Address"} value={email}
-                            onChangeText={(e) => setEmail(e)} placeholder={"joe.bloggs@cognicarer.com"}/>
+                            onChangeText={(e) => setEmail(e)} placeholder={"joe.bloggs@cognicarer.com"}
+                            textContentType={"emailAddress"}
+                            autoComplete={"email"} keyboardType={"email-address"}
+                />
                 <InputGroup ref={refPasswordInput} error={passwordErrVisible} errorMessage={"This field is required!"}
                             label={"Password"} value={password} onChangeText={(e) => setPassword(e)}
+                            autoComplete={"password"}
+                            textContentType={"password"}
                             placeholder={"Password"} secureTextEntry={true}/>
 
                 <TouchableOpacity onPress={() => router.push("/(auth)/forgot-password")}>
