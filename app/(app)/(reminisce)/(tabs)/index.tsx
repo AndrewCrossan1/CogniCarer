@@ -26,7 +26,7 @@ const index = () => {
     const theme = useThemeColor();
     const mode = useColorScheme();
     const [albums, setAlbums] = useState([] as UserAlbum[]);
-    const [alertType, setAlertType] = useState<"success" | "error">("error");
+    const [alertType] = useState<"success" | "error">("error");
     const [message, setMessage] = useState("");
     const [visible, setVisible] = useState(false);
     const [currentAlbum, setCurrentAlbum] = useState<UserAlbum>({} as UserAlbum);
@@ -48,7 +48,6 @@ const index = () => {
                 setAlbums(fetchedAlbums.sort((a, b) => {
                     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
                 }));
-                console.debug("Albums fetched and sorted, found: ", fetchedAlbums.length);
                 setCurrentAlbum(fetchedAlbums[0]);
             } else {
                 setMessage("No albums found");
@@ -65,8 +64,8 @@ const index = () => {
             }
         }
 
-        getEntryDates();
-        fetchAlbums();
+        getEntryDates().then(() => console.debug("Entry dates fetched"));
+        fetchAlbums().then(() => console.debug("Albums fetched"));
     }, []);
 
     useEffect(() => {
@@ -78,11 +77,10 @@ const index = () => {
                 const formattedDate = new Date(date).toISOString().split("T")[0];
                 markedDates[formattedDate] = {selected: true, selectedColor: colors.blue[500]};
             });
-            console.debug("Marked dates: ", markedDates);
             setMarkedDates(markedDates);
         }
 
-        marked()
+        marked().then(() => console.debug("Marked dates"));
     }, [entryDates])
 
     const onRefresh = useCallback(() => {
@@ -101,7 +99,7 @@ const index = () => {
                 markedDates[formattedDate] = {selected: true, selectedColor: colors.blue[500]};
             });
         });
-    }, [getEntries]);
+    }, [getEntries, entryDates, markedDates]);
 
     const backAlbum = () => {
         // Find the index of the current album
