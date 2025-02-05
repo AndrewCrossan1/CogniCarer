@@ -121,17 +121,28 @@ const NewPictureForm = (props: NewAlbumProps) => {
             setErrors(true);
             return;
         }
-        if (album === "") {
-            setErrors(true);
-            return;
-        }
         if (picture === null || user === null) {
             setErrors(true);
             return;
         }
 
-        // Upload
-        newPicture({title: title, patient: patient, album: album, user: user.pk}, picture).then(
+        let data;
+        if (album) {
+            data = {
+                title: title,
+                patient: patient,
+                album: album,
+                user: user.pk
+            }
+        } else {
+            data = {
+                title: title,
+                patient: patient,
+                user: user.pk
+            }
+        }
+
+        newPicture(data, picture).then(
             () => {
                 reset().then(
                     () => {
