@@ -65,6 +65,12 @@ const index = () => {
             }
         }
 
+        getEntryDates();
+        fetchAlbums();
+    }, []);
+
+    useEffect(() => {
+
         const marked = async () => {
             let markedDates: any = {};
             entryDates.forEach((date) => {
@@ -76,10 +82,8 @@ const index = () => {
             setMarkedDates(markedDates);
         }
 
-        marked();
-        getEntryDates();
-        fetchAlbums();
-    }, []);
+        marked()
+    }, [entryDates])
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
