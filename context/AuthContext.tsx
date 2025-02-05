@@ -91,19 +91,16 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         setLoading(true);
         setError(null);
         try {
-            // Check if the user chose to remember them
-            const remember = await SecureStore.getItemAsync("remember");
-            if (remember !== "true") {
-                // Remove the token from the secure store
-                await SecureStore.deleteItemAsync("token");
-                // Call the logout API
-                await API.POST("/auth/logout/");
-            }
+            // Clear data from SecureStore
+            await SecureStore.deleteItemAsync("email");
+            await SecureStore.deleteItemAsync("password");
+
             // Remove the user data
             setUser(null);
 
             // Remove the token from the redux store
             dispatch(setToken(null));
+            dispatch(setQuote(null));
 
             // Redirect to login page
             router.push("/(auth)/login");
