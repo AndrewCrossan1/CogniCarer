@@ -45,7 +45,7 @@ const Pictures = () => {
         }
     }
 
-    const {getPictures, loading} = useReminisce()
+    const {getPictures, loading, deleteItem} = useReminisce()
 
     // Timer to automatically close the alert after 3 seconds
     useEffect(() => {
@@ -90,7 +90,19 @@ const Pictures = () => {
         }
         if (confirmVisible) {
             // Delete albums
+            console.debug("Deleting pictures: ", selected.map(picture => picture.title));
             setConfirmVisible(false);
+            // For each selected album, delete it
+            selected.forEach(async (picture) => {
+                await deleteItem({type: "pictures", id: picture.uuid});
+                console.debug("Deleted picture: ", picture.title);
+
+                getPictures().then((valid) => {
+                    if (!valid) return;
+                    console.debug("Pictures updated, found: ", valid.length);
+                    setPictures(valid);
+                });
+            })
             setSelected([]);
             setMessage("Picture(s) deleted");
             setAlertType("success");
@@ -102,7 +114,7 @@ const Pictures = () => {
             setConfirmVisible(true);
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
         }
-    }, [confirmVisible, selected]);
+    }, [confirmVisible, selected, deleteItem, getPictures]);
 
 
     const onSubmitted = () => {
@@ -176,9 +188,9 @@ const Pictures = () => {
                 {!loading &&
                   <View className={"w-full p-4"}>
                     <View className={"flex-row flex-wrap justify-start"}>
-                        {pictures.map((picture, index) => (
+                        {pictures.map((picture) => (
                             <TouchableOpacity
-                                key={picture.title + index}
+                                key={picture.uuid}
                                 activeOpacity={0.8}
                                 onPress={() => {
                                     if (!canSelect) return;
@@ -255,7 +267,7 @@ const Pictures = () => {
                         This action is irreversible, all selected pictures will be deleted.
                     </Text>
                     {selected.map((picture, index) => (
-                        <View className={"p-2 dark:bg-black bg-neutral-100 mt-2 rounded-lg"} key={picture.title}>
+                        <View className={"p-2 dark:bg-black bg-neutral-100 mt-2 rounded-lg"} key={picture.uuid + "-deletion"}>
                             <Text className={"dark:text-gray-400"}>
                                 {index + 1}. {picture.title}
                             </Text>
