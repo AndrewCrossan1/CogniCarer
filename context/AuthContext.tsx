@@ -68,7 +68,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             if (quote !== null) {
                 dispatch(setQuote(quote));
             } else {
-                console.error("Failed to get the quote of the day");
+                console.debug("Failed to retrieve the quote of the day");
             }
 
             setLoading(false);
@@ -77,7 +77,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             if (e instanceof Error) {
                 setError(e.message);
             }
-            console.error(e);
+            console.debug("Error logging in", e);
             setLoading(false);
             return false;
         }
@@ -109,7 +109,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             if (e instanceof Error) {
                 setError(e.message);
             }
-            console.error(e);
+            console.debug(e)
         } finally {
             setLoading(false);
         }
@@ -139,7 +139,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             if (e instanceof Error) {
                 setError(e.message);
             }
-            console.error(e);
+            console.debug(e);
             setError("An error occurred while updating the user");
         } finally {
             setLoading(false);
@@ -171,7 +171,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             if (e instanceof Error) {
                 setError(e.message);
             }
-            console.error(e);
+            console.debug(e);
             setError("An error occurred while sending the reset email");
         } finally {
             setLoading(false);
@@ -198,7 +198,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             if (e instanceof Error) {
                 setError(e.message);
             }
-            console.error(e);
+            console.debug(e);
             setError("An error occurred while validating the reset code");
         } finally {
             setLoading(false);
@@ -227,7 +227,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             if (e instanceof Error) {
                 setError(e.message);
             }
-            console.error(e);
+            console.debug(e);
             setError("An error occurred while resetting the password");
         } finally {
             setLoading(false);
