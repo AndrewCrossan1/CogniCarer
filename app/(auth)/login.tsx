@@ -154,15 +154,6 @@ export default function LoginScreen() {
         }
     };
 
-    const styles = StyleSheet.create({
-        alertError: {
-            color: colors.red[800]
-        },
-        error: {
-            color: colors.red[500]
-        }
-    });
-
     return (
         <ScrollView className={"flex-1 w-full dark:bg-neutral-900 bg-neutral-100"}>
             <Alert
