@@ -6,7 +6,7 @@ import {
     TouchableWithoutFeedback,
     StyleSheet,
     Keyboard,
-    ScrollView, TouchableOpacity
+    ScrollView, TouchableOpacity, useColorScheme, Platform
 } from 'react-native';
 import {useEffect, useState} from 'react';
 import {Patient, Picture} from '@/services/api/types';
@@ -18,11 +18,14 @@ import * as Haptics from "expo-haptics";
 import Animated, {useSharedValue, useAnimatedStyle, withTiming} from "react-native-reanimated";
 import InputGroup from "@/components/forms/InputGroup";
 import {MaterialIcons} from "@expo/vector-icons";
+import DateTimePicker, {DateTimePickerEvent} from "@react-native-community/datetimepicker";
+import RNDateTimePicker from "@react-native-community/datetimepicker";
 
 const NewEntry = () => {
 
     const {getPictures} = useReminisce();
     const {getPatients} = usePatients();
+    const theme = useColorScheme();
     const image = require('@/assets/images/undraw_dreamer_gb41.png');
 
     const [pictures, setPictures] = useState<Picture[] | null>([] as Picture[]);
@@ -33,6 +36,16 @@ const NewEntry = () => {
     const [selectedPicture, setSelectedPicture] = useState<Picture | null>(null);
     const [fullImageVisible, setFullImageVisible] = useState(false);
     const [tipsVisible, setTipsVisible] = useState(false);
+
+    // Date Picker Configurations
+    const [date, setDate] = useState(new Date());
+    const [show, setShow] = useState(false);
+
+    const onChange = (_event: DateTimePickerEvent, selectedDate?: Date) => {
+        const currentDate = selectedDate || date;
+        setDate(currentDate);
+        setShow(Platform.OS === "ios");
+    }
 
     // Shared value for the long press animation
     const scale = useSharedValue(1);
@@ -103,6 +116,16 @@ const NewEntry = () => {
         }
     });
 
+    /**
+     * Submit the entry to the server
+     * @desc This function validates input from the entry form and submits it to the server.
+     * @returns {Promise<void>}
+     */
+    const submit = async (): Promise<void> => {
+
+    }
+
+
     return (
         <ScrollView contentContainerStyle={{alignItems: "center"}} className={"flex-1 dark:bg-neutral-800"}>
             <View className={"w-full bg-blue-500 dark:bg-neutral-800 p-6"}>
@@ -128,7 +151,7 @@ const NewEntry = () => {
                         }}
                         style={{padding: 10, borderRadius: 10, marginTop: 10}}
                         className={`flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900`}>
-                        <MaterialIcons name={"download-done"} size={24} color="white" className={"mr-1"} />
+                        <MaterialIcons name={"download-done"} size={24} color="white" className={"mr-1"}/>
                         <Text className={"text-white"}>
                             Submit
                         </Text>
@@ -140,7 +163,7 @@ const NewEntry = () => {
                         }}
                         style={{padding: 10, borderRadius: 10, marginTop: 10}}
                         className={`flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900`}>
-                        <MaterialIcons name={"restart-alt"} size={24} color="white" className={"mr-1"} />
+                        <MaterialIcons name={"restart-alt"} size={24} color="white" className={"mr-1"}/>
                         <Text className="text-white">
                             Restart
                         </Text>
@@ -223,6 +246,52 @@ const NewEntry = () => {
                                 </View>
                             </View>
                             <View className={"mt-4"}>
+                                {/* When was the picture taken? */}
+                                <Text className={"font-bold dark:text-white text-lg"}>
+                                    When was the picture taken?
+                                </Text>
+                                <Text className={"text-sm font-normal dark:text-neutral-300 text-neutral-600"}>
+                                    It's okay if you don't remember the exact date.
+                                </Text>
+
+                                {Platform.OS === "android" && (
+                                    <View className={"w-full my-4"}>
+                                        <TouchableOpacity
+                                            onPress={() => {
+                                                setDate(new Date());
+                                                setShow(true);
+                                            }}
+                                            className={`flex-row justify-between items-center p-2 bg-blue-500 dark:bg-neutral-900 rounded-lg`}>
+                                            <Text className={"text-white"}>
+                                                {date.toDateString()}
+                                            </Text>
+                                            <MaterialIcons name={"date-range"} size={24} color={"white"}/>
+                                        </TouchableOpacity>
+
+                                        {show && (
+                                        <RNDateTimePicker
+                                            value={date}
+                                            mode={"date"}
+                                            display={"default"}
+                                            onChange={onChange}
+                                            style={{width: "100%"}}
+                                        />)}
+                                    </View>
+                                )}
+
+                                {Platform.OS === "ios" && (
+                                    <View className={"w-full my-4"}>
+                                        <DateTimePicker
+                                            value={date}
+                                            mode={"date"}
+                                            display={"default"}
+                                            onChange={onChange}
+                                            style={{width: "100%"}}
+                                        />
+                                    </View>
+                                )}
+
+                                {/* Describing the picture */}
                                 <InputGroup
                                     label={"Write about the picture"}
                                     placeholder={"This is ... it was very ..., This is me and my ... in the picture."}
@@ -237,7 +306,7 @@ const NewEntry = () => {
                                             Helpful Questions and Answers
                                         </Text>
                                         <MaterialIcons name={tipsVisible ? "arrow-drop-up" : "arrow-drop-down"}
-                                                       size={24} color={"#000"}/>
+                                                       size={24} color={theme === "dark" ? "white" : "#000"}/>
                                     </View>
                                 </TouchableWithoutFeedback>
                                 <View className={`${tipsVisible ? "" : "hidden"}`}>
