@@ -8,7 +8,6 @@ import {
     useColorScheme,
     View
 } from "react-native";
-import {useAppSelector} from "@/hooks/store/hooks";
 import {MaterialIcons} from "@expo/vector-icons";
 import colors from "tailwindcss/colors";
 import {Alert} from "@/components/Alert";
@@ -24,7 +23,6 @@ const Entries = () => {
 
     const image = require('@/assets/images/undraw_dreamer_gb41.png');
 
-    const user = useAppSelector(state => state.user.user);
     const mode = useColorScheme();
 
     const [visible, setVisible] = useState(false);
@@ -33,7 +31,7 @@ const Entries = () => {
     const [message, setMessage] = useState("");
     const [refreshing, setRefreshing] = useState(false);
     const [entries, setEntries] = useState<ReminisceEntry[]>([] as ReminisceEntry[]);
-    const { getEntries, error: EntryError, loading, deleteItem } = useReminisce()
+    const { getEntries, loading, deleteItem } = useReminisce()
     const [confirmVisible, setConfirmVisible] = useState(false);
     const [alertType, setAlertType] = useState<"success" | "error">("error");
 
@@ -116,7 +114,7 @@ const Entries = () => {
             setConfirmVisible(true);
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
         }
-    }, [confirmVisible, selected]);
+    }, [confirmVisible, selected, deleteItem, getEntries]);
 
     // Selected Animations
     const maxHeight = useSharedValue(0)
@@ -223,9 +221,9 @@ const Entries = () => {
                 {!loading &&
                     <View className={"w-full p-4"}>
                         <View className={"flex-row flex-wrap justify-start"}>
-                            {entries.map((entry, index) => (
+                            {entries.map((entry) => (
                                 <TouchableOpacity
-                                    key={entry.title + index}
+                                    key={entry.uuid}
                                     activeOpacity={0.8}
                                     onPress={() => {
                                         if (!canSelect) return;
@@ -263,7 +261,7 @@ const Entries = () => {
                                         <View className={"rounded-b-lg bg-neutral-100 dark:bg-neutral-900 p-4"}>
                                             <View className={"flex-row items-center justify-between"}>
                                                 <Text numberOfLines={1} className={"dark:text-white text-lg font-bold"}>
-                                                    {entry.title}
+                                                    {entry.pictureActual?.title}
                                                 </Text>
                                             </View>
                                             <Text className={"text-sm dark:text-blue-500"}>
