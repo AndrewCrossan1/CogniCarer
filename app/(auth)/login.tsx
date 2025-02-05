@@ -3,7 +3,6 @@ import {
     Text,
     TouchableOpacity,
     ActivityIndicator,
-    StyleSheet,
     ScrollView
 } from "react-native";
 import {useEffect, useRef, useState} from "react";
