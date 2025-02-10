@@ -106,7 +106,7 @@ const Albums = () => {
             setConfirmVisible(true);
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
         }
-    }, [confirmVisible, selected]);
+    }, [confirmVisible, selected, deleteItem, getAlbums]);
 
     // Timer to automatically close the alert after 3 seconds
     useEffect(() => {
@@ -124,6 +124,10 @@ const Albums = () => {
             console.debug("Albums updated, found: ", valid.length);
             setAlbums(valid);
         });
+        // Show success message
+        setMessage("Album created successfully");
+        setAlertType("success");
+        setVisible(true);
         setNewAlbumVisible(false);
     };
 
