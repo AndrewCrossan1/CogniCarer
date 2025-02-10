@@ -96,10 +96,17 @@ const NewPictureForm = (props: NewAlbumProps) => {
             });
             setAlbumsOptions(a);
         }
-
-        if (patient !== "") {
-            getUsersAlbums();
+        const fetchAlbums = async () => {
+            if (patient !== "") {
+                await getUsersAlbums();
+                console.debug("Fetching albums for patient: ", patient);
+                console.debug("Album Options: ", albums);
+            }
         }
+
+        fetchAlbums().then(() => {
+            console.debug("Albums fetched");
+        });
     }, [patient]);
 
     /**
