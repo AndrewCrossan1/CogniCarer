@@ -145,6 +145,7 @@ const index = () => {
                     refreshControl={
                         <RefreshControl
                             refreshing={refreshing}
+                            title={"Refreshing..."}
                             onRefresh={onRefresh}
                             colors={[colors.blue[500]]}
                         />
