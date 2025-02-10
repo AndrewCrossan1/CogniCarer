@@ -18,11 +18,12 @@ import * as Haptics from "expo-haptics";
 import {useReminisce} from "@/hooks/useReminisce";
 import {BlurView} from "expo-blur";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import {Link, useRouter} from "expo-router";
 
 const Entries = () => {
 
     const image = require('@/assets/images/undraw_dreamer_gb41.png');
-
+    const router = useRouter();
     const mode = useColorScheme();
 
     const [visible, setVisible] = useState(false);
@@ -169,6 +170,11 @@ const Entries = () => {
                     </View>
                     <View className={"flex-row items-center gap-2 justify-between w-full"}>
                         <TouchableOpacity
+                            onPress={
+                                () => {
+                                    router.push("/(app)/(reminisce)/(tabs)/NewEntry");
+                                }
+                            }
                             className="flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900">
                             <MaterialIcons name="add" size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
@@ -187,7 +193,7 @@ const Entries = () => {
                         </TouchableOpacity>
                     </View>
                 </View>
-                {/* Selected album dropdown choices (Delete, etc) */}
+                {/* Selected album dropdown choices (Delete, etc.) */}
                 <Animated.View style={[styles.selectedContainer, animatedStyle]}>
                     {canSelect && selected.length > 0 &&
                         <View className={"w-full px-4 pt-4 flex-row items-center justify-between"}>
@@ -270,6 +276,14 @@ const Entries = () => {
                                             <Text className={"text-sm text-neutral-500"}>
                                                 Taken at: {new Date(entry.date_taken).toDateString()}
                                             </Text>
+                                            <Link href={{
+                                                pathname: "/(app)/(reminisce)/entry/[id]",
+                                                params: {id: entry.uuid}
+                                            }}>
+                                                <Text className={"text-blue-500 underline"}>
+                                                    View Entry
+                                                </Text>
+                                            </Link>
                                         </View>
                                     </View>
                                 </TouchableOpacity>
