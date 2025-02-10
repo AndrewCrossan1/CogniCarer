@@ -116,11 +116,6 @@ export default function Layout() {
                                    drawerIcon: ({ color }) => <FontAwesome name="user" size={24} color={color} />,
                                    title: 'My Account',
                                }}/>
-                <Drawer.Screen name="(storyboard)"
-                               options={{
-                                   drawerIcon: ({ color }) => <FontAwesome name="book" size={24} color={color} />,
-                                   title: 'Storyboard',
-                               }}/>
                 <Drawer.Screen name="(reminisce)"
                                options={{
                                    drawerIcon: ({ color }) => <FontAwesome name="history" size={24} color={color} />,
