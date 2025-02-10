@@ -6,10 +6,11 @@ import {
     TouchableWithoutFeedback,
     StyleSheet,
     Keyboard,
-    ScrollView, TouchableOpacity, useColorScheme, Platform
+    TouchableOpacity, useColorScheme, Platform, SafeAreaView
 } from 'react-native';
 import {useEffect, useState} from 'react';
 import {Patient, Picture} from '@/services/api/types';
+import {Alert} from "@/components/Alert";
 import {useReminisce} from "@/hooks/useReminisce";
 import {usePatients} from "@/hooks/patients/usePatients";
 import {Dropdown} from "@/components/forms/Dropdown";
@@ -20,13 +21,17 @@ import InputGroup from "@/components/forms/InputGroup";
 import {MaterialIcons} from "@expo/vector-icons";
 import DateTimePicker, {DateTimePickerEvent} from "@react-native-community/datetimepicker";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
+import {useRouter} from "expo-router";
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 
 const NewEntry = () => {
 
-    const {getPictures} = useReminisce();
+    const {getPictures, newEntry} = useReminisce();
     const {getPatients} = usePatients();
     const theme = useColorScheme();
     const image = require('@/assets/images/undraw_dreamer_gb41.png');
+    const loading = require('@/assets/images/loading.gif');
+    const router = useRouter();
 
     const [pictures, setPictures] = useState<Picture[] | null>([] as Picture[]);
     const [patients, setPatients] = useState<Patient[] | null>([] as Patient[]);
@@ -36,6 +41,20 @@ const NewEntry = () => {
     const [selectedPicture, setSelectedPicture] = useState<Picture | null>(null);
     const [fullImageVisible, setFullImageVisible] = useState(false);
     const [tipsVisible, setTipsVisible] = useState(false);
+    const [notes, setNotes] = useState("");
+
+    // Alert Configurations
+    const [alertVisible, setAlertVisible] = useState(false);
+    const [alertType, setAlertType] = useState<"error" | "success">("success");
+    const [alertMessage, setAlertMessage] = useState("");
+
+    useEffect(() => {
+        if (alertVisible) {
+            setTimeout(() => {
+                setAlertVisible(false);
+            }, 3000);
+        }
+    }, [alertVisible]);
 
     // Date Picker Configurations
     const [date, setDate] = useState(new Date());
@@ -46,6 +65,10 @@ const NewEntry = () => {
         setDate(currentDate);
         setShow(Platform.OS === "ios");
     }
+
+    // Error Configurations
+    const [notesError, setNotesError] = useState(false);
+    const [dateError, setDateError] = useState(false);
 
     // Shared value for the long press animation
     const scale = useSharedValue(1);
@@ -122,13 +145,55 @@ const NewEntry = () => {
      * @returns {Promise<void>}
      */
     const submit = async (): Promise<void> => {
+        if (!selectedPicture || !selectedPatient) {
+            setAlertType("error");
+            setAlertMessage("Please select a patient and an image to continue.");
+            setAlertVisible(true);
+            return;
+        }
 
+        // Date is not required, but if it is set, it should not be in the future
+        if (date > new Date()) {
+            setDateError(true);
+            setAlertType("error");
+            setAlertMessage("Please select a date that is not in the future.");
+            setAlertVisible(true);
+            return;
+        }
+
+        // Validate notes for only alphanumeric characters and spaces, and a dash
+        if (notes.length !== 0) {
+            if (!notes.match(/^[a-zA-Z0-9-!? ]+$/)) {
+                setAlertType("error");
+                setAlertMessage("Please only use alphanumeric characters, spaces, and dashes in the notes.");
+                setAlertVisible(true);
+                setNotesError(true);
+                return;
+            }
+        }
+
+        // Format the date (2025-01-31)
+        const formattedDate = date.toISOString().split("T")[0];
+
+        // Submit the entry to the server
+        newEntry({
+            patient: selectedPatient.uuid,
+            picture: selectedPicture.uuid,
+            notes: notes,
+            date_taken: formattedDate
+        });
+
+        setSelectedPatient(null);
+        setSelectedPicture(null);
+        // Redirect to the entries page
+        router.push("/(app)/(reminisce)/(tabs)/Entries");
     }
 
 
     return (
-        <ScrollView contentContainerStyle={{alignItems: "center"}} className={"flex-1 dark:bg-neutral-800"}>
+        <KeyboardAwareScrollView contentContainerStyle={{alignItems: "center"}} className={"flex-1 dark:bg-neutral-800"}>
             <View className={"w-full bg-blue-500 dark:bg-neutral-800 p-6"}>
+                <Alert type={alertType} message={alertMessage} onPress={() => setAlertVisible(false)} visible={alertVisible}/>
                 <View className={"flex-row items-center"}>
                     <Image
                         source={image}
@@ -148,6 +213,7 @@ const NewEntry = () => {
                     <TouchableOpacity
                         onPress={() => {
                             // Submit the entry
+                            submit();
                         }}
                         style={{padding: 10, borderRadius: 10, marginTop: 10}}
                         className={`flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900`}>
@@ -160,6 +226,10 @@ const NewEntry = () => {
                         onPress={() => {
                             setSelectedPicture(null);
                             setSelectedPatient(null);
+                            setNotes("");
+                            setDate(new Date());
+                            setNotesError(false);
+                            setDateError(false);
                         }}
                         style={{padding: 10, borderRadius: 10, marginTop: 10}}
                         className={`flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900`}>
@@ -212,20 +282,21 @@ const NewEntry = () => {
                                             style={[{aspectRatio: 1, height: 200}]}
                                             resizeMode={"cover"}
                                             className={"rounded-lg"}
+                                            loadingIndicatorSource={loading}
                                         />
                                     </TouchableWithoutFeedback>
                                 </Animated.View>
-                                <View className={"1/2"}>
+                                <View className={"w-1/2"}>
                                     {/* Picture details */}
-                                    <View className={"items-start"}>
-                                        <View className={"my-2"}>
+                                    <View className={"w-full items-start"}>
+                                        <SafeAreaView className={"my-2 max-w-full"}>
                                             <Text
                                                 className={"font-bold dark:text-white text-xl mb-2 underline underline-offset-2"}>Image
                                                 Name</Text>
-                                            <Text className={"dark:text-white"}>
+                                            <Text className={"dark:text-white break-words whitespace-normal"}>
                                                 {selectedPicture.title}
                                             </Text>
-                                        </View>
+                                        </SafeAreaView>
 
                                         <View className={"my-2"}>
                                             <Text
@@ -290,14 +361,21 @@ const NewEntry = () => {
                                         />
                                     </View>
                                 )}
+                                {dateError && (
+                                    <Text className={"text-red-500"}>
+                                        Please select a date that is not in the future (today or before).
+                                    </Text>
+                                )}
 
                                 {/* Describing the picture */}
                                 <InputGroup
                                     label={"Write about the picture"}
                                     placeholder={"This is ... it was very ..., This is me and my ... in the picture."}
-                                    error={false}
-                                    errorMessage={"False"}
+                                    error={notesError}
+                                    errorMessage={"Please only use alphanumeric characters, spaces, and dashes."}
                                     multiline={true}
+                                    value={notes}
+                                    onChangeText={(text) => setNotes(text)}
                                 />
                                 <TouchableWithoutFeedback className={"mt-4"} hitSlop={20}
                                                           onPress={() => setTipsVisible(!tipsVisible)}>
@@ -381,7 +459,7 @@ const NewEntry = () => {
                     </TouchableWithoutFeedback>
                 </View>
             </Modal>
-        </ScrollView>
+        </KeyboardAwareScrollView>
     );
 }
 
