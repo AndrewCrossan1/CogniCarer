@@ -123,6 +123,10 @@ const Pictures = () => {
             if (!valid) return;
             setPictures(valid);
         });
+        // Show success alert
+        setMessage("Picture uploaded successfully");
+        setAlertType("success");
+        setVisible(true);
 
         // Close the modal
         setNewPictureVisible(false);
