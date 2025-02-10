@@ -172,5 +172,58 @@ export const useReminisce = () => {
         return response;
     }
 
-    return { entries, getEntries, albums, getAlbums, pictures, deleteItem, getPictures, loading, error, getAlbumName, newAlbum, getAlbum, newPicture };
+    const newEntry = async (data: { patient: string, picture: string, notes: string, date_taken: string }) => {
+        setLoading(true);
+
+        const response = await API.POST("reminisce/entries/", data);
+
+        if (response) {
+            setEntries([...entries, response]);
+        } else {
+            console.debug("Error creating entry");
+        }
+
+        setLoading(false);
+        return response
+    }
+
+    const getEntry = async (entryId: string): Promise<ReminisceEntry | null> => {
+        setLoading(true);
+
+        const response = await API.get(`reminisce/entries/${entryId}/`);
+
+        if (response) {
+            setLoading(false);
+            return response;
+        }
+
+        setLoading(false);
+        setError("Entry not found");
+        return null;
+    }
+
+    const update = async (type: "entries" | "user-albums" | "pictures", id: string, data: any) => {
+        setLoading(true);
+
+        const response = await API.put(`reminisce/${type}/${id}/`, data);
+
+        if (response) {
+            switch (type) {
+                case "entries":
+                    setEntries(entries.map((entry) => entry.uuid === id ? response : entry));
+                    break;
+                case "user-albums":
+                    setAlbums(albums.map((album) => album.uuid === id ? response : album));
+                    break;
+                case "pictures":
+                    setPictures(pictures.map((picture) => picture.uuid === id ? response : picture));
+                    break;
+            }
+        }
+
+        setLoading(false);
+        return response;
+    }
+
+    return { entries, getEntries, albums, getAlbums, pictures, deleteItem, getPictures, loading, error, getAlbumName, newAlbum, getAlbum, newPicture, newEntry, getEntry, update };
 }
