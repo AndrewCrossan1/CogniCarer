@@ -82,7 +82,7 @@ const InputGroup =  forwardRef<InputGroupRef, InputGroupProps>((props, ref) => {
                 <TextInput secureTextEntry={props.secureTextEntry} value={props.value} onChangeText={props.onChangeText}
                            ref={inputRef}
                            placeholder={props.placeholder} placeholderTextColor={"#AAAAA5"}
-                           className={`rounded-md p-4 border dark:text-white ${props.error ? "border-red-500" : "dark:border-gray-500 border-gray-400"} focus:border-blue-500 my-1`}
+                           className={`rounded-lg p-4 border dark:text-white ${props.error ? "border-red-500" : "dark:border-gray-500 border-gray-400"} focus:border-blue-500 my-1`}
                             {...props}
                 />
                 {props.error &&
