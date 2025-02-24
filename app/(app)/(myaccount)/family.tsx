@@ -109,7 +109,9 @@ const family = () => {
                                     <TouchableOpacity
                                         key={patient.uuid}
                                         activeOpacity={0.8}
-                                        className={"w-1/2"}>
+                                        className={"w-1/2"}
+                                        onPress={() => router.push(`/(app)/(myaccount)/family/${patient.uuid}`)}
+                                    >
                                         <View className={`w-full py-2 px-2`}>
                                             <View className={"justify-center items-center"}>
                                                 {/* Album Cover */}
