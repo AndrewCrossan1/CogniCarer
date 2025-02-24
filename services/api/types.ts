@@ -26,6 +26,9 @@ export interface ErrorResponse {
 
 // Patient Types
 export interface Patient {
+    profile_picture: string;
+    age: number;
+    relationship: string;
     uuid: string;
     first_name: string;
     last_name: string;
