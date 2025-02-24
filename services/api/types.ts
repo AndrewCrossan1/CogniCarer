@@ -36,6 +36,7 @@ export interface Patient {
     gender: string;
     room_number: string;
     conditions: string[];
+    care_notes: string;
     created_at: string;
 }
 
