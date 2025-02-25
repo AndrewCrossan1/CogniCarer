@@ -89,17 +89,6 @@ const index = () => {
                         </TouchableOpacity>
                         <View className={"flex-1 border-b dark:border-b-neutral-600 border-b-neutral-300 xs:mt-1 sm:mt-1 md:mt-3 lg:mt-3 xl:mt-4 xs:px-1 sm:px-2 md:px-2 lg:px-3 xl:px-4"}/>
 
-                        <View className={"flex-row items-center justify-between mt-4"}>
-                            <View className={"flex-row items-center"}>
-                                <MaterialIcons name={"lock-reset"} size={24} color={colorScheme === "dark" ? colors.white : colors.black} />
-                                <Text className={"dark:text-white xs:text-sm sm:text-sm md:text-base lg:text-lg xl:text-xl ml-4"}>
-                                    Reset your password
-                                </Text>
-                            </View>
-                            <MaterialIcons name={"chevron-right"} size={32} color={colorScheme === "dark" ? colors.white : colors.black} />
-                        </View>
-                        <View className={"flex-1 border-b dark:border-b-neutral-600 border-b-neutral-300 xs:mt-1 sm:mt-1 md:mt-3 lg:mt-3 xl:mt-4 xs:px-1 sm:px-2 md:px-2 lg:px-3 xl:px-4"}/>
-
                         <TouchableOpacity className={"flex-row items-center justify-between mt-4"} onPress={() => router.push("/(app)/(myaccount)/data-protection")}>
                             <View className={"flex-row items-center"}>
                                 <MaterialIcons name={"security"} size={24} color={colorScheme === "dark" ? colors.white : colors.black} />
