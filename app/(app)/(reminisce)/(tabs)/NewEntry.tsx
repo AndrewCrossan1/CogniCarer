@@ -161,17 +161,6 @@ const NewEntry = () => {
             return;
         }
 
-        // Validate notes for only alphanumeric characters and spaces, and a dash
-        if (notes.length !== 0) {
-            if (!notes.match(/^[a-zA-Z0-9-!? ]+$/)) {
-                setAlertType("error");
-                setAlertMessage("Please only use alphanumeric characters, spaces, and dashes in the notes.");
-                setAlertVisible(true);
-                setNotesError(true);
-                return;
-            }
-        }
-
         // Format the date (2025-01-31)
         const formattedDate = date.toISOString().split("T")[0];
 
