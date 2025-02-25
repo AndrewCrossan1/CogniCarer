@@ -25,29 +25,26 @@ const family = () => {
         }
     }, []);
 
+    const fetchPatients = async () => {
+        const patients = await getPatients();
+
+        if (patients) {
+            setPatients(patients);
+        } else {
+            setPatients([]);
+        }
+    }
+
     // Refresh the list of patients
     const onRefresh = useCallback(() => {
         setRefreshing(true);
-        getPatients().then((patients) => {
-            // @ts-ignore
-            setPatients(patients);
+        fetchPatients().then(() => {
             setRefreshing(false);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }).catch(console.error);
-
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    }, [getPatients]);
+    }, []);
 
     useEffect(() => {
-        const fetchPatients = async () => {
-            const patients = await getPatients();
-
-            if (patients) {
-                setPatients(patients);
-            } else {
-                setPatients([]);
-            }
-        }
-
         fetchPatients().then(() => {console.log("Family members fetched!")}).catch(console.error);
     }, []);
 
@@ -97,6 +94,19 @@ const family = () => {
                         <Image source={require("@/assets/images/undraw_showing-support_ixfc.png")} style={{maxWidth: 100, maxHeight: 100}}/>
                     </TouchableOpacity>
 
+                    <TouchableOpacity activeOpacity={0.5} className={"w-full xs:p-2 sm:p-2 md:p-4 lg:p-4 xl:p-4 bg-white dark:bg-neutral-900 xs:mb-1 sm:mb-2 md:mb-3 lg:mb-4 xl:mb-4 rounded-lg flex-row items-center justify-between"}
+                                      style={{
+                                          shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}
+                                        onPress={() => router.push("/(app)/(myaccount)/family/NewMember")}
+                    >
+                        <View className={"flex-row w-full items-center gap-14"}>
+                            <MaterialIcons name={"add"} size={32} color={colorScheme === "dark" ? colors.white : colors.black} />
+                            <Text className={"dark:text-white xs-text-base sm:text-base md:text-base lg:text-xl font-bold text-center"}>
+                                Add a new family member
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+
                     {/* Family member view */}
                     <View className={"w-full"}>
                         {/* Family member list */}
@@ -114,13 +124,20 @@ const family = () => {
                                     >
                                         <View className={`w-full py-2 px-2`}>
                                             <View className={"justify-center items-center"}>
-                                                {/* Album Cover */}
-                                                <Image
-                                                    className={"rounded-t-lg"}
-                                                    source={{uri: patient.profile_picture}}
-                                                    style={{width: "100%", height: 150}}
-                                                    resizeMode={"cover"}
-                                                />
+                                                {patient.profile_picture ?
+                                                    <Image
+                                                        className={"rounded-t-lg"}
+                                                        source={{uri: patient.profile_picture}}
+                                                        style={{width: "100%", height: 150}}
+                                                        resizeMode={"cover"}
+                                                    /> :
+                                                    <Image
+                                                        className={"rounded-t-lg"}
+                                                        source={require("@/assets/images/undraw_pic-profile_nr49.png")}
+                                                        style={{width: "100%", height: 150}}
+                                                        resizeMode={"cover"}
+                                                    />
+                                                }
                                             </View>
                                             <View className={"rounded-b-lg bg-white justify-center items-center dark:bg-neutral-900 p-2"}>
                                                 <View className={"items-center justify-between"}>
