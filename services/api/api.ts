@@ -130,7 +130,7 @@ export class API {
             response.data[0]);
     }
 
-    public async image_post(endpoint: string, data: any, file: ImagePickerResult): Promise<any> {
+    public async image_post(endpoint: string, data: any, file: ImagePickerResult, paramName?: string): Promise<any> {
         const formData = new FormData();
 
         if (!file.assets) {
@@ -150,13 +150,18 @@ export class API {
             type: file.assets[0].mimeType,
         };
 
-        // Append the file to the form data
-        formData.append('image', newFile as any);
+        if (paramName) {
+            formData.append(paramName, newFile as any);
+        } else {
+            formData.append('image', newFile as any);
+        }
 
         // Append the data to the form data
         Object.keys(data).forEach((key) => {
             formData.append(key, data[key]);
         });
+
+        console.debug(formData);
 
         const response = await this.client.post(endpoint, formData, {
             headers: {
