@@ -38,10 +38,12 @@ const dataProtection = () => {
                     <MaterialIcons name={"chevron-right"} size={32} color={colorScheme === "dark" ? colors.white : colors.black} />
                 </TouchableOpacity>
 
+                <View className={"flex-1 border-b dark:border-b-neutral-600 border-b-neutral-300 xs:mt-1 sm:mt-1 md:mt-2 lg:mt-3 xl:mt-4 xs:px-1 sm:px-2 md:px-2 lg:px-3 xl:px-4"}/>
+
                 {/* Data Protection Information */}
                 {/* What is data protection? */}
                 <View>
-                    <View className={"w-full xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 gap-1 bg-white dark:bg-neutral-900 xs:my-1 sm:my-2 md:my-3 lg:my-4 xl:my-4 rounded-lg flex-row items-center justify-between"}
+                    <View className={"w-full xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 xs:my-1 sm:my-2 md:my-3 lg:my-5 xl:my-6 rounded-lg flex-row items-center justify-between"}
                           style={{
                               shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}>
                         <View className={"flex-col w-2/3"}>
