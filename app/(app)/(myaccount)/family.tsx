@@ -2,7 +2,7 @@ import {Image, Text, TouchableOpacity, View, ScrollView, RefreshControl} from "r
 import {MaterialIcons} from "@expo/vector-icons";
 import colors from "tailwindcss/colors";
 import {useAppSelector} from "@/hooks/store/hooks";
-import {useRouter} from "expo-router";
+import {Link, useRouter} from "expo-router";
 import {useColorScheme} from "nativewind";
 import {useCallback, useEffect, useState} from "react";
 import {usePatients} from "@/hooks/patients/usePatients";
@@ -80,7 +80,7 @@ const family = () => {
                     <View className={"flex-1 border-b dark:border-b-neutral-600 border-b-neutral-300 xs:mt-1 sm:mt-1 md:mt-2 lg:mt-3 xl:mt-4 xs:px-1 sm:px-2 md:px-2 lg:px-3 xl:px-4"}/>
 
                     {/* Caring for someone new */}
-                    <TouchableOpacity activeOpacity={0.5} className={"w-full xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 xs:my-1 sm:my-2 md:my-3 lg:my-5 xl:my-6 rounded-lg flex-row items-center justify-between"}
+                    <View className={"w-full xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 xs:my-1 sm:my-2 md:my-3 lg:my-5 xl:my-6 rounded-lg flex-row items-center justify-between"}
                                       style={{
                                           shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}>
                         <View className={"flex-col w-2/3"}>
@@ -90,22 +90,14 @@ const family = () => {
                             <Text className={"dark:text-neutral-200 text-neutral-500 xs:text-sm sm:text-sm md:text-sm lg:text-base mt-2"}>
                                 Add, remove or manage those who you care for!
                             </Text>
+                            <Link href={"/(app)/(myaccount)/family/NewMember"}>
+                                <Text className={"text-blue-500 text-base mt-2 underline"}>
+                                    Add a new family member
+                                </Text>
+                            </Link>
                         </View>
                         <Image source={require("@/assets/images/undraw_showing-support_ixfc.png")} style={{maxWidth: 100, maxHeight: 100}}/>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity activeOpacity={0.5} className={"w-full xs:p-2 sm:p-2 md:p-4 lg:p-4 xl:p-4 bg-white dark:bg-neutral-900 xs:mb-1 sm:mb-2 md:mb-3 lg:mb-4 xl:mb-4 rounded-lg flex-row items-center justify-between"}
-                                      style={{
-                                          shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}
-                                        onPress={() => router.push("/(app)/(myaccount)/family/NewMember")}
-                    >
-                        <View className={"flex-row w-full items-center gap-14"}>
-                            <MaterialIcons name={"add"} size={32} color={colorScheme === "dark" ? colors.white : colors.black} />
-                            <Text className={"dark:text-white xs-text-base sm:text-base md:text-base lg:text-xl font-bold text-center"}>
-                                Add a new family member
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
+                    </View>
 
                     {/* Family member view */}
                     <View className={"w-full"}>
