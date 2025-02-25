@@ -61,9 +61,16 @@ export default function Layout() {
                                 href: null,
                             }}
             />
+            <Tabs.Screen name="family/NewMember"
+                            options={{
+                                headerShown: false,
+                                title: 'Add Member',
+                                tabBarIcon: ({ color }) => <MaterialIcons name="person-add" size={24} color={color} />,
+                            }}
+            />
             <Tabs.Screen name="data-protection"
                             options={{
-                                title: 'Data Protection',
+                                title: 'Your Data',
                                 headerShown: false,
                                 tabBarIcon: ({ color }) => <FontAwesome name="shield" size={24} color={color} />,
                             }}
