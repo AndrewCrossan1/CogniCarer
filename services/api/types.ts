@@ -26,18 +26,17 @@ export interface ErrorResponse {
 
 // Patient Types
 export interface Patient {
-    profile_picture: string;
-    age: number;
+    profile_picture?: string;
+    age?: number;
     relationship: string;
     uuid: string;
     first_name: string;
+    middle_name: string;
     last_name: string;
     date_of_birth: string;
     gender: string;
-    room_number: string;
-    conditions: string[];
     care_notes: string;
-    created_at: string;
+    created_at?: string;
 }
 
 // Storyboard Types
