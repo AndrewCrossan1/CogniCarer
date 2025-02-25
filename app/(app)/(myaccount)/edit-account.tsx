@@ -10,7 +10,7 @@ import RNDateTimePicker, {DateTimePickerEvent} from "@react-native-community/dat
 import {Alert} from "@/components/Alert";
 import {useAuth} from "@/context/AuthContext";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
-import NewProfilePicture from "@/components/NewProfilePicture";
+import NewProfilePicture from "@/components/myaccount/NewProfilePicture";
 
 const editAccount = () => {
 
