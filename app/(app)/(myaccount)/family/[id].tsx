@@ -133,7 +133,7 @@ const familyMember = () => {
                 dob: familyMember.date_of_birth,
                 relationship: familyMember.relationship,
                 // @ts-ignore
-                profile_picture: familyMember.profile_picture,
+                profile_picture: familyMember.profile_picture || undefined,
                 care_notes: familyMember.care_notes,
                 gender: familyMember.gender
             });
