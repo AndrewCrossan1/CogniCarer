@@ -37,6 +37,7 @@ const ConfRemoveFam = (props: ConfRemoveFamProps) => {
             animationType="slide"
             transparent={true}
             visible={props.visible}
+            className={"flex-1"}
             onRequestClose={() => {
                 props.onClose();
             }}>
@@ -51,7 +52,7 @@ const ConfRemoveFam = (props: ConfRemoveFamProps) => {
                 </View>
 
                 <View
-                    className={"flex-1 border-b dark:border-b-neutral-600 border-b-neutral-300 xs:mt-1 sm:mt-1 md:mt-2 lg:mt-3 xl:mt-4 xs:px-1 sm:px-2 md:px-2 lg:px-3 xl:px-4"}/>
+                    className={"border-b dark:border-b-neutral-600 border-b-neutral-300 xs:mt-1 sm:mt-1 md:mt-2 lg:mt-3 xl:mt-4 xs:px-1 sm:px-2 md:px-2 lg:px-3 xl:px-4"}/>
 
                 <Text className={"dark:text-gray-400 mt-4"}>
                     Please confirm that you would like to remove this family member from your account.

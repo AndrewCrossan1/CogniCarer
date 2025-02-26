@@ -60,6 +60,7 @@ export default function NewProfilePicture(props: NewProfilePictureProps) {
             animationType="slide"
             transparent={true}
             visible={props.visible}
+            className={"flex-1"}
             onRequestClose={() => {
                 props.onClose();
             }}>
