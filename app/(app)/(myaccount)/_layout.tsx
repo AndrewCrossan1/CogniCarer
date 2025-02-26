@@ -34,13 +34,6 @@ export default function Layout() {
                 headerShown: false,
                 tabBarStyle: styles.tabBar,
             }}>
-            <Tabs.Screen name="index"
-                            options={{
-                                title: 'Home',
-                                headerShown: false,
-                                tabBarIcon: ({ color }) => <FontAwesome name="home" size={24} color={color} />,
-                            }}
-            />
             <Tabs.Screen name="edit-account"
                             options={{
                                 title: 'Edit',
@@ -54,6 +47,13 @@ export default function Layout() {
                                 headerShown: false,
                                 tabBarIcon: ({ color }) => <FontAwesome name="users" size={24} color={color} />,
                             }}
+            />
+            <Tabs.Screen name="index"
+                         options={{
+                             title: 'Home',
+                             headerShown: false,
+                             tabBarIcon: ({ color }) => <FontAwesome name="home" size={24} color={color} />,
+                         }}
             />
             <Tabs.Screen name="family/[id]"
                             options={{
