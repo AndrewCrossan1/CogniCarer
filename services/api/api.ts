@@ -171,7 +171,7 @@ export class API {
         return response.data;
     }
 
-    public async image_put(endpoint: string, data: any, file: ImagePickerResult): Promise<any> {
+    public async image_put(endpoint: string, data: any, file: ImagePickerResult, paramName?: string): Promise<any> {
         const formData = new FormData();
 
         if (!file.assets) {
@@ -192,7 +192,11 @@ export class API {
         };
 
         // Append the file to the form data
-        formData.append('profile_Mimage', newFile as any);
+        if (paramName) {
+            formData.append(paramName, newFile as any);
+        } else {
+            formData.append('image', newFile as any);
+        }
 
         // Append the data to the form data
         Object.keys(data).forEach((key) => {
