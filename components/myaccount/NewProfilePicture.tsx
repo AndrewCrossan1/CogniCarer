@@ -15,6 +15,11 @@ interface NewProfilePictureProps {
     onErrors: (error: string) => void;
 }
 
+/**
+ * New Profile Picture Component for user profile
+ * @param props
+ * @constructor
+ */
 export default function NewProfilePicture(props: NewProfilePictureProps) {
 
     const [picture, setPicture] = useState<ImagePicker.ImagePickerResult | undefined>(undefined);
