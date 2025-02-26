@@ -46,7 +46,7 @@ const familyMember = () => {
         dob: "",
         relationship: "",
         care_notes: "",
-        profile_picture: "" as string | ImagePicker.ImagePickerResult,
+        profile_picture: undefined as string | ImagePicker.ImagePickerResult | undefined,
         gender: ""
     })
     const [errors, setErrors] = useState({
@@ -132,7 +132,8 @@ const familyMember = () => {
                 last_name: familyMember.last_name,
                 dob: familyMember.date_of_birth,
                 relationship: familyMember.relationship,
-                profile_picture: familyMember.profile_picture || "",
+                // @ts-ignore
+                profile_picture: familyMember.profile_picture,
                 care_notes: familyMember.care_notes,
                 gender: familyMember.gender
             });
@@ -263,7 +264,7 @@ const familyMember = () => {
                 {typeof form.profile_picture === "object" && ( // @ts-ignore
                     <Image source={{uri: form.profile_picture.assets[0].uri  }} style={{width: 100, height: 100, borderRadius: 50}}/>
                 )}
-                {form.profile_picture === null && (
+                {form.profile_picture === undefined && (
                     <Image source={require("@/assets/images/undraw_pic-profile_nr49.png")} style={{width: 100, height: 100, borderRadius: 50}}/>
                 )}
                 <View className={"items-center"}>
