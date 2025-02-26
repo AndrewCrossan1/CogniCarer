@@ -130,7 +130,48 @@ export class API {
             response.data[0]);
     }
 
-    public async image_post(endpoint: string, data: any, file: ImagePickerResult): Promise<any> {
+    public async image_post(endpoint: string, data: any, file: ImagePickerResult, paramName?: string): Promise<any> {
+        const formData = new FormData();
+
+        if (!file.assets) {
+            return Promise.reject("No file provided");
+        }
+
+        // Get the file type
+        const uri = file.assets[0].mimeType;
+        if (!uri) {
+            return Promise.reject("Invalid file type");
+        }
+
+        // Create a new file from the image
+        const newFile = {
+            uri: file.assets[0].uri,
+            name: `photo.${uri.split('/')[1]}`,
+            type: file.assets[0].mimeType,
+        };
+
+        if (paramName) {
+            formData.append(paramName, newFile as any);
+        } else {
+            formData.append('image', newFile as any);
+        }
+
+        // Append the data to the form data
+        Object.keys(data).forEach((key) => {
+            formData.append(key, data[key]);
+        });
+
+        console.debug(formData);
+
+        const response = await this.client.post(endpoint, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    }
+
+    public async image_put(endpoint: string, data: any, file: ImagePickerResult, paramName?: string): Promise<any> {
         const formData = new FormData();
 
         if (!file.assets) {
@@ -151,14 +192,18 @@ export class API {
         };
 
         // Append the file to the form data
-        formData.append('image', newFile as any);
+        if (paramName) {
+            formData.append(paramName, newFile as any);
+        } else {
+            formData.append('image', newFile as any);
+        }
 
         // Append the data to the form data
         Object.keys(data).forEach((key) => {
             formData.append(key, data[key]);
         });
 
-        const response = await this.client.post(endpoint, formData, {
+        const response = await this.client.put(endpoint, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },

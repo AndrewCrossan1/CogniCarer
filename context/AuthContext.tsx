@@ -13,7 +13,7 @@ import {useQuote} from "@/hooks/useQuote";
 interface AuthContextType {
     login: (email: string, password: string) => Promise<boolean>;
     logout: () => Promise<boolean>;
-    update: (email: string, firstName: string, lastName: string) => Promise<boolean>
+    update: (email: string, firstName: string, lastName: string, image?: any) => Promise<boolean>
     sendResetEmail: (email: string) => Promise<boolean>;
     validateResetCode: (email: string, code: string) => Promise<boolean>;
     resetPassword: (email: string, code: string, password: string, confirmPassword: string) => Promise<boolean>;
@@ -121,28 +121,62 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
      * @param email The email of the user
      * @param firstName The first name of the user
      * @param lastName The last name of the user
+     * @param image
      * @returns A boolean indicating the success of the operation
      */
-    const update = async (email: string, firstName: string, lastName: string): Promise<boolean> => {
+    const update = async (email: string, firstName: string, lastName: string, image?: any): Promise<boolean> => {
         setLoading(true);
         setError(null);
-        try {
-            const user = await API.put("/auth/user/", {
-                email: email,
-                first_name: firstName,
-                last_name: lastName,
-            });
+        if (image) {
+            try {
+                const response = await API.image_put("/auth/user/", {
+                    email: email,
+                    first_name: firstName,
+                    last_name: lastName,
+                }, image, "profile_image");
 
-            setUser(user);
-            return true;
-        } catch (e) {
-            if (e instanceof Error) {
-                setError(e.message);
+                if (!response) {
+                    setError("Invalid response from the server");
+                    return false;
+                }
+
+                setUser(response);
+                setLoading(false);
+                return true;
+            } catch (e) {
+                if (e instanceof Error) {
+                    setError(e.message);
+                }
+                console.debug(e);
+                setError("An error occurred while updating the user");
+            } finally {
+                setLoading(false);
             }
-            console.debug(e);
-            setError("An error occurred while updating the user");
-        } finally {
-            setLoading(false);
+        } else {
+            try {
+                const response = await API.put("/auth/user/", {
+                    email: email,
+                    first_name: firstName,
+                    last_name: lastName,
+                });
+
+                if (!response) {
+                    setError("Invalid response from the server");
+                    return false;
+                }
+
+                setUser(response);
+                setLoading(false);
+                return true;
+            } catch (e) {
+                if (e instanceof Error) {
+                    setError(e.message);
+                }
+                console.debug(e);
+                setError("An error occurred while updating the user");
+            } finally {
+                setLoading(false);
+            }
         }
         return false;
     }

@@ -111,7 +111,7 @@ export default function Layout() {
                                    drawerIcon: ({ color }) => <FontAwesome name="home" size={24} color={color} />,
                                    title: 'Home',
                                }}/>
-                <Drawer.Screen name="myaccount"
+                <Drawer.Screen name="(myaccount)"
                                options={{
                                    drawerIcon: ({ color }) => <FontAwesome name="user" size={24} color={color} />,
                                    title: 'My Account',
@@ -121,6 +121,11 @@ export default function Layout() {
                                    drawerIcon: ({ color }) => <FontAwesome name="history" size={24} color={color} />,
                                    title: 'Reminisce',
                                }}/>
+                <Drawer.Screen name="(help)"
+                                 options={{
+                                      drawerIcon: ({ color }) => <FontAwesome name="info-circle" size={24} color={color} />,
+                                      title: 'Carer Support',
+                                 }}/>
             </Drawer>
         </GestureHandlerRootView>
     )

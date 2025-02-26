@@ -188,6 +188,17 @@ const Pictures = () => {
                 {/* Selected album dropdown choices (Delete, etc) */}
                 <Selector canSelect={canSelect} selected={selected} onSelect={onSelectPress} setConfirmVisible={setConfirmVisible} confirmVisible={confirmVisible} label={"Pictures"}/>
 
+                {!loading && pictures.length === 0 &&
+                  <View className={"w-full flex-col items-center justify-center mt-2"}>
+                    <Text className={"dark:text-white text-base font-bold"}>
+                        It's very quiet here!
+                    </Text>
+                    <Text className={"dark:text-neutral-200 text-neutral-500 text-sm"}>
+                        No pictures found, add some to get started.
+                    </Text>
+                  </View>
+                }
+
                 {/* Every 2 albums (Columns) create a new row */}
                 {!loading &&
                   <View className={"w-full p-4"}>

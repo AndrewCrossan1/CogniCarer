@@ -161,17 +161,6 @@ const NewEntry = () => {
             return;
         }
 
-        // Validate notes for only alphanumeric characters and spaces, and a dash
-        if (notes.length !== 0) {
-            if (!notes.match(/^[a-zA-Z0-9-!? ]+$/)) {
-                setAlertType("error");
-                setAlertMessage("Please only use alphanumeric characters, spaces, and dashes in the notes.");
-                setAlertVisible(true);
-                setNotesError(true);
-                return;
-            }
-        }
-
         // Format the date (2025-01-31)
         const formattedDate = date.toISOString().split("T")[0];
 
@@ -215,7 +204,6 @@ const NewEntry = () => {
                             // Submit the entry
                             submit();
                         }}
-                        style={{padding: 10, borderRadius: 10, marginTop: 10}}
                         className={`flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900`}>
                         <MaterialIcons name={"download-done"} size={24} color="white" className={"mr-1"}/>
                         <Text className={"text-white"}>
@@ -231,7 +219,6 @@ const NewEntry = () => {
                             setNotesError(false);
                             setDateError(false);
                         }}
-                        style={{padding: 10, borderRadius: 10, marginTop: 10}}
                         className={`flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900`}>
                         <MaterialIcons name={"restart-alt"} size={24} color="white" className={"mr-1"}/>
                         <Text className="text-white">

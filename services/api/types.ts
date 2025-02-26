@@ -1,3 +1,5 @@
+import * as ImagePicker from 'expo-image-picker';
+
 // Define a type for User
 export interface User {
     pk: string;
@@ -18,22 +20,19 @@ export interface ApiError {
     message: string;
 }
 
-// The exact same as above, will be replaced.
-export interface ErrorResponse {
-    errorMessage: string;
-    errorCode: number;
-}
-
 // Patient Types
 export interface Patient {
+    profile_picture?: string | null | ImagePicker.ImagePickerResult;
+    age?: number;
+    relationship: string;
     uuid: string;
     first_name: string;
+    middle_name: string;
     last_name: string;
     date_of_birth: string;
     gender: string;
-    room_number: string;
-    conditions: string[];
-    created_at: string;
+    care_notes: string;
+    created_at?: string;
 }
 
 // Storyboard Types

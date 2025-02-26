@@ -3,7 +3,7 @@ import {
     Text,
     Image,
     TouchableOpacity,
-    ScrollView, useColorScheme, RefreshControl
+    ScrollView, RefreshControl
 } from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
 import {useAppSelector} from "@/hooks/store/hooks";
@@ -18,13 +18,14 @@ import {Alert} from "@/components/Alert";
 import NewAlbumForm from "@/components/reminisce/NewAlbumForm";
 import NewPictureForm from "@/components/reminisce/NewPictureForm";
 import * as Haptics from "expo-haptics";
+import {useColorScheme} from "nativewind";
 
 const index = () => {
 
     const user = useAppSelector(state => state.user.user);
     const quote = useAppSelector(state => state.quote.quote);
     const theme = useThemeColor();
-    const mode = useColorScheme();
+    const { colorScheme: mode } = useColorScheme();
     const [albums, setAlbums] = useState([] as UserAlbum[]);
     const [alertType] = useState<"success" | "error">("error");
     const [message, setMessage] = useState("");
@@ -35,7 +36,6 @@ const index = () => {
     const [entryDates, setEntryDates] = useState<string[]>([] as string[]);
     const [markedDates, setMarkedDates] = useState({} as any);
     const [refreshing, setRefreshing] = useState(false);
-
 
     const {getAlbums, loading, getEntries} = useReminisce()
     const router = useRouter();
@@ -140,7 +140,7 @@ const index = () => {
     };
 
     return (
-        <ScrollView style={{backgroundColor: mode === 'dark' ? colors.neutral[800] : colors.white}}
+        <ScrollView style={{backgroundColor: mode === 'dark' ? colors.neutral[800] : colors.neutral[100]}}
                     contentContainerStyle={{flexGrow: 1}}
                     refreshControl={
                         <RefreshControl
@@ -151,7 +151,7 @@ const index = () => {
                         />
                     }
         >
-            <View className={"flex-1 items-center dark:bg-neutral-800 pb-10"}>
+            <View className={"flex-1 items-center bg-neutral-100 dark:bg-neutral-800 pb-10"}>
                 <View className={"w-full bg-blue-500 dark:bg-neutral-800 p-6"}>
                     <Alert message={message} type={alertType} onPress={() => {
                         setVisible(false);
@@ -200,7 +200,9 @@ const index = () => {
                 </View>
                 <View className={"px-4"}>
                     <View
-                        className={"mt-4 border bg-neutral-100 dark:bg-neutral-900 dark:border-neutral-900 border-neutral-300 rounded-lg p-4"}>
+                        className={"xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 xs:my-1 sm:my-2 md:my-3 lg:my-5 xl:my-6 rounded-lg"}
+                        style={{
+                            shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: mode === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}>
                         <View key={"subtasks"}>
                             <Text className={"text-lg font-bold dark:text-white"}>
                                 Quote of the Day
@@ -218,58 +220,63 @@ const index = () => {
                         </View>
                     </View>
                     <View className={"flex-row gap-4 justify-between w-full mt-4"} key={"albums"}>
-                        <View
-                            className={"flex-1 border bg-neutral-100 dark:bg-neutral-900 dark:border-neutral-900 border-neutral-300 rounded-lg pt-4 px-4 pb-2"}>
-                            <Text className={"dark:text-white font-bold"}>
-                                Albums
-                            </Text>
-                            {!loading &&
-                            <View className={"flex-row items-center justify-between"}>
-                                <TouchableOpacity onPress={backAlbum} hitSlop={20}>
-                                    <MaterialIcons name={"keyboard-arrow-left"}  size={28} color={theme.text}/>
-                                </TouchableOpacity>
-                              <TouchableOpacity
-                                key={currentAlbum.uuid}
-                                activeOpacity={0.8}
-                                className={"w-1/2 p-2"}>
-                                <View className={`w-full`}>
-                                  <View className={"justify-center items-center"}>
-                                      {/* Album Cover */}
-                                    <Image
-                                      className={"rounded-t-lg border-t border-l border-r border-gray-400"}
-                                      source={albumCover}
-                                      style={{width: "100%", height: 100}}
-                                    />
-                                  </View>
-                                  <View className={"rounded-b-lg border-b border-r border-l border-gray-400 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-950 p-4"}>
-                                    <View className={"flex-row items-center justify-between"}>
-                                      <Text className={"dark:text-white text-lg font-bold"}>
-                                          {currentAlbum.title}
-                                      </Text>
-                                      <Text className={"text-blue-500 text-sm"}>
-                                          {currentAlbum.picture_count} Pictures
-                                      </Text>
-                                    </View>
-                                    <Text className={"text-sm text-blue-500"}>
-                                        {currentAlbum.patientActual?.first_name} {currentAlbum.patientActual?.last_name}
-                                    </Text>
+                        {/* Albums */}
+                        {!loading && albums.length > 0 && (
+                            <View
+                                className={"w-full xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 xs:my-1 sm:my-2 md:my-3 lg:my-5 xl:my-6 rounded-lg flex-row items-center justify-between"}
+                                style={{
+                                    shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: mode === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}>
+                                <Text className={"dark:text-white font-bold"}>
+                                    Albums
+                                </Text>
+                                <View className={"flex-row items-center justify-between"}>
+                                    <TouchableOpacity onPress={backAlbum} hitSlop={20}>
+                                        <MaterialIcons name={"keyboard-arrow-left"}  size={28} color={theme.text}/>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        key={currentAlbum.uuid}
+                                        activeOpacity={0.8}
+                                        className={"w-1/2 p-2"}>
+                                        <View className={`w-full`}>
+                                            <View className={"justify-center items-center"}>
+                                                {/* Album Cover */}
+                                                <Image
+                                                    className={"rounded-t-lg border-t border-l border-r border-gray-400"}
+                                                    source={albumCover}
+                                                    style={{width: "100%", height: 100}}
+                                                />
+                                            </View>
+                                            <View className={"rounded-b-lg border-b border-r border-l border-gray-400 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-950 p-4"}>
+                                                <View className={"flex-row items-center justify-between"}>
+                                                    <Text className={"dark:text-white text-lg font-bold"}>
+                                                        title
+                                                    </Text>
+                                                    <Text className={"text-blue-500 text-sm"}>
+                                                        {currentAlbum.picture_count} Pictures
+                                                    </Text>
+                                                </View>
+                                                <Text className={"text-sm text-blue-500"}>
+                                                    {currentAlbum.patientActual?.first_name} {currentAlbum.patientActual?.last_name}
+                                                </Text>
 
-                                    <Text className={"text-xs text-neutral-500"}>
-                                      Created: {new Date(currentAlbum.created_at).toDateString()}
-                                    </Text>
-                                  </View>
+                                                <Text className={"text-xs text-neutral-500"}>
+                                                    Created: {new Date(currentAlbum.created_at).toDateString()}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={nextAlbum} hitSlop={20}>
+                                        <MaterialIcons name={"keyboard-arrow-right"} size={28} color={theme.text}/>
+                                    </TouchableOpacity>
                                 </View>
-                              </TouchableOpacity>
-                                <TouchableOpacity onPress={nextAlbum} hitSlop={20}>
-                                    <MaterialIcons name={"keyboard-arrow-right"} size={28} color={theme.text}/>
-                                </TouchableOpacity>
                             </View>
-                            }
-                        </View>
+                        )}
                     </View>
-                    <View className={"flex-row gap-4 justify-between w-full mt-4"} key={"dates"}>
+                    <View className={"flex-row gap-4 justify-between w-full"} key={"dates"}>
                         <View
-                            className={"flex-1 border bg-neutral-100 dark:bg-neutral-900 dark:border-neutral-900 border-neutral-300 rounded-lg p-4"}>
+                            className={"w-full xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 rounded-lg"}
+                            style={{
+                                shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: mode === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}>
                             <Text className={"dark:text-white text-lg mb-2 font-bold"}>
                                 See when you've reminisced
                             </Text>
@@ -288,8 +295,8 @@ const index = () => {
                             <View key={mode}>
                                 <Calendar markingType={"custom"}
                                           theme={{
-                                              backgroundColor: mode === "dark" ? colors.neutral[900] : colors.neutral[100],
-                                              calendarBackground: mode === "dark" ? colors.neutral[900] : colors.neutral[100],
+                                              backgroundColor: mode === "dark" ? colors.neutral[900] : colors.white,
+                                              calendarBackground: mode === "dark" ? colors.neutral[900] : colors.white,
                                               textSectionTitleColor: theme.text,
                                               selectedDayBackgroundColor: colors.blue[500],
                                               selectedDayTextColor: mode === "dark" ? colors.neutral[900] : colors.neutral[100],
@@ -302,7 +309,7 @@ const index = () => {
                                               yearTextColor: theme.text,
                                               arrowColor: colors.blue[500],
                                           }}
-                                            markedDates={markedDates}
+                                          markedDates={markedDates}
                                 />
                             </View>
                         </View>

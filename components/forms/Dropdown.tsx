@@ -36,7 +36,7 @@ export const Dropdown = (props: DropdownProps) => {
         <View>
             <TouchableWithoutFeedback onPress={toggle} hitSlop={10}>
                 <View
-                    className={`w-full flex flex-row justify-between items-center p-4 ${isOpen ? "border-t border-l border-r rounded-tl-md rounded-tr-md" : "border-t border-l border-r border-b rounded-md"} dark:border-gray-500 border-gray-400`}>
+                    className={`w-full flex flex-row justify-between items-center p-3 ${isOpen ? "border-t border-l border-r rounded-tl-lg rounded-tr-lg" : "border-t border-l border-r border-b rounded-lg"} dark:border-gray-500 border-gray-400`}>
                     <TextInput editable={false} key={"dropdown"} value={selected} className={"dark:text-white"}
                                placeholder={"Choose an option"} placeholderTextColor={"#AAAAA5"}/>
                     <MaterialIcons name={isOpen ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={24}
@@ -46,7 +46,7 @@ export const Dropdown = (props: DropdownProps) => {
 
             {isOpen && (
                 <ScrollView
-                    className={"w-full flex flex-col bg-white h-48 dark:bg-neutral-900 border-b border-l border-t border-r dark:border-gray-500 border-gray-400 rounded-b-md"}>
+                    className={"w-full flex flex-col bg-white h-48 dark:bg-neutral-900 border-b border-l border-t border-r dark:border-gray-500 border-gray-400 rounded-b-lg"}>
                     {options.map((option: any, index: number) => (
                         <TouchableOpacity key={index} onPress={() => {
                             setSelected(option.display);

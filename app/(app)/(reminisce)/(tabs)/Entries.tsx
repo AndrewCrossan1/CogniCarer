@@ -223,6 +223,17 @@ const Entries = () => {
                     }
                 </Animated.View>
 
+                {!loading && entries.length === 0 &&
+                  <View className={"w-full flex-col items-center justify-center mt-2"}>
+                    <Text className={"dark:text-white text-base font-bold"}>
+                      It's very quiet here!
+                    </Text>
+                    <Text className={"dark:text-neutral-200 text-neutral-500 text-sm"}>
+                      Add a new entry to get started.
+                    </Text>
+                  </View>
+                }
+
                 {/* Every 2 albums (Columns) create a new row */}
                 {!loading &&
                     <View className={"w-full p-4"}>
