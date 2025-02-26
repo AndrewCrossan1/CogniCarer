@@ -14,6 +14,11 @@ interface CreateProfilePictureProps {
     onPicture: (picture: ImagePicker.ImagePickerResult | undefined) => void;
 }
 
+/**
+ * Create a new profile picture for a family member
+ * @param props
+ * @constructor
+ */
 export default function CreateProfilePicture(props: CreateProfilePictureProps) {
 
     const [picture, setPicture] = useState<ImagePicker.ImagePickerResult | undefined>(undefined);
@@ -87,6 +92,10 @@ export default function CreateProfilePicture(props: CreateProfilePictureProps) {
                     <TouchableOpacity
                         onPress={() => {
                             props.onPicture(picture);
+                            // Reset errors and close the modal
+                            setErrors(false);
+                            setPicture(undefined);
+                            setPictureString(undefined);
                         }}
                         className={`flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-blue-500`}>
                         <MaterialIcons name="upload" size={24} color="white" className={"mr-1"}/>
