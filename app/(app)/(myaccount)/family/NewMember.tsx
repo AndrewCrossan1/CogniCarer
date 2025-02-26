@@ -22,7 +22,6 @@ const NewMember = () => {
     const onPicture = (picture: ImagePicker.ImagePickerResult | undefined) => {
         setModalVisible(false);
         if (picture) {
-            console.log(picture);
             setForm({...form, profile_picture: picture});
         }
     }
@@ -35,7 +34,7 @@ const NewMember = () => {
         dob: new Date().toDateString(),
         relationship: "",
         care_notes: "",
-        profile_picture: null as any,
+        profile_picture: undefined as string | ImagePicker.ImagePickerResult | undefined,
         gender: ""
     })
     const [errors, setErrors] = useState({
@@ -121,9 +120,6 @@ const NewMember = () => {
             formattedDate = `${date.getFullYear()}-0${date.getMonth() + 1}-${date.getDate()}`;
         }
 
-        // Submit the form
-        console.log("Submitting form...");
-
         // Build the data
         const data = {
             first_name: form.first_name,
@@ -145,7 +141,7 @@ const NewMember = () => {
                     dob: new Date().toDateString(),
                     gender: "",
                     relationship: "",
-                    profile_picture: null,
+                    profile_picture: undefined,
                     care_notes: "",
                 });
 
@@ -172,11 +168,15 @@ const NewMember = () => {
             {/* Profile Edit Quick Action */}
             <View className={"flex-col items-center justify-between xs:mt-2 sm:mt-3 md:mt-3 lg:mt-3 xl:mt-3"}>
                 {/* @ts-ignore */}
-                {form.profile_picture ?
-                    <Image source={{uri: form.profile_picture.uri}} className={"rounded-full xs:w-16 sm:w-24 md:w-32 lg:w-40 xl:w-40 xs:h-16 sm:h-24 md:h-32 lg:h-40 xl:h-40 "}/>
-                    :
-                    <Image source={require("@/assets/images/undraw_pic-profile_nr49.png")} className={"rounded-full xs:w-16 sm:w-24 md:w-32 lg:w-40 xl:w-40 xs:h-16 sm:h-24 md:h-32 lg:h-40 xl:h-40 "}/>
-                }
+                {typeof form.profile_picture === "string" && (
+                    <Image source={{uri: form.profile_picture}} style={{width: 100, height: 100, borderRadius: 50}}/>
+                )}
+                {typeof form.profile_picture === "object" && ( // @ts-ignore
+                    <Image source={{uri: form.profile_picture.assets[0].uri  }} style={{width: 100, height: 100, borderRadius: 50}}/>
+                )}
+                {form.profile_picture === undefined && (
+                    <Image source={require("@/assets/images/undraw_pic-profile_nr49.png")} style={{width: 100, height: 100, borderRadius: 50}}/>
+                )}
                 <View className={"items-center"}>
                     <TouchableOpacity>
                         <Text className={"dark:text-white xs:text-xs sm:text-sm md:text-sm lg:text-base xl:text-base text-blue-500 underline underline-offset-1"} onPress={() => {setModalVisible(true)}}>
