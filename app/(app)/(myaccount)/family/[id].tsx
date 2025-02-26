@@ -9,27 +9,44 @@ import RNDateTimePicker, {DateTimePickerEvent} from "@react-native-community/dat
 import {Dropdown} from "@/components/forms/Dropdown";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {useLocalSearchParams} from "expo-router";
+import {useRouter} from "expo-router";
 import {Alert} from "@/components/Alert";
-import {useAppSelector} from "@/hooks/store/hooks";
 import ConfRemoveFam from "@/components/myaccount/ConfRemoveFam";
+import CreateProfilePicture from "@/components/myaccount/CreateProfilePicture";
+import * as ImagePicker from "expo-image-picker";
 
+/**
+ * Family Member Page
+ * @desc This page displays a single family member's details.
+ */
 const familyMember = () => {
     const { id } = useLocalSearchParams();
 
     const colorScheme = useColorScheme();
-    const { getPatient, loading, updatePatient } = usePatients();
-    const user = useAppSelector(state => state.user.user);
-    const [error, setError] = useState({
-        error: false,
-        message: ""
-    });
+    const { getPatient, loading, updatePatient, deletePatient } = usePatients();
+    const router = useRouter();
     const [familyMember, setFamilyMember] = useState<Patient>({} as Patient);
+
+    // Profile Picture Modal Visibility
+    const [profilePicVisible, setProfilePicVisible] = useState(false);
+
+    // Profile Picture Callback
+    const onPicture = (picture: ImagePicker.ImagePickerResult | undefined) => {
+        if (picture) {
+            setFamilyMember({...familyMember, profile_picture: picture});
+            setForm({...form, profile_picture: picture});
+        }
+        setProfilePicVisible(false);
+    }
+
+    // Form State and Errors
     const [form, setForm] = useState({
         first_name: "",
         last_name: "",
         dob: "",
         relationship: "",
         care_notes: "",
+        profile_picture: "" as string | ImagePicker.ImagePickerResult,
         gender: ""
     })
     const [errors, setErrors] = useState({
@@ -40,10 +57,33 @@ const familyMember = () => {
         care_notes: "",
         gender: ""
     });
-    const [show, setShow] = useState(false);
-    const [enableEdit, setEnableEdit] = useState(false);
-    const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
 
+    /**
+     * onSubmitted
+     * @description Callback function to execute when the confirm delete modal is submitted.
+     */
+    const onSubmitted = () => {
+        // Use the usePatient delete() method to delete the family member
+        deletePatient(familyMember.uuid).then((success) => {
+            // Close the modal
+            setConfirmDeleteVisible(false);
+            if (success) router.push("/(app)/(myaccount)/family");
+            if (!success) setAlert({message: "An error occurred while deleting the family member!", type: "error", visible: true});
+        }).catch(
+            () => {
+                setConfirmDeleteVisible(false);
+                // Display an error message
+                setAlert({message: "An internal error occurred, please try again later!", type: "error", visible: true})
+            }
+        );
+    }
+
+    const [show, setShow] = useState(false);  // Date picker visibility
+    const [enableEdit, setEnableEdit] = useState(false);  // Enable form editing
+    const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);  // Confirm delete modal visibility
+
+
+    // Refs for the 'shake' animation
     const firstNameRef = useRef<InputGroupRef>(null);
     const lastNameRef = useRef<InputGroupRef>(null);
     const dobRef = useRef<InputGroupRef>(null);
@@ -69,17 +109,21 @@ const familyMember = () => {
         setShow(Platform.OS === "ios");
     }
 
+    // Fetch the family member using the ID from the URL
     const getFamilyMember = async () => {
         console.debug(`Fetching family member with UUID: ${id}`);
 
         if (!id) {
-            setError({error: false, message: "No UUID provided!"});
+            // Redirect to the family page
+            console.error("Family member ID not provided!");
+            router.push("/(app)/(myaccount)/family");
             return;
         }
 
+        let newId = id as string;
+
         // Fetch family member with UUID: id
-        // @ts-ignore
-        const familyMember = await getPatient(id);
+        const familyMember = await getPatient(newId);
 
         if (familyMember) {
             setFamilyMember(familyMember);
@@ -88,16 +132,23 @@ const familyMember = () => {
                 last_name: familyMember.last_name,
                 dob: familyMember.date_of_birth,
                 relationship: familyMember.relationship,
+                profile_picture: familyMember.profile_picture || "",
                 care_notes: familyMember.care_notes,
                 gender: familyMember.gender
             });
         }
     }
 
+    // Fetch the family member on page load or when the ID changes
     useEffect(() => {
         getFamilyMember().then(() => {console.log("Family member fetched!")}).catch(console.error);
     }, [id]);
 
+    /**
+     * submitForm
+     * @description Validate the form and submit the data to the API if the form is valid,
+     *              otherwise, display an error message.
+     */
     const submitForm = async () => {
         // Validate the form
         let errors = {
@@ -136,9 +187,6 @@ const familyMember = () => {
             return;
         }
 
-        // Submit the form
-        console.log("Submitting form...");
-
         let formattedDate = new Date(form.dob);  // YYYY-MM-DD
         let day = formattedDate.getDate();
         let month: any = formattedDate.getMonth() + 1;
@@ -165,19 +213,37 @@ const familyMember = () => {
             created_at: familyMember.created_at,
         }
 
-        // Update the family member
-        updatePatient(familyMember.uuid, data).then((success) => {
-            if (success) {
-                console.log("Family member updated successfully!");
-                setAlert({message: "Family member updated successfully!", type: "success", visible: true});
-                getFamilyMember().then(() => {console.log("Family member fetched!")}).catch(console.error);
-            } else {
-                console.error("An error occurred while updating the family member!");
-                setAlert({message: "An error occurred while updating the family member!", type: "error", visible: true});
-            }
-        }).catch(console.error);
+        // Check if form.profile_picture is a string or an object
+        if (typeof form.profile_picture === "object") {
+            // Set the image args in the updatePatient method
+            updatePatient(familyMember.uuid, data, form.profile_picture).then((success) => {
+                if (success) {
+                    setAlert({message: "Family member updated successfully!", type: "success", visible: true});
+                } else {
+                    setAlert({message: "An error occurred while updating the family member!", type: "error", visible: true});
+                }
+            }).catch(() => {
+                setAlert({message: "An internal error occurred, please try again later!", type: "error", visible: true});
+            });
+        } else {
+            // Update the family member without the image
+            updatePatient(familyMember.uuid, data).then((success) => {
+                if (success) {
+                    setAlert({message: "Family member updated successfully!", type: "success", visible: true});
+                } else {
+                    setAlert({message: "An error occurred while updating the family member!", type: "error", visible: true});
+                }
+            }).catch(() => {
+                setAlert({
+                    message: "An internal error occurred, please try again later!",
+                    type: "error",
+                    visible: true
+                });
+            });
+        }
     }
 
+    // Auto-hide the alert after 5 seconds
     useEffect(() => {
         if (alert.visible) {
             setTimeout(() => {
@@ -191,22 +257,22 @@ const familyMember = () => {
             <Alert message={alert.message} type={alert.type} visible={alert.visible} onPress={() => setAlert({...alert, visible: !alert.visible})} />
             {/* Profile Edit Quick Action */}
             <View className={"flex-col items-center justify-between xs:mt-2 sm:mt-3 md:mt-3 lg:mt-3 xl:mt-3"}>
-                {familyMember.profile_picture ?
-                    <Image
-                        source={{uri: familyMember.profile_picture}}
-                        className={"rounded-full xs:w-16 sm:w-24 md:w-32 lg:w-40 xl:w-40 xs:h-16 sm:h-24 md:h-32 lg:h-40 xl:h-40 "}
-                    />
-                    :
-                    <Image
-                        source={require("@/assets/images/undraw_pic-profile_nr49.png")}
-                        className={"rounded-full xs:w-16 sm:w-24 md:w-32 lg:w-40 xl:w-40 xs:h-16 sm:h-24 md:h-32 lg:h-40 xl:h-40 "}
-                    />
-                }
+                {typeof form.profile_picture === "string" && (
+                    <Image source={{uri: form.profile_picture}} style={{width: 100, height: 100, borderRadius: 50}}/>
+                )}
+                {typeof form.profile_picture === "object" && ( // @ts-ignore
+                    <Image source={{uri: form.profile_picture.assets[0].uri  }} style={{width: 100, height: 100, borderRadius: 50}}/>
+                )}
+                {form.profile_picture === null && (
+                    <Image source={require("@/assets/images/undraw_pic-profile_nr49.png")} style={{width: 100, height: 100, borderRadius: 50}}/>
+                )}
                 <View className={"items-center"}>
                     <TouchableOpacity>
-                        <Text className={"dark:text-white xs:text-xs sm:text-sm md:text-sm lg:text-base xl:text-base text-blue-500 underline underline-offset-1"} onPress={() => {}}>
+                        {enableEdit && (
+                        <Text className={"dark:text-white xs:text-xs sm:text-sm md:text-sm lg:text-base xl:text-base text-blue-500 underline underline-offset-1"} onPress={() => {setProfilePicVisible(true)}}>
                             Change Picture
                         </Text>
+                        )}
                     </TouchableOpacity>
                     <View className={"flex-col items-center mt-2"}>
                         <Text className={"dark:text-white xs:text-base sm:text-base md:text-xl lg:text-2xl xl:text-3xl font-bold"}>
@@ -318,6 +384,7 @@ const familyMember = () => {
                                     last_name: familyMember.last_name,
                                     dob: familyMember.date_of_birth,
                                     gender: familyMember.gender,
+                                    profile_picture: familyMember.profile_picture || "",
                                     relationship: familyMember.relationship,
                                     care_notes: familyMember.care_notes,
                                 });
@@ -338,7 +405,8 @@ const familyMember = () => {
                 </Text>
             </TouchableOpacity>
 
-            <ConfRemoveFam visible={confirmDeleteVisible} onClose={() => {setConfirmDeleteVisible(false)}} familyMember={familyMember}/>
+            <ConfRemoveFam visible={confirmDeleteVisible} onClose={() => {setConfirmDeleteVisible(false)}} familyMember={familyMember} onSubmitted={onSubmitted}/>
+            <CreateProfilePicture visible={profilePicVisible} onClose={() => {setProfilePicVisible(false)}} onErrors={() => {}} onPicture={onPicture}/>
         </KeyboardAwareScrollView>
     )
 }
