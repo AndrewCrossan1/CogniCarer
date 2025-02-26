@@ -1,3 +1,5 @@
+import * as ImagePicker from 'expo-image-picker';
+
 // Define a type for User
 export interface User {
     pk: string;
@@ -26,7 +28,7 @@ export interface ErrorResponse {
 
 // Patient Types
 export interface Patient {
-    profile_picture?: string;
+    profile_picture?: string | null | ImagePicker.ImagePickerResult;
     age?: number;
     relationship: string;
     uuid: string;
