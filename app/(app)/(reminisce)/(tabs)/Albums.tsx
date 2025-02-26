@@ -237,6 +237,18 @@ const Albums = () => {
 
 
                 {/* Every 2 albums (Columns) create a new row */}
+
+                {!loading && albums.length === 0 &&
+                  <View className={"w-full flex-col items-center justify-center mt-2"}>
+                    <Text className={"dark:text-white text-base font-bold"}>
+                      It's very quiet here!
+                    </Text>
+                    <Text className={"dark:text-neutral-200 text-neutral-500 text-sm"}>
+                      Add a new album to get started.
+                    </Text>
+                  </View>
+                }
+
                 {!loading &&
                   <View className={"w-full p-4"}>
                     <View className={"flex-row flex-wrap justify-start"}>
