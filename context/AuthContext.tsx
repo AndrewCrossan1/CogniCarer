@@ -133,7 +133,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
                     email: email,
                     first_name: firstName,
                     last_name: lastName,
-                }, image);
+                }, image, "profile_image");
 
                 if (!response) {
                     setError("Invalid response from the server");
