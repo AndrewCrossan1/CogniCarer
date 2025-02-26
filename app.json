@@ -1,34 +1,38 @@
 {
   "expo": {
-    "name": "dementia-rehab",
-    "slug": "dementia-rehab",
+    "name": "Cognicarer",
+    "slug": "cognicarer",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "assets/logo.png",
+    "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "assets/logo.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "image": "./assets/images/splash.jpg",
+      "resizeMode": "cover"
     },
     "ios": {
       "infoPlist": {
         "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID."
-      }
+      },
+      "bundleIdentifier": "com.andrewcrossan1.dementiarehab"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "assets/logo.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#FFFFFF"
       },
-      "package": "live.andrewcrossan.dementia_rehab"
+      "package": "live.andrewcrossan.dementia_rehab",
+      "permissions": [
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
+      ]
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "logo.png"
+      "favicon": "./assets/images/icon.png"
     },
     "plugins": [
       "expo-router",
@@ -38,10 +42,25 @@
         {
           "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos"
+        }
       ]
+
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "89bc1a22-032c-41bc-90f9-49fd371fb835"
+      }
     }
   }
 }

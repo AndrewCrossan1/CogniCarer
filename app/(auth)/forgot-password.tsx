@@ -1,18 +1,26 @@
-import {View, Text, TouchableOpacity, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData} from "react-native";
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    TextInput,
+    NativeSyntheticEvent,
+    TextInputKeyPressEventData,
+    ActivityIndicator
+} from "react-native";
 import {useRef, useState} from "react";
-import InputField from "@/components/InputField";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {useRouter} from "expo-router";
-
-// TODO: Implement backend functionality
+import {useAuth} from "@/context/AuthContext";
+import Input from "@/components/forms/Input";
+import InputGroup, {InputGroupRef} from "@/components/forms/InputGroup";
 
 export default function ResetPasswordScreen() {
     const [email, setEmail] = useState("");
     const [emailSent, setEmailSent] = useState(false);
     const [code, setCode] = useState<string[]>(Array(6).fill("")); // Six-digit code
     const [codeSent, setCodeSent] = useState(false);
-    const [error, setError] = useState(false);
     const inputRefs = useRef<Array<TextInput | null>>([]);
+    const emailRef = useRef<InputGroupRef>(null);
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [tenChars, setTenChars] = useState(false);
@@ -20,7 +28,12 @@ export default function ResetPasswordScreen() {
     const [lowerCase, setLowerCase] = useState(false);
     const [number, setNumber] = useState(false);
     const [specialChar, setSpecialChar] = useState(false);
+    const [emailError, setEmailError] = useState(false);
+    const [codeError, setCodeError] = useState(false);
+    const [passwordError, setPasswordError] = useState(false);
     const router = useRouter();
+
+    const {sendResetEmail, validateResetCode, resetPassword, loading, error: authError} = useAuth();
 
     /**
      * Handle text change event
@@ -56,24 +69,66 @@ export default function ResetPasswordScreen() {
      *  If the code is valid, set the error to false and set sent to true
      */
     const handleReset = () => {
-
         if (!emailSent) {
-            // Send email
-            setEmailSent(true);
+            // Validate email
+            const isValid = email !== "";
+
+            // If the email is valid, utilise the backend functionality
+            if (isValid) {
+                sendResetEmail(email).then((success) => {
+                    if (!success) {
+                        // Handle error
+                        setEmailError(true);
+                        return;
+                    }
+                });
+                setEmailSent(true);
+                return;
+            }
+            setEmailError(true);
+            emailRef.current?.shake();
             return;
         }
 
-        const isValid = code.every((c) => c !== "");
-        setError(!isValid);
+        if (!codeSent) {
+            // Validate code
+            const isValid = code.every((c) => c !== "");
+
+            if (isValid) {
+                setCodeError(false);
+                validateResetCode(email, code.join("")).then((success) => {
+                    if (!success) {
+                        // Handle error
+                        setCodeError(true);
+                        return;
+                    }
+                    setCodeSent(true);
+                });
+                return;
+            }
+            setCodeError(true);
+
+            // If the code is not valid, focus on the first input
+            inputRefs.current[0]?.focus();
+            return;
+        }
+
+        // Validate password
+        const isValid = tenChars && upperCase && lowerCase && number && specialChar && password === confirmPassword;
 
         if (isValid) {
-            setError(false);
-            setCodeSent(true);
+            resetPassword(email, code.join(""), password, confirmPassword).then((success) => {
+                if (!success) {
+                    // Handle error
+                    setPasswordError(true);
+                    return;
+                }
+                router.push("/(auth)/login");
+                return;
+            });
             return;
         }
-
-        // If the code is not valid, focus on the first input
-        inputRefs.current[0]?.focus();
+        setPasswordError(true);
         return;
     }
 
@@ -137,7 +192,7 @@ export default function ResetPasswordScreen() {
             <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8"}>
                 {!emailSent &&
                   <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 xs:mt-0 sm:mt-1 md:mt-2 lg:mt-3 xl:mt-4"}>
-                    <InputField value={email} password={false} onChangeText={(e) => setEmail(e)} placeholder={"joebloggs@bloggs.com"} placeholderTextColor={"#AAAAA5"} label={"Email Address"} key={"email"}/>
+                    <InputGroup ref={emailRef} label={"Email Address"} errorMessage={"Please enter a valid email address"} error={emailError} value={email} onChangeText={(e) => setEmail(e)} placeholder={"joe.bloggs@cognicarer.com"} keyboardType={"email-address"} key={"email"}/>
                   </View>}
 
                 {emailSent && !codeSent &&
@@ -154,11 +209,11 @@ export default function ResetPasswordScreen() {
                                            returnKeyType={"done"}
                                            keyboardType={"numeric"}
                                            maxLength={1}
-                                           className={`rounded-md w-12 p-4 border dark:text-white focus:border-blue-500 transition-all ease-linear ${error && !code[i] ? "border-red-500" : "border-gray-400 dark:border-gray-500"}`}/>
+                                           className={`rounded-md w-12 p-4 border dark:text-white focus:border-blue-500 transition-all ease-linear ${codeError && !code[i] ? "border-red-500" : "border-gray-400 dark:border-gray-500"}`}/>
                             </View>
                         ))}
                     </View>
-                      {error &&
+                      {codeError &&
                         <Text className={"text-center text-red-500 mt-2"}>
                           Please enter the six-digit code
                         </Text>}
@@ -192,26 +247,42 @@ export default function ResetPasswordScreen() {
                       <FontAwesome name={password === confirmPassword ? "check" : "close"} size={24} color={password === confirmPassword ? "#3B82F6" : "#EF5350"}/>
                       <Text className={"ml-2 dark:text-white"}>Passwords match</Text>
                     </View>
-                    <InputField value={password} password={true} onChangeText={validatePassword} placeholder={"Password"} placeholderTextColor={"#AAAAA5"} label={"Password"} key={"password"}/>
+
+                    <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>Password</Text>
+                    <Input value={password} secureTextEntry={true} onChangeText={validatePassword} placeholder={"Password"} placeholderTextColor={"#AAAAA5"} key={"password"}/>
+
                     <View className={"my-2"}/>
-                    <InputField value={confirmPassword} password={true} onChangeText={matchPasswords} placeholder={"Confirm Password"} placeholderTextColor={"#AAAAA5"} label={"Confirm Password"} key={"confirmPassword"}/>
+
+                    <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>Confirm Password</Text>
+                    <Input value={confirmPassword} secureTextEntry={true} onChangeText={matchPasswords} placeholder={"Confirm Password"} placeholderTextColor={"#AAAAA5"} key={"confirmPassword"}/>
+
+                    {passwordError &&
+                      <Text className={"text-center text-red-500 mt-2"}>
+                        Please ensure that your password meets the requirements
+                      </Text>}
                   </View>
                 }
 
                 {/* Reset Button */}
-                <TouchableOpacity className={"w-full bg-blue-500 text-white p-2.5 rounded-md xs:mt-3 sm:mt-4 md:mt-5 lg:mt-6"} onPress={handleReset}>
-                    <Text className={"text-center text-white text-lg"}>
-                        {!emailSent && "Send Email"}
-                        {emailSent && codeSent && "Reset Password"}
-                        {emailSent && !codeSent && "Send Code"}
-                    </Text>
-                </TouchableOpacity>
+                {loading ?
+                    <ActivityIndicator size={"large"} className={"dark:text-white text-blue-500 mt-10"}/>
+                    :
+                    <TouchableOpacity className={"w-full bg-blue-500 text-white p-2.5 rounded-md xs:mt-3 sm:mt-4 md:mt-5 lg:mt-6"} onPress={handleReset}>
+                        <Text className={"text-center text-white text-lg"}>
+                            {!emailSent && "Send Email"}
+                            {emailSent && codeSent && "Reset Password"}
+                            {emailSent && !codeSent && "Send Code"}
+                        </Text>
+                    </TouchableOpacity>
+                }
 
-                <TouchableOpacity className={"w-full bg-red-500 text-white p-2.5 rounded-md xs:mt-3 sm:mt-4 md:mt-5 lg:mt-6"} onPress={() => router.push("/(auth)/login")}>
+                {!loading &&
+                  <TouchableOpacity className={"w-full bg-red-500 text-white p-2.5 rounded-md xs:mt-3 sm:mt-4 md:mt-5 lg:mt-6"} onPress={() => router.push("/(auth)/login")}>
                     <Text className={"text-center text-white text-lg"}>
-                        Cancel
+                      Cancel
                     </Text>
-                </TouchableOpacity>
+                  </TouchableOpacity>
+                }
             </View>
         </View>
     );

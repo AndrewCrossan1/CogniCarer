@@ -1,21 +1,21 @@
 import {
     View,
     Text,
-    TextInput,
     TouchableOpacity,
     ActivityIndicator,
-    StyleSheet,
-    Platform,
-    Animated,
     ScrollView
 } from "react-native";
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useRouter} from "expo-router";
 import colors from "tailwindcss/colors";
 import {useAuth} from "@/context/AuthContext";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import * as Haptics from "expo-haptics";
-import InputField from "@/components/InputField";
+import InputGroup, {InputGroupRef} from "@/components/forms/InputGroup";
+import * as SecureStore from "expo-secure-store";
+import * as LocalAuthentication from "expo-local-authentication";
+import {MaterialIcons} from "@expo/vector-icons";
+import {Alert} from "@/components/Alert";
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -24,9 +24,24 @@ export default function LoginScreen() {
     const [showAlert, setShowAlert] = useState(false);
     const [passwordErrVisible, setPasswordErrVisible] = useState(false);
     const [emailErrVisible, setEmailErrVisible] = useState(false);
-    const refPasswordInput = useRef(null);
+    const [message, setMessage] = useState("");
+    const [alertType, setAlertType] = useState<"error" | "success">("error");
 
-    const { login, loading } = useAuth();
+    const refEmailInput = useRef<InputGroupRef>(null);
+    const refPasswordInput = useRef<InputGroupRef>(null);
+
+    const [checked, setChecked] = useState(false);
+
+    const {login, loading} = useAuth();
+
+    // Timer to automatically close the alert after 3 seconds
+    useEffect(() => {
+        if (showAlert) {
+            setTimeout(() => {
+                setShowAlert(false);
+            }, 3000);
+        }
+    }, [showAlert]);
 
     const focusOnPassword = () => {
         if (refPasswordInput && refPasswordInput.current) {
@@ -35,6 +50,71 @@ export default function LoginScreen() {
         }
     };
 
+    // Check if the user has biometric authentication enabled
+    const hasBiometrics = async () => {
+        // Check if the device has biometric hardware
+        const hasHardware = await LocalAuthentication.hasHardwareAsync();
+        if (!hasHardware) {
+            console.debug("Device does not have biometric hardware");
+            return false;
+        }
+
+        // Check if the user has biometric records
+        const hasRecords = await LocalAuthentication.isEnrolledAsync();
+        if (!hasRecords) {
+            console.debug("User does not have biometric records");
+            return false;
+        }
+        return true;
+    }
+
+    const useLocalAuth = async () => {
+        // Check if the user has biometric authentication enabled
+        if (!await hasBiometrics()) {
+            console.debug("Biometric authentication is not enabled, defaulting to login screen");
+            return;
+        }
+
+        // Check SecureStore for stored credentials
+        const email = await SecureStore.getItemAsync("email");
+        const password = await SecureStore.getItemAsync("password");
+
+        if (!email || !password) {
+            setShowAlert(true);
+            setMessage("No stored credentials found");
+            setAlertType("error");
+            console.debug("No stored credentials found, defaulting to login screen");
+            return;
+        }
+
+        // Prompt the user to authenticate with biometrics
+        const result = await LocalAuthentication.authenticateAsync({
+            promptMessage: "Please authenticate to continue",
+            cancelLabel: "Cancel"
+        });
+
+        // If the user cancels the biometric prompt, return
+        if (!result.success) {
+            console.debug("Biometric prompt cancelled, defaulting to login screen");
+            return;
+        }
+
+        // Attempt to log in with the stored credentials
+        const response = await login(email, password);
+        if (!response) {
+            setShowAlert(true);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+            setMessage("Invalid email or password");
+            setAlertType("error");
+            console.debug("Stored credentials are invalid, defaulting to login screen");
+            return;
+        }
+
+        // If the login is successful, navigate to the app
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        router.push("/(app)");
+    }
+
     const handleLogin = async () => {
         // Reset the error messages
         setEmailErrVisible(false);
@@ -42,12 +122,12 @@ export default function LoginScreen() {
         // Validate the email and password
         if (email.length === 0) {
             setEmailErrVisible(true);
-            shake(emailShakeAnim);
+            refEmailInput.current?.shake();
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         }
         if (password.length === 0) {
             setPasswordErrVisible(true);
-            shake(passwordShakeAnim);
+            refPasswordInput.current?.shake();
             // Give a gentle vibration to the user
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         }
@@ -57,146 +137,97 @@ export default function LoginScreen() {
             const response = await login(email, password);
             if (!response) {
                 setShowAlert(true);
+                setMessage("Invalid email or password");
+                setAlertType("error");
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
                 return;
             }
+
+            // If the user has checked the remember me box, store the credentials
+            if (checked) {
+                await SecureStore.setItemAsync("email", email);
+                await SecureStore.setItemAsync("password", password);
+            }
+
             router.push("/(app)");
         }
     };
 
-    const styles = StyleSheet.create({
-        alertError: {
-            color: colors.red[800]
-        },
-        error: {
-            color: colors.red[500]
-        }
-    });
-
-    const emailShakeAnim = useRef(new Animated.Value(0)).current;
-    const passwordShakeAnim = useRef(new Animated.Value(0)).current;
-
-    const shake = (animation: Animated.Value | Animated.ValueXY) => {
-        Animated.sequence([
-            Animated.timing(animation, {toValue: 10, duration: 50, useNativeDriver: true}),
-            Animated.timing(animation, {toValue: -10, duration: 50, useNativeDriver: true}),
-            Animated.timing(animation, {toValue: 10, duration: 50, useNativeDriver: true}),
-            Animated.timing(animation, {toValue: 0, duration: 50, useNativeDriver: true})
-        ]).start();
-    };
-
     return (
-        Platform.OS === "android" ?
-            <ScrollView className={"flex-1 w-full dark:bg-neutral-900 bg-neutral-100"}>
-                {/* Header */}
-                <View className={"xs:mt-1 sm:mt-2 md:mt-4 lg:mt-6"}>
-                    <Text className={"dark:text-white font-bold text-center xs:text-base sm:text-xl md:text-2xl lg:text-4xl"}>Welcome Back</Text>
-                    <Text className={"text-lg dark:text-white text-center"}>Log in to your account</Text>
-                </View>
-                <View className={`mx-4 rounded-md bg-red-200 flex-row justify-between p-2 items-center ${showAlert ? 'visible' : 'invisible'} xs:mb-1 sm:mb-2 md:mb-4 lg:mb-6 xs:mt-1 sm:mt-1 md:mt-4 lg:mt-6`}>
-                    <View className={"flex-row justify-center items-center"}>
-                        <FontAwesome name={"exclamation-circle"} size={20} className={"mr-2"} color={colors.red[500]}/>
-                        <Text style={styles.alertError} className={`text-center xs:text-sm sm:text-base md:text-lg lg:text-xl`}>
-                            Your email or password is incorrect
-                        </Text>
-                    </View>
-                    <FontAwesome name={"close"} size={20} className={"ml-4"} color={colors.red[500]} onPress={() => setShowAlert(!showAlert)}/>
-                </View>
-                {/* Form */}
-                <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8"}>
-                    <Animated.View style={{transform: [{translateX: emailShakeAnim}]}}>
-                        <Text className={"mb-2 dark:text-white font-bold  sm:text-sm md:text-base lg:text-lg"}>Email Address</Text>
-                        <TextInput key={"email"} value={email} onSubmitEditing={focusOnPassword} onChangeText={(e) => setEmail(e)} placeholder={"joebloggs@bloggs.com"} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear input"}/>
-                        <Text style={styles.error} className={`mt-2 ${emailErrVisible ? 'visible' : 'invisible'}`}>
-                            This field is required
-                        </Text>
-                    </Animated.View>
-                    <Animated.View style={{transform: [{translateX: passwordShakeAnim}]}}>
-                        <InputField ref={refPasswordInput} onChangeText={(p) => setPassword(p)} label={"Password"} value={password} placeholder={"Password"} password={true} placeholderTextColor={"#AAAAA5"} />
-                        <Text style={styles.error} className={`mt-2 ${passwordErrVisible ? 'visible' : 'invisible'}`}>
-                            This field is required
-                        </Text>
-                    </Animated.View>
-                    <TouchableOpacity onPress={() => router.push("/(auth)/forgot-password")}>
-                        <Text className={"underline dark:text-white ml-2"}>Forgot your password?</Text>
+        <ScrollView className={"flex-1 w-full dark:bg-neutral-900 bg-neutral-100"}>
+            <Alert
+                message={message}
+                type={alertType}
+                visible={showAlert}
+                onPress={() => setShowAlert(false)}
+            />
+            {/* Header */}
+            <View className={"xs:mt-1 sm:mt-2 md:mt-4 lg:mt-6"}>
+                <Text
+                    className={"dark:text-white font-bold text-center xs:text-base sm:text-xl md:text-2xl lg:text-4xl"}>Welcome
+                    Back</Text>
+                <Text className={"text-lg dark:text-white text-center"}>Log in to your account</Text>
+            </View>
+            {/* Form */}
+            <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8"}>
+                <InputGroup ref={refEmailInput} onSubmitEditing={focusOnPassword} error={emailErrVisible}
+                            errorMessage={"This field is required!"} label={"Email Address"} value={email}
+                            onChangeText={(e) => setEmail(e)} placeholder={"joe.bloggs@cognicarer.com"}
+                            textContentType={"emailAddress"}
+                            autoComplete={"email"} keyboardType={"email-address"}
+                />
+                <InputGroup ref={refPasswordInput} error={passwordErrVisible} errorMessage={"This field is required!"}
+                            label={"Password"} value={password} onChangeText={(e) => setPassword(e)}
+                            autoComplete={"password"}
+                            textContentType={"password"}
+                            placeholder={"Password"} secureTextEntry={true}/>
+                <TouchableOpacity onPress={() => router.push("/(auth)/forgot-password")}>
+                    <Text className={"underline dark:text-white ml-2"}>Forgot your password?</Text>
+                </TouchableOpacity>
+
+                {/* Remember Me */}
+                <View className={"flex-row items-center ml-2"} style={{marginTop: 20}}>
+                    <TouchableOpacity onPress={() => setChecked(!checked)} className={"flex-row items-center"}>
+                        <View
+                            className={`w-6 h-6 border-2 mr-2 rounded-md border-blue-500 flex-row justify-center items-center ${checked ? 'bg-blue-500' : 'bg-transparent'}`}>
+
+                            {checked &&
+                                <FontAwesome name={"check"} size={16} color={colors.white}/>
+                            }
+                        </View>
+                        <Text className={"dark:text-white"}>Remember me</Text>
                     </TouchableOpacity>
-                    {/* Login Button */}
-                    {loading ?
-                        <ActivityIndicator size={"large"} className={"dark:text-white text-blue-500 mt-10"}/> :
-                        <TouchableOpacity onPress={handleLogin}
-                                          className={"w-full bg-blue-500 text-white p-2.5 rounded-md xs:mt-3 sm:mt-4 md:mt-5 lg:mt-6"}>
-                            <Text className={"text-center text-white text-lg"}>
-                                Login
-                            </Text>
-                        </TouchableOpacity>
-                    }
+                </View>
 
-                    <View className={"xs:mt-1 sm:mt-3 md:mt-5 lg:mt-7 flex-row items-center"}>
-                        <Text className={"text-xl dark:text-white font-bold"}>
-                            Not a member?
+                {/* Login Button */}
+                {loading ?
+                    <ActivityIndicator size={"large"} className={"dark:text-white text-blue-500 mt-10"}/> :
+                    <TouchableOpacity onPress={handleLogin}
+                                      className={"w-full bg-blue-500 text-white p-2.5 rounded-md xs:mt-3 sm:mt-4 md:mt-5 lg:mt-6"}>
+                        <Text className={"text-center text-white text-lg"}>
+                            Login
                         </Text>
-                        <TouchableOpacity onPress={() => router.push("/(auth)/register")}>
-                            <Text className={"dark:text-blue-500 sm:text-sm md:text-base lg:text-lg ml-4"}>Register</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </ScrollView>
-            :
-            <View className={"flex-1 w-full dark:bg-neutral-900 bg-neutral-100"}>
-                {/* Header */}
-                <View className={"xs:mt-1 sm:mt-2 md:mt-4 lg:mt-6"}>
-                    <Text className={"dark:text-white font-bold text-center xs:text-base sm:text-xl md:text-2xl lg:text-4xl"}>Welcome Back</Text>
-                    <Text className={"text-lg dark:text-white text-center"}>Log in to your account</Text>
-                </View>
-                <View className={`mx-4 rounded-md bg-red-200 flex-row justify-between p-2 items-center ${showAlert ? 'visible' : 'invisible'} xs:mb-1 sm:mb-2 md:mb-4 lg:mb-6 xs:mt-1 sm:mt-1 md:mt-4 lg:mt-6`}>
-                    <View className={"flex-row justify-center items-center"}>
-                        <FontAwesome name={"exclamation-circle"} size={20} className={"mr-2"} color={colors.red[500]}/>
-                        <Text style={styles.alertError} className={`text-center xs:text-sm sm:text-base md:text-lg lg:text-xl`}>
-                            Your email or password is incorrect
-                        </Text>
-                    </View>
-                    <FontAwesome name={"close"} size={20} className={"ml-4"} color={colors.red[500]} onPress={() => setShowAlert(!showAlert)}/>
-                </View>
-                {/* Form */}
-                <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8"}>
-                    <Animated.View style={{transform: [{translateX: emailShakeAnim}]}}>
-                        <Text className={"mb-2 dark:text-white font-bold  sm:text-sm md:text-base lg:text-lg"}>Email Address</Text>
-                        <TextInput key={"email"} value={email} onSubmitEditing={focusOnPassword} onChangeText={(e) => setEmail(e)} placeholder={"joebloggs@bloggs.com"} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear input"}/>
-                        <Text style={styles.error} className={`mt-2 ${emailErrVisible ? 'visible' : 'invisible'}`}>
-                            This field is required
-                        </Text>
-                    </Animated.View>
-                    <Animated.View style={{transform: [{translateX: passwordShakeAnim}]}}>
-                        <Text className={"mb-2 dark:text-white font-bold  sm:text-sm md:text-base lg:text-lg"}>Password</Text>
-                        <TextInput ref={refPasswordInput} key={"password"} placeholder={"Password"} value={password} onChangeText={(p) => setPassword(p)} secureTextEntry={true} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear input"}/>
-                        <Text style={styles.error} className={`mt-2 ${passwordErrVisible ? 'visible' : 'invisible'}`}>
-                            This field is required
-                        </Text>
-                    </Animated.View>
-                    <TouchableOpacity onPress={() => router.push("/(auth)/forgot-password")}>
-                        <Text className={"underline dark:text-white ml-2"}>Forgot your password?</Text>
                     </TouchableOpacity>
+                }
 
-                    {/* Login Button */}
-                    {loading ?
-                        <ActivityIndicator size={"large"} className={"dark:text-white text-blue-500 mt-10"}/> :
-                        <TouchableOpacity onPress={handleLogin}
-                                          className={"w-full bg-blue-500 text-white p-2.5 rounded-md xs:mt-3 sm:mt-4 md:mt-5 lg:mt-6"}>
-                            <Text className={"text-center text-white text-lg"}>
-                                Login
-                            </Text>
-                        </TouchableOpacity>
-                    }
-                    <View className={"xs:mt-1 sm:mt-3 md:mt-5 lg:mt-7 flex-row items-center"}>
-                        <Text className={"text-xl dark:text-white font-bold"}>
-                            Not a member?
-                        </Text>
-                        <TouchableOpacity onPress={() => router.push("/(auth)/register")}>
-                            <Text className={"dark:text-blue-500 sm:text-sm md:text-base lg:text-lg ml-4"}>Register</Text>
-                        </TouchableOpacity>
-                    </View>
+                {/* Biometric Authentication */}
+                <TouchableOpacity onPress={useLocalAuth}
+                                  className={"w-full bg-blue-500 flex-row justify-center text-white p-2.5 rounded-md xs:mt-3 sm:mt-4 md:mt-5 lg:mt-6"}>
+                    <MaterialIcons name={"fingerprint"} size={24} color={colors.white}/>
+                    <Text className={"text-center text-white text-lg"}>
+                        Use Biometrics
+                    </Text>
+                </TouchableOpacity>
 
+                <View className={"xs:mt-1 sm:mt-3 md:mt-5 lg:mt-7 flex-row items-center"}>
+                    <Text className={"text-xl dark:text-white font-bold"}>
+                        Not a member?
+                    </Text>
+                    <TouchableOpacity onPress={() => router.push("/(auth)/register")}>
+                        <Text className={"dark:text-blue-500 sm:text-sm md:text-base lg:text-lg ml-4"}>Register</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
+        </ScrollView>
     )
 }

@@ -1,71 +1,40 @@
-import {View, TextInput, StyleSheet, TouchableOpacity, SafeAreaView} from "react-native";
+import {View, TouchableOpacity} from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {useThemeColor} from "@/hooks/useThemeColor";
 import {useState} from "react";
+import Input from "@/components/forms/Input";
 
 export function SearchInput({placeholder, onSearch, modalVisibleFun}: { placeholder: string, onSearch: (s: string) => void, modalVisible: boolean, modalVisibleFun: () => void }) {
-    const theme = useThemeColor();
-    const [borderColor, setBorderColor] = useState("border-neutral-900");
-    const [iconColor, setIconColor] = useState("dimgrey");
     const [searchValue, setSearchValue] = useState("")
+    const [focused, setFocused] = useState(false);
 
     const onChangeText = (s: string) => {
         setSearchValue(s);
         onSearch(s);
     }
 
-    const styles = StyleSheet.create({
-        container: {
-            flexDirection: "row",
-            alignItems: "center",
-            padding: 10,
-            borderRadius: 5,
-        },
-        icon: {
-            marginRight: 10,
-        },
-        input: {
-            flex: 1,
-            color: theme.text,
-        }
-    })
-
-    const onInputFocus = () => {
-        setBorderColor("border-blue-500");
-        setIconColor(theme.text);
-    }
-    const onInputFocusOut = () => {
-        setBorderColor("border-neutral-900");
-        setIconColor("dimgrey");
-    }
-
     return (
-        <SafeAreaView className={"w-full"}>
-            <View style={styles.container}
-                  className={`dark:bg-neutral-900 w-full border ${borderColor} transition ease-linear`}>
-                <FontAwesome style={{marginRight: 10}} name={"search"} size={16} color={iconColor}/>
-                <View style={{flex: 1, flexDirection: "row", alignItems: "center"}}>
-                    <TextInput
-                        className={"dark:text-white w-full"}
-                        onFocus={onInputFocus}
-                        onBlur={onInputFocusOut}
-                        placeholder={placeholder}
-                        autoCorrect={false}
-                        autoCapitalize={"none"}
-                        onChangeText={(s) => {
-                            onChangeText(s)
-                        }}
-                        value={searchValue}
-                        placeholderTextColor={"dimgrey"}
-                    />
-                </View>
-                <TouchableOpacity onPress={() => {
-                    modalVisibleFun();
-                }} className={"rounded-lg"}>
-                    <FontAwesome style={{marginLeft: 10}} name={"info-circle"} size={20} color={iconColor}/>
-                </TouchableOpacity>
+        <View className={`flex-row p-3 rounded-lg border-2 transition ease-linear ${focused ? "border-blue-500" : "border-neutral-900"}`}>
+            <FontAwesome style={{marginRight: 10}} name={"search"} size={16} color={focused ? "#3B82F6" : "#9ca3af"}/>
+            <View style={{flex: 1, flexDirection: "row", alignItems: "center"}}>
+                <Input
+                    className={"dark:text-white w-full"}
+                    autoCorrect={false}
+                    autoCapitalize={"none"}
+                    onFocus={() => {setFocused(true)}}
+                    onBlur={() => {setFocused(false)}}
+                    onChangeText={onChangeText}
+                    value={searchValue}
+                    placeholderTextColor={"#AAAAA5"}
+                    placeholder={placeholder}
+                    noStyle={true}
+                />
             </View>
-        </SafeAreaView>
+            <TouchableOpacity className={"rounded-lg"}>
+                <FontAwesome style={{marginLeft: 10}} name={"info-circle"} size={20}  color={focused ? "#3B82F6" : "#9ca3af"}
+                                onPress={modalVisibleFun}
+                />
+            </TouchableOpacity>
+        </View>
     )
 
 }

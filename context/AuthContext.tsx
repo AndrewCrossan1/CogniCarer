@@ -1,17 +1,22 @@
 import { createContext, useContext, useState, ReactNode, FC } from "react";
-import {User} from "@/services/api/types";
+import {Quote, User} from "@/services/api/types";
 import {useRouter} from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import API from "@/services/api/api";
 import {useDispatch} from "react-redux";
 import {setToken} from "@/services/store/slices/tokenSlice";
 import { useUser } from "@/hooks/store/user";
+import {setQuote} from "@/services/store/slices/quoteSlice";
+import {useQuote} from "@/hooks/useQuote";
 
 // Define the shape of the context
 interface AuthContextType {
     login: (email: string, password: string) => Promise<boolean>;
     logout: () => Promise<boolean>;
-    update: (email: string, firstName: string, lastName: string) => Promise<boolean>
+    update: (email: string, firstName: string, lastName: string, image?: any) => Promise<boolean>
+    sendResetEmail: (email: string) => Promise<boolean>;
+    validateResetCode: (email: string, code: string) => Promise<boolean>;
+    resetPassword: (email: string, code: string, password: string, confirmPassword: string) => Promise<boolean>;
     loading: boolean;
     error: string | null;
 }
@@ -27,6 +32,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const router = useRouter();
     const dispatch = useDispatch();
     const {setUser} = useUser();
+    const { getQuote, loading: quoteLoading } = useQuote();
 
     /**
      * Log in a user using the provided email and password
@@ -57,13 +63,21 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             const user: User = await API.get("/auth/user/");
             setUser(user);
 
+            // Retrieve the quote of the day
+            const quote: Quote = await getQuote();
+            if (quote !== null) {
+                dispatch(setQuote(quote));
+            } else {
+                console.debug("Failed to retrieve the quote of the day");
+            }
+
             setLoading(false);
             return true;
         } catch (e) {
             if (e instanceof Error) {
                 setError(e.message);
             }
-            console.error(e);
+            console.debug("Error logging in", e);
             setLoading(false);
             return false;
         }
@@ -77,19 +91,16 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         setLoading(true);
         setError(null);
         try {
-            // Check if the user chose to remember them
-            const remember = await SecureStore.getItemAsync("remember");
-            if (remember !== "true") {
-                // Remove the token from the secure store
-                await SecureStore.deleteItemAsync("token");
-                // Call the logout API
-                await API.POST("/auth/logout/");
-            }
+            // Clear data from SecureStore
+            await SecureStore.deleteItemAsync("email");
+            await SecureStore.deleteItemAsync("password");
+
             // Remove the user data
             setUser(null);
 
             // Remove the token from the redux store
             dispatch(setToken(null));
+            dispatch(setQuote(null));
 
             // Redirect to login page
             router.push("/(auth)/login");
@@ -98,7 +109,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             if (e instanceof Error) {
                 setError(e.message);
             }
-            console.error(e);
+            console.debug(e)
         } finally {
             setLoading(false);
         }
@@ -110,26 +121,148 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
      * @param email The email of the user
      * @param firstName The first name of the user
      * @param lastName The last name of the user
+     * @param image
      * @returns A boolean indicating the success of the operation
      */
-    const update = async (email: string, firstName: string, lastName: string): Promise<boolean> => {
+    const update = async (email: string, firstName: string, lastName: string, image?: any): Promise<boolean> => {
         setLoading(true);
         setError(null);
+        if (image) {
+            try {
+                const response = await API.image_put("/auth/user/", {
+                    email: email,
+                    first_name: firstName,
+                    last_name: lastName,
+                }, image, "profile_image");
+
+                if (!response) {
+                    setError("Invalid response from the server");
+                    return false;
+                }
+
+                setUser(response);
+                setLoading(false);
+                return true;
+            } catch (e) {
+                if (e instanceof Error) {
+                    setError(e.message);
+                }
+                console.debug(e);
+                setError("An error occurred while updating the user");
+            } finally {
+                setLoading(false);
+            }
+        } else {
+            try {
+                const response = await API.put("/auth/user/", {
+                    email: email,
+                    first_name: firstName,
+                    last_name: lastName,
+                });
+
+                if (!response) {
+                    setError("Invalid response from the server");
+                    return false;
+                }
+
+                setUser(response);
+                setLoading(false);
+                return true;
+            } catch (e) {
+                if (e instanceof Error) {
+                    setError(e.message);
+                }
+                console.debug(e);
+                setError("An error occurred while updating the user");
+            } finally {
+                setLoading(false);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Email the user with a link to reset their password
+     * @param email The email of the user
+     * @returns A boolean indicating the success of the operation
+     * @see https://gitlab.cis.strath.ac.uk/fqb22133/dementia-rehabilitation-backend/-/blob/master/README.md?ref_type=heads
+     */
+    const sendResetEmail = async (email: string): Promise<boolean> => {
+        setLoading(true);
+        setError(null);
+
         try {
-            const user = await API.put("/auth/user/", {
+            const response = await API.POST("/auth/password-reset/", {
                 email: email,
-                first_name: firstName,
-                last_name: lastName,
             });
 
-            setUser(user);
+            if (!response.success) {
+                setError("Invalid response from the server");
+                return false;
+            }
             return true;
         } catch (e) {
             if (e instanceof Error) {
                 setError(e.message);
             }
-            console.error(e);
-            setError("An error occurred while updating the user");
+            console.debug(e);
+            setError("An error occurred while sending the reset email");
+        } finally {
+            setLoading(false);
+        }
+        return false;
+    }
+
+    const validateResetCode = async (email: string, code: string): Promise<boolean> => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            const response = await API.POST("/auth/password-reset/confirm-code/", {
+                email: email,
+                code: code,
+            });
+
+            if (!response.success) {
+                setError("Invalid response from the server");
+                return false;
+            }
+            return true;
+        } catch (e) {
+            if (e instanceof Error) {
+                setError(e.message);
+            }
+            console.debug(e);
+            setError("An error occurred while validating the reset code");
+        } finally {
+            setLoading(false);
+        }
+        return false;
+    }
+
+    const resetPassword = async (email: string, code: string, password: string, confirmPassword: string): Promise<boolean> => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            const response = await API.POST("/auth/password-reset/confirm-password/", {
+                email: email,
+                code: code,
+                password: password,
+                password2: confirmPassword,
+            });
+
+            if (!response.success) {
+                setError("Invalid response from the server");
+                return false;
+            }
+            return true;
+        } catch (e) {
+            if (e instanceof Error) {
+                setError(e.message);
+            }
+            console.debug(e);
+            setError("An error occurred while resetting the password");
         } finally {
             setLoading(false);
         }
@@ -137,7 +270,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ login, logout, update, loading, error }}>
+        <AuthContext.Provider value={{ login, logout, update, sendResetEmail, validateResetCode, resetPassword, loading, error }}>
             {children}
         </AuthContext.Provider>
     );
