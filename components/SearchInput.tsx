@@ -1,7 +1,7 @@
 import {View, TouchableOpacity} from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {useState} from "react";
-import Input from "@/components/Input";
+import Input from "@/components/forms/Input";
 
 export function SearchInput({placeholder, onSearch, modalVisibleFun}: { placeholder: string, onSearch: (s: string) => void, modalVisible: boolean, modalVisibleFun: () => void }) {
     const [searchValue, setSearchValue] = useState("")
@@ -13,7 +13,7 @@ export function SearchInput({placeholder, onSearch, modalVisibleFun}: { placehol
     }
 
     return (
-        <View className={`flex-row p-2.5 rounded-md border transition ease-linear ${focused ? "border-blue-500" : "border-gray-400"}`}>
+        <View className={`flex-row p-3 rounded-lg border-2 transition ease-linear ${focused ? "border-blue-500" : "border-neutral-900"}`}>
             <FontAwesome style={{marginRight: 10}} name={"search"} size={16} color={focused ? "#3B82F6" : "#9ca3af"}/>
             <View style={{flex: 1, flexDirection: "row", alignItems: "center"}}>
                 <Input

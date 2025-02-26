@@ -1,7 +1,5 @@
-import {View, Text, StyleSheet} from "react-native";
-import Input from "@/components/Input";
-import colors from "tailwindcss/colors"
-import {useState} from "react";
+import {View, Text} from "react-native";
+import Input from "@/components/forms/Input";
 
 /**
  * Interface for the response input field

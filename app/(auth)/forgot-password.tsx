@@ -8,13 +8,11 @@ import {
     ActivityIndicator
 } from "react-native";
 import {useRef, useState} from "react";
-import InputField from "@/components/InputField";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {useRouter} from "expo-router";
 import {useAuth} from "@/context/AuthContext";
-import Input from "@/components/Input";
-
-// TODO: Implement backend functionality
+import Input from "@/components/forms/Input";
+import InputGroup, {InputGroupRef} from "@/components/forms/InputGroup";
 
 export default function ResetPasswordScreen() {
     const [email, setEmail] = useState("");
@@ -22,6 +20,7 @@ export default function ResetPasswordScreen() {
     const [code, setCode] = useState<string[]>(Array(6).fill("")); // Six-digit code
     const [codeSent, setCodeSent] = useState(false);
     const inputRefs = useRef<Array<TextInput | null>>([]);
+    const emailRef = useRef<InputGroupRef>(null);
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [tenChars, setTenChars] = useState(false);
@@ -87,6 +86,7 @@ export default function ResetPasswordScreen() {
                 return;
             }
             setEmailError(true);
+            emailRef.current?.shake();
             return;
         }
 
@@ -192,12 +192,7 @@ export default function ResetPasswordScreen() {
             <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8"}>
                 {!emailSent &&
                   <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 xs:mt-0 sm:mt-1 md:mt-2 lg:mt-3 xl:mt-4"}>
-                    <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>Email Address</Text>
-                    <Input value={email} onChangeText={(e) => setEmail(e)} placeholder={"joebloggs@bloggs.com"} placeholderTextColor={"#AAAAA5"} key={"email"}/>
-                      {emailError &&
-                        <Text className={"text-center text-red-500 mt-2"}>
-                          Please enter a valid email address
-                        </Text>}
+                    <InputGroup ref={emailRef} label={"Email Address"} errorMessage={"Please enter a valid email address"} error={emailError} value={email} onChangeText={(e) => setEmail(e)} placeholder={"joe.bloggs@cognicarer.com"} keyboardType={"email-address"} key={"email"}/>
                   </View>}
 
                 {emailSent && !codeSent &&
