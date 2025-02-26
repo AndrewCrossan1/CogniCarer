@@ -11,6 +11,7 @@ import {MaterialIcons} from "@expo/vector-icons";
 interface ConfRemoveFamProps {
     visible: boolean;
     onClose: () => void;
+    onSubmitted: () => void;
     familyMember: Patient;
 }
 
@@ -20,7 +21,7 @@ interface ConfRemoveFamProps {
  */
 const ConfRemoveFam = (props: ConfRemoveFamProps) => {
 
-    const { colorScheme } = useColorScheme();
+    const {colorScheme} = useColorScheme();
     const styles = StyleSheet.create({
         modalView: {
             shadowColor: colors.black,
@@ -30,7 +31,6 @@ const ConfRemoveFam = (props: ConfRemoveFamProps) => {
             elevation: 2
         },
     });
-
 
     return (
         <Modal
@@ -50,7 +50,8 @@ const ConfRemoveFam = (props: ConfRemoveFamProps) => {
                     <Text className={"text-lg ml-4 dark:text-white font-bold w-full"}>Remove a family member</Text>
                 </View>
 
-                <View className={"flex-1 border-b dark:border-b-neutral-600 border-b-neutral-300 xs:mt-1 sm:mt-1 md:mt-2 lg:mt-3 xl:mt-4 xs:px-1 sm:px-2 md:px-2 lg:px-3 xl:px-4"}/>
+                <View
+                    className={"flex-1 border-b dark:border-b-neutral-600 border-b-neutral-300 xs:mt-1 sm:mt-1 md:mt-2 lg:mt-3 xl:mt-4 xs:px-1 sm:px-2 md:px-2 lg:px-3 xl:px-4"}/>
 
                 <Text className={"dark:text-gray-400 mt-4"}>
                     Please confirm that you would like to remove this family member from your account.
@@ -72,6 +73,7 @@ const ConfRemoveFam = (props: ConfRemoveFamProps) => {
 
                         {props.familyMember.profile_picture ?
                             <Image
+                                // @ts-ignore
                                 source={{uri: props.familyMember.profile_picture}}
                                 className={"rounded-full xs:w-8 sm:w-12 md:w-16 lg:w-20 xl:w-20 xs:h-8 sm:h-12 md:h-16 lg:h-20 xl:h-20"}
                             />
@@ -82,7 +84,8 @@ const ConfRemoveFam = (props: ConfRemoveFamProps) => {
                             />
                         }
                         <View className={"flex-col w-2/3"}>
-                            <Text className={"dark:text-white xs-text-base sm:text-base md:text-base lg:text-xl font-bold"}>
+                            <Text
+                                className={"dark:text-white xs-text-base sm:text-base md:text-base lg:text-xl font-bold"}>
                                 {props.familyMember.first_name} {props.familyMember.last_name}
                             </Text>
                             <Text
@@ -94,16 +97,22 @@ const ConfRemoveFam = (props: ConfRemoveFamProps) => {
                 </View>
 
                 <Text className={"dark:text-gray-400 mt-2"}>
-                    If you are feeling overwhelmed or need help, please consider reaching out to the following resources:
+                    If you are feeling overwhelmed or need help, please consider reaching out to the following
+                    resources:
                 </Text>
                 <View className={"dark:text-gray-400 mt-2"}>
-                    <Link href={"https://www.nhs.uk/mental-health/feelings-symptoms-behaviours/feelings-and-symptoms/grief-bereavement-loss/"} className={"dark:text-white my-1"}>
+                    <Link
+                        href={"https://www.nhs.uk/mental-health/feelings-symptoms-behaviours/feelings-and-symptoms/grief-bereavement-loss/"}
+                        className={"dark:text-white my-1"}>
                         - <Text className={"text-blue-600 underline"}>NHS Grief Counseling</Text>
                     </Link>
-                    <Link href={"https://www.nhs.uk/nhs-services/mental-health-services/"} className={"dark:text-white my-1"}>
+                    <Link href={"https://www.nhs.uk/nhs-services/mental-health-services/"}
+                          className={"dark:text-white my-1"}>
                         - <Text className={"text-blue-600 underline"}>NHS Mental Health Services</Text>
                     </Link>
-                    <Link href={"https://www.mind.org.uk/information-support/guides-to-support-and-services/seeking-help-for-a-mental-health-problem/mental-health-helplines/"} className={"dark:text-white my-1"}>
+                    <Link
+                        href={"https://www.mind.org.uk/information-support/guides-to-support-and-services/seeking-help-for-a-mental-health-problem/mental-health-helplines/"}
+                        className={"dark:text-white my-1"}>
                         - <Text className={"text-blue-600 underline"}>Mind Mental Health Helplines</Text>
                     </Link>
                 </View>
@@ -115,6 +124,12 @@ const ConfRemoveFam = (props: ConfRemoveFamProps) => {
                 {/* Buttons */}
                 <View className={"flex-row justify-center gap-2"}>
                     <TouchableOpacity
+                        onPress={
+                            // Reset errors and close the modal
+                            () => {
+                                props.onSubmitted();
+                            }
+                        }
                         className={`flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-blue-500`}>
                         <MaterialIcons name="check" size={24} color="white" className={"mr-1"}/>
                         <Text className="text-white">
