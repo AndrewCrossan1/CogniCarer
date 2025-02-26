@@ -20,12 +20,6 @@ export interface ApiError {
     message: string;
 }
 
-// The exact same as above, will be replaced.
-export interface ErrorResponse {
-    errorMessage: string;
-    errorCode: number;
-}
-
 // Patient Types
 export interface Patient {
     profile_picture?: string | null | ImagePicker.ImagePickerResult;
