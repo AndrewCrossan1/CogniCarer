@@ -13,6 +13,12 @@ export default function Layout() {
                               headerShown: false,
                           }}
             />
+            <Stack.Screen name="article/[id]"
+                          options={{
+                              title: 'About',
+                              headerShown: false,
+                          }}
+            />
         </Stack>
     )
 }

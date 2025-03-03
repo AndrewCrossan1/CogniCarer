@@ -5,9 +5,9 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
-    useColorScheme,
     View
 } from "react-native";
+import {useColorScheme} from "nativewind";
 import {MaterialIcons} from "@expo/vector-icons";
 import {Alert} from "@/components/Alert";
 import {useCallback, useEffect, useState} from "react";
@@ -22,7 +22,7 @@ import NewAlbumForm from "@/components/reminisce/NewAlbumForm";
 
 const Albums = () => {
 
-    const mode = useColorScheme();
+    const {colorScheme} = useColorScheme();
     const image = require('@/assets/images/undraw_photo-album_9d6r.png');
     const [visible, setVisible] = useState(false);
     const [selected, setSelected] = useState<UserAlbum[]>([] as UserAlbum[]);
@@ -154,7 +154,7 @@ const Albums = () => {
     }))
 
     return (
-        <ScrollView style={{backgroundColor: mode === 'dark' ? colors.neutral[800] : colors.white}} contentContainerStyle={{flexGrow: 1}}
+        <ScrollView className={"dark:bg-neutral-800 bg-neutral-100"} contentContainerStyle={{flexGrow: 1}}
                     refreshControl={
                         <View>
                             <RefreshControl title={"Refreshing..."} titleColor={colors.neutral[400]}
@@ -162,8 +162,8 @@ const Albums = () => {
                                             onRefresh={onRefresh}/>
                         </View>
                     }>
-            <View className={"flex-1 items-center dark:bg-neutral-800 pb-4"}>
-                <View className={"w-full bg-blue-500 dark:bg-neutral-800 p-6"}>
+            <View className={"flex-1 items-center dark:bg-neutral-800 bg-neutral-100 pb-4"}>
+                <View className={"w-full bg-blue-500 dark:bg-neutral-800 md:p-4 lg:p-6"}>
                     <Alert message={message} type={alertType} onPress={() => {
                         setVisible(false);
                     }} visible={visible} />
@@ -173,11 +173,11 @@ const Albums = () => {
                             style={{width: 100, height: 100}}
                             className={"mr-4 rounded-lg"}
                         />
-                        <View className={"p-2 w-3/4"}>
-                            <Text className={"dark:text-white text-2xl font-bold text-white"}>
+                        <View className={"w-1/2"}>
+                            <Text className={"dark:text-white md:text-xl lg:text-2xl font-bold text-white"}>
                                 Albums
                             </Text>
-                            <Text className={"mt-2 text-neutral-100 text-base"}>
+                            <Text className={"mt-1 text-neutral-100 md:text-base lg:text-base"}>
                                 See all of your pictures by their respective albums.
                             </Text>
                         </View>
@@ -250,7 +250,7 @@ const Albums = () => {
                 }
 
                 {!loading &&
-                  <View className={"w-full p-4"}>
+                  <View className={"w-full md:p-2 lg:p-4"}>
                     <View className={"flex-row flex-wrap justify-start"}>
                         {albums.map((album, index) => (
                             <TouchableOpacity
@@ -285,24 +285,31 @@ const Albums = () => {
                                         <Image
                                             className={"rounded-t-lg"}
                                             source={albumCover}
-                                            style={{width: "100%", height: 175}}
+                                            style={{width: "100%", height: 125}}
                                         />
                                     </View>
-                                    <View className={"rounded-b-lg bg-neutral-100 dark:bg-neutral-900 p-4"}>
+                                    <View className={"rounded-b-lg bg-white dark:bg-neutral-900 p-4"} style={{
+                                        shadowColor: colors.black,
+                                        shadowOffset: {width: 0, height: 2},
+                                        shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10,
+                                        shadowRadius: 3.84,
+                                        elevation: 2
+                                    }}>
                                         <View className={"flex-row items-center justify-between"}>
-                                            <Text className={"dark:text-white text-lg font-bold"}>
+                                            <Text className={"dark:text-white md:text-base lg:text-lg font-bold"}>
                                                 {album.title}
                                             </Text>
-                                            <Text className={"text-blue-500 text-sm"}>
+                                            <Text className={"text-blue-500 md:text-xs lg:text-sm"}>
                                                 {album.picture_count} Pictures
                                             </Text>
                                         </View>
-                                        <Text className={"text-sm text-blue-500"}>
+
+                                        <Text className={"md:text-xs lg:text-sm text-blue-500"}>
                                             {album.patientActual?.first_name} {album.patientActual?.last_name}
                                         </Text>
 
                                         <Text className={"text-xs text-neutral-500"}>
-                                            Created: {new Date(album.created_at).toDateString()}
+                                            Created: {new Date(album.created_at).toLocaleDateString()}
                                         </Text>
                                     </View>
                                 </View>
@@ -319,7 +326,18 @@ const Albums = () => {
                 onRequestClose={() => {
                     setConfirmVisible(!confirmVisible);
                 }}>
-                <BlurView intensity={75} style={[StyleSheet.absoluteFill, styles.modalView]}/>
+                <BlurView intensity={75}
+                          style={[StyleSheet.absoluteFill, {
+                              shadowColor: '#000',
+                              shadowOffset: {
+                                  width: 0,
+                                  height: 2,
+                              },
+                              shadowOpacity: 0.5,
+                              shadowRadius: 4,
+                              elevation: 5,
+                          }]}
+                />
                 <View className={"mt-safe mx-safe-or-4 dark:bg-neutral-900 bg-white rounded-lg elevation-md p-4"}>
                     <View className={"flex-row justify-start items-center"}>
                         <FontAwesome name={"close"} size={30} color={"red"}
@@ -375,16 +393,6 @@ const styles = StyleSheet.create({
     selectedContainer: {
         flex: 1,
         overflow: 'hidden',
-    },
-    modalView: {
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,
     },
 })
 
