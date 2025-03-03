@@ -80,21 +80,20 @@ export const useSupport = () => {
      * const article = await getArticle('1234-5678-9101')
      */
     const getArticle = async (uuid: string) : Promise<Article | null> => {
-        return null;
+        setLoading(true);
+        // Call the API to get all support articles
+        console.log(uuid)
+        const response = await API.get(`/support/articles/${uuid}/`);
+
+        if (!response) {
+            setError('An error occurred while fetching support articles');
+            setLoading(false);
+            return null;
+        }
+
+        setLoading(false);
+        return response;
     }
 
-    /**
-     * processMarkdown function
-     * @param {string} markdown
-     * @returns {ReactNode} A valid React Native component
-     * @description This function is used to process Markdown text and return a valid React Native component
-     * @example
-     * const markdown = '# Hello World'
-     * const component = processMarkdown(markdown)
-     */
-    const processMarkdown = (markdown: string) : ReactNode => {
-        return <Markdown>{markdown}</Markdown>
-    }
-
-    return {loading, error, getArticles, getLatestArticle, getArticleBySource, getArticle, processMarkdown}
+    return {loading, error, getArticles, getLatestArticle, getArticleBySource, getArticle}
 }
