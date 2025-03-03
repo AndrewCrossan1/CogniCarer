@@ -11,6 +11,7 @@ import {TextInput, TextInputProps} from "react-native";
 interface InputProps extends TextInputProps {
     noStyle?: boolean;
     padding?: string;
+    ref?: any;
 }
 
 /**
@@ -25,7 +26,7 @@ const Input = (props: InputProps) => {
     const padding = props.padding ?? "p-4";
 
     if (noStyle) {
-        return <TextInput {...props} />
+        return <TextInput {...props} ref={props.ref} />
     }
 
     return <TextInput {...props}

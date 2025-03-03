@@ -106,3 +106,28 @@ export interface Picture {
     created_at: string;
     updated_at: string;
 }
+
+// Article Subtypes
+export interface Tag {
+    name: string;
+}
+
+export interface Category {
+    uuid: string;
+    name: string;
+    description: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Article {
+    uuid: string;
+    title: string;
+    tags: string[];
+    category: Category
+    source: string;
+    source_url: string;
+    content: string;
+    created_at: string;
+    updated_at: string;
+}
