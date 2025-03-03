@@ -1,6 +1,5 @@
-import {ReactNode, useState} from "react";
+import {useState} from "react";
 import {Article} from "@/services/api/types";
-import Markdown from "react-native-markdown-display";
 import API from "@/services/api/api";
 
 /**
