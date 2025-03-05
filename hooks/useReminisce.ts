@@ -45,7 +45,7 @@ export const useReminisce = () => {
     const getAlbums = async (): Promise<UserAlbum[] | null> => {
         setLoading(true);
 
-        const response = await API.get("reminisce/user-albums/");
+        const response = await API.get("reminisce/albums/");
 
         if (response) {
             setAlbums(response);
@@ -67,7 +67,7 @@ export const useReminisce = () => {
     const getAlbumName = async (albumId: string): Promise<string | null> => {
         setLoading(true);
 
-        const response = await API.get(`reminisce/user-albums/${albumId}/`);
+        const response = await API.get(`reminisce/album/${albumId}/`);
 
         if (response) {
             setLoading(false);
@@ -82,7 +82,7 @@ export const useReminisce = () => {
     const getAlbum = async (albumName: string): Promise<string | null> => {
         setLoading(true);
 
-        const response = await API.get(`reminisce/user-albums/${albumName}/`);
+        const response = await API.get(`reminisce/album/${albumName}/`);
 
         if (response) {
             setLoading(false);
@@ -124,7 +124,7 @@ export const useReminisce = () => {
     }
 
     interface DeleteProps {
-        type: "entries" | "user-albums" | "pictures";
+        type: "entry" | "album" | "picture";
         id: string;
     }
 
@@ -133,13 +133,13 @@ export const useReminisce = () => {
 
         if (response) {
             switch (type) {
-                case "entries":
+                case "entry":
                     setEntries(entries.filter((entry) => entry.uuid !== id));
                     break;
-                case "user-albums":
+                case "album":
                     setAlbums(albums.filter((album) => album.uuid !== id));
                     break;
-                case "pictures":
+                case "picture":
                     setPictures(pictures.filter((picture) => picture.uuid !== id));
                     break;
             }
@@ -148,7 +148,7 @@ export const useReminisce = () => {
     }
 
     const newAlbum = async (data: { title: string, description: string, patient: string, user: string }) => {
-        const response = await API.POST("reminisce/user-albums/", data);
+        const response = await API.POST("reminisce/albums/", data);
 
         if (response) {
             setAlbums([...albums, response]);
@@ -190,7 +190,7 @@ export const useReminisce = () => {
     const getEntry = async (entryId: string): Promise<ReminisceEntry | null> => {
         setLoading(true);
 
-        const response = await API.get(`reminisce/entries/${entryId}/`);
+        const response = await API.get(`reminisce/entry/${entryId}/`);
 
         if (response) {
             setLoading(false);
@@ -202,20 +202,20 @@ export const useReminisce = () => {
         return null;
     }
 
-    const update = async (type: "entries" | "user-albums" | "pictures", id: string, data: any) => {
+    const update = async (type: "entry" | "album" | "picture", id: string, data: any) => {
         setLoading(true);
 
         const response = await API.put(`reminisce/${type}/${id}/`, data);
 
         if (response) {
             switch (type) {
-                case "entries":
+                case "entry":
                     setEntries(entries.map((entry) => entry.uuid === id ? response : entry));
                     break;
-                case "user-albums":
+                case "album":
                     setAlbums(albums.map((album) => album.uuid === id ? response : album));
                     break;
-                case "pictures":
+                case "picture":
                     setPictures(pictures.map((picture) => picture.uuid === id ? response : picture));
                     break;
             }
@@ -225,5 +225,43 @@ export const useReminisce = () => {
         return response;
     }
 
-    return { entries, getEntries, albums, getAlbums, pictures, deleteItem, getPictures, loading, error, getAlbumName, newAlbum, getAlbum, newPicture, newEntry, getEntry, update };
+    /**
+     * Get the number of entries made today
+     * @returns {Promise<number | null>} The number of entries made today or null if an error occurred
+     */
+    const entriesToday = async (): Promise<number | null> => {
+        setLoading(true);
+
+        const response = await API.get("reminisce/entries/today/");
+
+        if (response) {
+            setLoading(false);
+            return response.count;
+        }
+
+        setLoading(false);
+        setError("No entries found");
+        return null;
+    }
+
+    /**
+     * Return the percentage of family members reminisced with
+     * @returns {Promise<string | null>} The percentage of family members reminisced with or null if an error occurred
+     */
+    const familyReminisced = async (): Promise<string> => {
+        setLoading(true);
+
+        const response = await API.get("reminisce/entries/family-today/");
+
+        if (response) {
+            setLoading(false);
+            return response.count;
+        }
+
+        setLoading(false);
+        setError("No family members found");
+        return "0%"
+    }
+
+    return { entries, getEntries, albums, getAlbums, pictures, deleteItem, getPictures, loading, error, getAlbumName, newAlbum, getAlbum, newPicture, newEntry, getEntry, update, entriesToday, familyReminisced };
 }

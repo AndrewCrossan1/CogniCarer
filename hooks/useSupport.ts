@@ -46,7 +46,7 @@ export const useSupport = () => {
     const getLatestArticle = async () : Promise<Article | null> => {
         setLoading(true);
         // Call the API to get all support articles
-        const response = await API.get('/support/articles/');
+        const response = await API.get('/support/articles/latest-article/');
 
         if (!response) {
             setError('An error occurred while fetching support articles');
@@ -94,5 +94,52 @@ export const useSupport = () => {
         return response;
     }
 
-    return {loading, error, getArticles, getLatestArticle, getArticleBySource, getArticle}
+    const likeArticle = async (uuid: string) : Promise<boolean> => {
+        setLoading(true);
+        // Call the API to get all support articles
+        console.log(uuid)
+        const response = await API.POST(`/support/articles/${uuid}/like/`);
+
+        if (!response) {
+            setError('An error occurred while fetching support articles');
+            setLoading(false);
+            return false;
+        }
+
+        setLoading(false);
+        return true;
+    }
+
+    const unlikeArticle = async (uuid: string) : Promise<boolean> => {
+        setLoading(true);
+        // Call the API to get all support articles
+        console.log(uuid)
+        const response = await API.POST(`/support/articles/${uuid}/unlike/`);
+
+        if (!response) {
+            setError('An error occurred while fetching support articles');
+            setLoading(false);
+            return false;
+        }
+
+        setLoading(false);
+        return true;
+    }
+
+    const getArticlesViewedToday = async () : Promise<number | null> => {
+        setLoading(true);
+        // Call the API to get all support articles
+        const response = await API.get('/support/articles/viewed-today/');
+
+        if (!response) {
+            setError('An error occurred while fetching support articles');
+            setLoading(false);
+            return null;
+        }
+
+        setLoading(false);
+        return response.articles_viewed_today;
+    }
+
+    return {loading, error, getArticles, getLatestArticle, getArticleBySource, getArticle, likeArticle, unlikeArticle, getArticlesViewedToday}
 }

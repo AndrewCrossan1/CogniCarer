@@ -1,7 +1,6 @@
 import { Stack } from 'expo-router';
 import "../global.css";
 import { AuthProvider } from "@/context/AuthContext";
-import AuthHandler from "@/app/AuthHandler";
 import { configureReanimatedLogger, ReanimatedLogLevel} from "react-native-reanimated";
 import {Provider} from "react-redux";
 import {persistor, store} from "@/services/store/store";
@@ -22,7 +21,6 @@ export default function RootLayout() {
         <Provider store={store}>
             <PersistGate persistor={persistor} loading={null}>
                 <AuthProvider>
-                    <AuthHandler/>
                     <Stack
                         screenOptions={{
                             headerShown: false
@@ -37,7 +35,11 @@ export default function RootLayout() {
                                           gestureEnabled: false,
                                       }}
                         />
-
+                        <Stack.Screen name="index"
+                                        options={{
+                                            gestureEnabled: false,
+                                        }}
+                        />
                     </Stack>
                 </AuthProvider>
             </PersistGate>

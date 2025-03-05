@@ -11,7 +11,7 @@ export default function AuthHandler() {
 
     useEffect(() => {
         if (mounted) {
-            router.push("/(auth)/login")
+            router.replace("/(auth)/login")
         }
     }, [mounted, router])
     return null

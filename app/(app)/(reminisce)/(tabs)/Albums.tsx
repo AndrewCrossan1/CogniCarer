@@ -86,7 +86,7 @@ const Albums = () => {
 
             // For each selected album, delete it
             selected.forEach(async (album) => {
-                await deleteItem({type: "user-albums", id: album.uuid});
+                await deleteItem({type: "album", id: album.uuid});
 
                 getAlbums().then((valid) => {
                     if (!valid) return;
