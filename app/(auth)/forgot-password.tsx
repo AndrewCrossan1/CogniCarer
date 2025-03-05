@@ -176,7 +176,7 @@ export default function ResetPasswordScreen() {
     }
 
     return (
-        <View className={"flex-1 dark:bg-neutral-900 bg-neutral-100"}>
+        <View className={"flex-1 dark:bg-neutral-800 bg-neutral-100"}>
             <View className={"xs:mt-1 sm:mt-2 md:mt-4 lg:mt-6"}>
                 <Text className={"dark:text-white font-bold text-center xs:text-base sm:text-xl md:text-2xl lg:text-4xl"}>Reset Password</Text>
                 <Text className={"text-lg dark:text-white text-center px-12"}>

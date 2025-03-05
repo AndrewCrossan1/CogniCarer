@@ -154,7 +154,7 @@ export default function LoginScreen() {
     };
 
     return (
-        <ScrollView className={"flex-1 w-full dark:bg-neutral-900 bg-neutral-100"}>
+        <ScrollView className={"flex-1 w-full dark:bg-neutral-800 bg-neutral-100"}>
             <Alert
                 message={message}
                 type={alertType}
