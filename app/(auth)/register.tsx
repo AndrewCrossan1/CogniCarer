@@ -12,9 +12,11 @@ import {useColorScheme} from "nativewind";
 import {Alert} from "@/components/Alert";
 import * as ImagePicker from "expo-image-picker";
 import CreateProfilePicture from "@/components/myaccount/CreateProfilePicture";
+import {useAuth} from "@/context/AuthContext";
 
-export default function Index() {
+export default function Register() {
     const [activeForm, setActiveForm] = useState("personal");
+    const { registerUser } = useAuth();
     const {colorScheme} = useColorScheme();
     const [show, setShow] = useState(false)
     const router = useRouter();
@@ -62,7 +64,6 @@ export default function Index() {
             setForm({...form, profilePicture: picture});
         }
     }
-
 
     /**
      * onChange
@@ -141,7 +142,7 @@ export default function Index() {
         if (form.password === "") {
             tempErrors = {...tempErrors, password: "Password is required"};
         }
-        if (form.password.match("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,10}$")) {
+        if (!form.password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,10}$/)) {
             tempErrors = {...tempErrors, password: "Password must be at least 8 characters long, contain a number, a special character, an uppercase and a lowercase letter"};
         }
 
@@ -181,22 +182,57 @@ export default function Index() {
             return;
         }
 
-        // Submit the form
-        try {
+        // Format the date (YYYY-MM-DD)
+        const dob = new Date(form.dob).toISOString().split("T")[0];
 
-        } catch (error) {
-            // Show an error message
-            setAlert({
-                message: "An error occurred while creating your account",
-                type: "error",
-                visible: true,
-            });
+        const data = {
+            email: form.email,
+            password1: form.password,
+            password2: form.confirmPassword,
+            first_name: form.firstName,
+            last_name: form.lastName,
+            date_of_birth: dob,
+            prof_carer: form.professionalCarer,
+            family_carer: form.familyCarer,
+            mhstruggle: form.mentalHealthStruggles,
+            profile_image: form.profilePicture,
         }
+
+        registerUser(data).then(
+            (response) => {
+                if (!response) {
+                    setAlert({
+                        message: "An error occurred while creating your account. Please try again",
+                        type: "error",
+                        visible: true,
+                    });
+                    return;
+                }
+                setAlert({
+                    message: "Account created successfully. Please login to continue",
+                    type: "success",
+                    visible: true,
+                });
+                router.push("/(auth)/login");
+            },
+            (error) => {
+                setAlert({
+                    message: error.message,
+                    type: "error",
+                    visible: true,
+                });
+            }
+        )
     }
 
     return (
         <KeyboardAwareScrollView className={"flex-1 w-full dark:bg-neutral-800 bg-neutral-100"}>
             {/* Header */}
+            <Alert message={alert.message} type={alert.type} visible={alert.visible} onPress={
+                () => {
+                    setAlert({...alert, visible: false});
+                }
+            }/>
             <View className={"md:my-2 lg:my-3 xl:my-4"}>
                 <Text
                     className={"dark:text-white font-bold text-center xs:text-base sm:text-xl md:text-2xl lg:text-4xl"}>Create
@@ -211,12 +247,6 @@ export default function Index() {
                     <Text className={"dark:text-white text-center xs:text-xs sm:text-sm md:text-base lg:text-lg"}>Setting
                         your password</Text> : null}
             </View>
-
-            <Alert message={alert.message} type={alert.type} visible={alert.visible} onPress={
-                () => {
-                    setAlert({...alert, visible: false});
-                }
-            }/>
 
             {/* Progress Icons */}
             <View className={"md:my-2 lg:my-3 xl:my-4"}>
@@ -251,15 +281,13 @@ export default function Index() {
                             <InputGroup label={"First name"} onChangeText={
                                 (text: string) => {
                                     setForm({...form, firstName: text});
-                                }
-                            } placeholder={"John"} errorMessage={errors.firstName} error={errors.firstName !== ""}/>
+                                }} value={form.firstName} placeholder={"John"} errorMessage={errors.firstName} error={errors.firstName !== ""}/>
                         </View>
                         <View className={"flex-1"}>
                             <InputGroup label={"Last name"} onChangeText={
                                 (text: string) => {
                                     setForm({...form, lastName: text});
-                                }
-                            } placeholder={"Doe"} errorMessage={errors.lastName} error={errors.lastName !== ""}/>
+                                }} value={form.lastName} placeholder={"Doe"} errorMessage={errors.lastName} error={errors.lastName !== ""}/>
                         </View>
                     </View>
 
@@ -268,8 +296,7 @@ export default function Index() {
                         <InputGroup label={"Email"} onChangeText={
                             (text: string) => {
                                 setForm({...form, email: text});
-                            }
-                        } placeholder={"john.doe@example.com"} errorMessage={errors.email} error={errors.email !== ""}/>
+                            }} value={form.email} placeholder={"john.doe@example.com"} errorMessage={errors.email} error={errors.email !== ""}/>
                     </View>
 
                     {/* Date of Birth */}
@@ -307,6 +334,10 @@ export default function Index() {
                                     style={{width: "100%"}}
                                 />
                             </View>)}
+
+                        <Text className={"dark:text-red-500 text-red-500 text-sm"}>
+                            {errors.dob}
+                        </Text>
                     </View>
 
                     {/* Profile Picture */}
@@ -332,7 +363,7 @@ export default function Index() {
                     {/* Next Button */}
                     <View className={"my-2"}>
                         <TouchableOpacity onPress={() => setActiveForm("occupation")}
-                                          className={"flex-row justify-center items-center bg-blue-500 p-4 rounded-lg"}>
+                                          className={"flex-row justify-center items-center bg-blue-500 p-3 rounded-lg"}>
                             <Text className={"text-white text-center font-semibold text-lg"}>Next</Text>
                         </TouchableOpacity>
                     </View>
@@ -416,7 +447,7 @@ export default function Index() {
 
                     {/* Next Button */}
                     <TouchableOpacity onPress={() => setActiveForm("password")}
-                                        className={"flex-row justify-center items-center bg-blue-500 p-3 rounded-lg"}>
+                                        className={"flex-row justify-center items-center bg-blue-500 p-3 rounded-lg my-2"}>
                             <Text className={"text-white text-center font-semibold text-lg"}>Next</Text>
                     </TouchableOpacity>
                 </View>
@@ -428,15 +459,13 @@ export default function Index() {
                     <InputGroup label={"Password"} onChangeText={
                         (text: string) => {
                             setForm({...form, password: text});
-                        }
-                    } secureTextEntry={true} placeholder={"VerySecurePassword34563!"} errorMessage={errors.password} error={errors.password !== ""}/>
+                        }} value={form.password} secureTextEntry={true} placeholder={"VerySecurePassword34563!"} errorMessage={errors.password} error={errors.password !== ""}/>
 
                     {/* Confirm Password */}
                     <InputGroup label={"Confirm Password"} onChangeText={
                         (text: string) => {
                             setForm({...form, confirmPassword: text});
-                        }
-                    } secureTextEntry={true} placeholder={"VerySecurePassword34563!"} errorMessage={errors.confirmPassword} error={errors.confirmPassword !== ""}/>
+                        }} value={form.confirmPassword} secureTextEntry={true} placeholder={"VerySecurePassword34563!"} errorMessage={errors.confirmPassword} error={errors.confirmPassword !== ""}/>
 
                     {/* Terms of Service */}
                     <View className={"flex-row items-center justify-start my-2"}>
