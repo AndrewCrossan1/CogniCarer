@@ -1,288 +1,481 @@
-import {Text, View, TextInput, TouchableOpacity, ScrollView, Platform} from "react-native";
-import {useState} from "react";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import {Text, View, TouchableOpacity, Platform} from "react-native";
+import {useEffect, useState} from "react";
+import {DateTimePickerEvent} from "@react-native-community/datetimepicker";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {Checkbox} from "react-native-paper";
 import {useRouter} from "expo-router";
 import InputGroup from "@/components/forms/InputGroup";
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
+import {MaterialIcons} from "@expo/vector-icons";
+import colors from "tailwindcss/colors";
+import RNDateTimePicker from "@react-native-community/datetimepicker";
+import {useColorScheme} from "nativewind";
+import {Alert} from "@/components/Alert";
+import * as ImagePicker from "expo-image-picker";
+import CreateProfilePicture from "@/components/myaccount/CreateProfilePicture";
 
 export default function Index() {
     const [activeForm, setActiveForm] = useState("personal");
+    const {colorScheme} = useColorScheme();
+    const [show, setShow] = useState(false)
     const router = useRouter();
 
-    {/* Personal Details */}
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [dob, setDob] = useState(new Date());
-    const [email, setEmail] = useState("");
+    {/* Form Fields */}
+    const [form, setForm] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        dob: "",
+        profilePicture: undefined as string | ImagePicker.ImagePickerResult | undefined,
+        password: "",
+        confirmPassword: "",
+        professionalCarer: false,
+        familyCarer: false,
+        mentalHealthStruggles: false,
+    });
 
-    {/* Password */}
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [tenChars, setTenChars] = useState(false);
-    const [upperCase, setUpperCase] = useState(false);
-    const [lowerCase, setLowerCase] = useState(false);
-    const [number, setNumber] = useState(false);
-    const [specialChar, setSpecialChar] = useState(false);
+    {/* Form Errors */}
+    const [errors, setErrors] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        dob: "",
+        password: "",
+        confirmPassword: "",
+    });
 
-    {/* Occupation Details */}
-    const [profCarer, setProfCarer] = useState(false);
-    const [familyCarer, setFamilyCarer] = useState(false);
-    const [patientCount, setPatientCount] = useState("");
-    const [struggle, setStruggle] = useState(false);
-    const [preferNot, setPreferNot] = useState(false);
+    const [tosAccepted, setTosAccepted] = useState(false);
+    const [emailUpdates, setEmailUpdates] = useState(false);
 
-    {/* Errors */}
-    const [emailErr, setEmailErr] = useState(false);
-    const [passwordErr, setPasswordErr] = useState(false);
-    const [confirmPasswordErr, setConfirmPasswordErr] = useState(false);
-    const [firstNameErr, setFirstNameErr] = useState(false);
-    const [lastNameErr, setLastNameErr] = useState(false);
+    // Alert State
+    const [alert, setAlert] = useState({
+        message: "",
+        type: "success" as "success" | "error",
+        visible: false,
+    });
 
-    const validatePassword = (p: string) => {
-        // Check if password is at least 10 characters
-        if (password.length >= 10) {
-            setTenChars(true);
-        } else {
-            setTenChars(false);
+    // Profile Picture Modal
+    const [profilePictureVisible, setProfilePictureVisible] = useState(false);
+
+    const onPicture = (picture: ImagePicker.ImagePickerResult | undefined) => {
+        setProfilePictureVisible(false);
+        if (picture) {
+            setForm({...form, profilePicture: picture});
         }
-
-        // Check if password has an uppercase letter
-        if (p.match(/[A-Z]/)) {
-            setUpperCase(true);
-        } else {
-            setUpperCase(false);
-        }
-
-        // Check if password has a lowercase letter
-        if (p.match(/[a-z]/)) {
-            setLowerCase(true);
-        } else {
-            setLowerCase(false);
-        }
-
-        // Check if password has a number
-        if (p.match(/[0-9]/)) {
-            setNumber(true);
-        } else {
-            setNumber(false);
-        }
-
-        // Check if password has a special character
-        if (p.match(/[-’/`~!#*$@_%+=.,^&(){}[\]|;:”<>?\\]/)) {
-            setSpecialChar(true);
-        } else {
-            setSpecialChar(false);
-        }
-        setPassword(p);
     }
 
-    const matchPasswords = (p: string) => {
-        setConfirmPassword(p);
-        return confirmPassword === password;
+
+    /**
+     * onChange
+     * @desc This function is called when the date picker is changed
+     */
+    const onChange = (_event: DateTimePickerEvent, selectedDate?: Date) => {
+        const currentDate = selectedDate || new Date();
+        setForm({...form, dob: currentDate.toDateString()});
+        setShow(Platform.OS === "ios");
     }
 
-    // TODO: Separate each form into a separate component (For reusability and readability)
+    useEffect(() => {
+        if (alert.visible) {
+            setTimeout(() => {
+                setAlert({...alert, visible: false});  // Hide the alert after 5 seconds
+            }, 5000);
+        }
+    }, [alert.visible]);
+
+    /**
+     * validateForm
+     * @desc This function validates the form fields and returns a boolean
+     * @returns {Promise<boolean>} - True if the form is valid, false otherwise
+     */
+    const validateForm = async () : Promise<boolean> => {
+        // Reset the errors
+        setErrors({
+            firstName: "",
+            lastName: "",
+            email: "",
+            dob: "",
+            password: "",
+            confirmPassword: "",
+        });
+
+        let tempErrors = {
+            firstName: "",
+            lastName: "",
+            email: "",
+            dob: "",
+            password: "",
+            confirmPassword: "",
+        }
+
+        // Validate the first name
+        if (form.firstName === "") {
+            tempErrors = {...tempErrors, firstName: "First name is required"};
+        }
+
+        // Validate the last name
+        if (form.lastName === "") {
+            tempErrors = {...tempErrors, lastName: "Last name is required"};
+        }
+
+        // Validate the email for empty
+        if (form.email === "") {
+            tempErrors = {...tempErrors, email: "Email is required"};
+        }
+        // Validate the email for a valid email address
+        if (!form.email.includes("@") || !form.email.includes(".")) {
+            tempErrors = {...tempErrors, email: "Email is invalid"};
+        }
+
+        // Validate the date of birth (Before Today and at least 18 years old)
+        if (form.dob === "") {
+            tempErrors = {...tempErrors, dob: "Date of birth is required"};
+        }
+        const dob = new Date(form.dob);
+        const today = new Date();
+        const age = today.getFullYear() - dob.getFullYear();
+        if (age < 18) {
+            tempErrors = {...tempErrors, dob: "You must be at least 18 years old"};
+        }
+
+        // Validate the passwords
+        if (form.password === "") {
+            tempErrors = {...tempErrors, password: "Password is required"};
+        }
+        if (form.password.match("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,10}$")) {
+            tempErrors = {...tempErrors, password: "Password must be at least 8 characters long, contain a number, a special character, an uppercase and a lowercase letter"};
+        }
+
+        // Validate the confirm password
+        if (form.confirmPassword === "") {
+            tempErrors = {...tempErrors, confirmPassword: "Confirm Password is required"};
+        }
+        if (form.password !== form.confirmPassword) {
+            tempErrors = {...tempErrors, confirmPassword: "Passwords do not match"};
+        }
+
+        // Validate the terms of service
+        if (!tosAccepted) {
+            setAlert({
+                message: "You must accept the terms of service to continue",
+                type: "error",
+                visible: true,
+            });
+        }
+
+        // Set the errors
+        setErrors(tempErrors);
+
+        // Check if the form is valid
+        return Object.values(tempErrors).every((error) => error === "");
+    }
+
+    /**
+     * submitForm
+     * @desc This function submits the form to the server
+     * @returns {Promise<void>}
+     */
+    const submitForm = async () : Promise<void> => {
+        // Validate the form
+        const isValid = await validateForm();
+        if (!isValid) {
+            return;
+        }
+
+        // Submit the form
+        try {
+
+        } catch (error) {
+            // Show an error message
+            setAlert({
+                message: "An error occurred while creating your account",
+                type: "error",
+                visible: true,
+            });
+        }
+    }
 
     return (
-        <ScrollView className={"flex-1 w-full dark:bg-neutral-900 bg-neutral-100"}>
+        <KeyboardAwareScrollView className={"flex-1 w-full dark:bg-neutral-800 bg-neutral-100"}>
             {/* Header */}
-            <View className={"xs:mt-1 sm:mt-2 md:mt-4 lg:mt-6"}>
-                <Text className={"dark:text-white font-bold text-center xs:text-base sm:text-xl md:text-2xl lg:text-4xl"}>Create an account</Text>
-                {activeForm === "personal" ? <Text className={"dark:text-white text-center xs:text-xs sm:text-sm md:text-base lg:text-lg"}>Personal Details</Text> : null}
-                {activeForm === "occupation" ? <Text className={"dark:text-white text-center xs:text-xs sm:text-sm md:text-base lg:text-lg"}>Occupation Details</Text> : null}
-                {activeForm === "password" ? <Text className={"dark:text-white text-center xs:text-xs sm:text-sm md:text-base lg:text-lg"}>Setting your password</Text> : null}
+            <View className={"md:my-2 lg:my-3 xl:my-4"}>
+                <Text
+                    className={"dark:text-white font-bold text-center xs:text-base sm:text-xl md:text-2xl lg:text-4xl"}>Create
+                    an account</Text>
+                {activeForm === "personal" ?
+                    <Text className={"dark:text-white text-center xs:text-xs sm:text-sm md:text-base lg:text-lg"}>Personal
+                        Details</Text> : null}
+                {activeForm === "occupation" ?
+                    <Text className={"dark:text-white text-center xs:text-xs sm:text-sm md:text-base lg:text-lg"}>Occupation
+                        Details</Text> : null}
+                {activeForm === "password" ?
+                    <Text className={"dark:text-white text-center xs:text-xs sm:text-sm md:text-base lg:text-lg"}>Setting
+                        your password</Text> : null}
             </View>
 
+            <Alert message={alert.message} type={alert.type} visible={alert.visible} onPress={
+                () => {
+                    setAlert({...alert, visible: false});
+                }
+            }/>
+
             {/* Progress Icons */}
-            <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8 xs:mt-2 sm:mt-3 md:mt-4 lg:mt-5"}>
-                <View className={"flex-row justify-between items-center"}>
-                    <TouchableOpacity onPress={() => setActiveForm("personal")} className={"justify-center items-center"}>
-                        <FontAwesome name={"user-circle"} size={24} color={activeForm === "personal" ? "#3B82F6" : "#AAAAA5"}/>
+            <View className={"md:my-2 lg:my-3 xl:my-4"}>
+                <View className={"flex-row justify-evenly items-center"}>
+                    <TouchableOpacity onPress={() => setActiveForm("personal")}
+                                      className={"flex-1 justify-center items-center"}>
+                        <FontAwesome name={"user-circle"} size={24}
+                                     color={activeForm === "personal" ? "#3B82F6" : "#AAAAA5"}/>
                         <Text className={"dark:text-white mt-1"}>Personal</Text>
                     </TouchableOpacity>
                     <FontAwesome name={"chevron-right"} size={24} color={"#AAAAA5"}/>
-                    <TouchableOpacity onPress={() => setActiveForm("occupation")} className={"justify-center items-center"}>
-                        <FontAwesome name={"check-circle"} size={24} color={activeForm === "occupation" ? "#3B82F6" : "#AAAAA5"}/>
+                    <TouchableOpacity onPress={() => setActiveForm("occupation")}
+                                      className={"flex-1 justify-center items-center"}>
+                        <FontAwesome name={"check-circle"} size={24}
+                                     color={activeForm === "occupation" ? "#3B82F6" : "#AAAAA5"}/>
                         <Text className={"dark:text-white mt-1"}>Occupation</Text>
                     </TouchableOpacity>
                     <FontAwesome name={"chevron-right"} size={24} color={"#AAAAA5"}/>
-                    <TouchableOpacity onPress={() => setActiveForm("password")} className={"justify-center items-center"}>
+                    <TouchableOpacity onPress={() => setActiveForm("password")}
+                                      className={"flex-1 justify-center items-center"}>
                         <FontAwesome name={"lock"} size={24} color={activeForm === "password" ? "#3B82F6" : "#AAAAA5"}/>
                         <Text className={"dark:text-white mt-1"}>Password</Text>
                     </TouchableOpacity>
                 </View>
             </View>
 
-            {/* Personal Details */}
-            {activeForm === "personal" &&
-                <View>
-                    <View className={"px-8"}>
-                        <InputGroup value={email} errorMessage={"This field is required"} error={emailErr} onChangeText={(e) => setEmail(e)} placeholder={"joe.bloggs@cognicarer.com"} label={"Email Address"} />
-                    </View>
-                    {/* First and last name */}
-                    <View className={"px-8 gap-4 flex-row justify-between"}>
-                        <InputGroup label={"First Name"} errorMessage={"This field is required"} error={firstNameErr} size={"1/2"} value={firstName} onChangeText={(s) => setFirstName(s)} placeholder={"Joe"} />
-                        <InputGroup label={"Last name"} errorMessage={"This field is required"} error={lastNameErr} size={"1/2"} value={lastName} onChangeText={(s) => setLastName(s)} placeholder={"Bloggs"} />
-                    </View>
-                    {/* Date of Birth */}
-                    {Platform.OS === "android" ? null :
-                    <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8"}>
-                        <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>Date of Birth</Text>
-                        {/* Month Dropdown */}
-                        <View className={"rounded-md border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear"}>
-                            {/* @ts-ignore */}
-                            <DateTimePicker  style={{marginHorizontal: "auto"}} value={dob} mode={"date"} collapsable={true} display={"spinner"} onChange={(e, date) => setDob(date)}/>
+            {activeForm === "personal" && (
+                <View className={"md:px-4 lg:px-6 xl:px-8"}>
+                    {/* First and Last Name */}
+                    <View className={"flex gap-4 flex-row justify-center items-center"}>
+                        <View className={"flex-1"}>
+                            <InputGroup label={"First name"} onChangeText={
+                                (text: string) => {
+                                    setForm({...form, firstName: text});
+                                }
+                            } placeholder={"John"} errorMessage={errors.firstName} error={errors.firstName !== ""}/>
                         </View>
-                    </View>}
-                    <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8 flex-row items-center"}>
-                        <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>Already have an account?</Text>
-                        <TouchableOpacity onPress={() => router.push("/(auth)/login")}>
-                            <Text className={"dark:text-blue-500 sm:text-sm md:text-base lg:text-lg ml-4"}>Sign in</Text>
+                        <View className={"flex-1"}>
+                            <InputGroup label={"Last name"} onChangeText={
+                                (text: string) => {
+                                    setForm({...form, lastName: text});
+                                }
+                            } placeholder={"Doe"} errorMessage={errors.lastName} error={errors.lastName !== ""}/>
+                        </View>
+                    </View>
+
+                    {/* Email */}
+                    <View>
+                        <InputGroup label={"Email"} onChangeText={
+                            (text: string) => {
+                                setForm({...form, email: text});
+                            }
+                        } placeholder={"john.doe@example.com"} errorMessage={errors.email} error={errors.email !== ""}/>
+                    </View>
+
+                    {/* Date of Birth */}
+                    <View className={"my-2"}>
+                        <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>
+                            Date of Birth
+                        </Text>
+                        <TouchableOpacity
+                            onPress={() => {
+                                setShow(!show);
+                            }}
+                            className={`flex-row items-center gap-2 justify-between rounded-lg p-4 border dark:text-white ${errors.dob ? "border-red-500" : "dark:border-gray-500 border-gray-400"} focus:border-blue-500 my-1`}>
+                            <View className={"flex-row items-center gap-2"}>
+                                <MaterialIcons name={"date-range"} size={20}
+                                               color={colorScheme === "dark" ? colors.white : colors.black}/>
+                                <Text className={"dark:text-white"}>
+                                    {form.dob ? new Date(form.dob).toLocaleDateString() : "Select Date of Birth"}
+                                </Text>
+                            </View>
+                            {Platform.OS === "ios" && (
+                                <MaterialIcons name={show ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={20}
+                                               color={colorScheme === "dark" ? colors.white : colors.black}/>
+                            )}
+                        </TouchableOpacity>
+
+                        {show && (
+                            <View
+                                className={`${Platform.OS === "ios" ? "w-full items-center border dark:border-gray-500 border-gray-400 rounded-lg" : ""}`}>
+                                <RNDateTimePicker
+                                    value={form.dob ? new Date(form.dob) : new Date()}
+                                    mode={"date"}
+                                    display={Platform.OS === "ios" ? "spinner" : "default"}
+                                    maximumDate={new Date()}
+                                    onChange={onChange}
+                                    style={{width: "100%"}}
+                                />
+                            </View>)}
+                    </View>
+
+                    {/* Profile Picture */}
+                    <View className={"my-2"}>
+                        <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>
+                            Profile Picture
+                        </Text>
+                        <TouchableOpacity
+                            onPress={() => {
+                                setProfilePictureVisible(true);
+                            }}
+                            className={"flex-row items-center gap-2 justify-between rounded-lg p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 my-1"}>
+                            <View className={"flex-row items-center gap-2"}>
+                                <MaterialIcons name={"photo-camera"} size={20}
+                                               color={colorScheme === "dark" ? colors.white : colors.black}/>
+                                <Text className={"dark:text-white"}>
+                                    {form.profilePicture ? "Picture Selected" : "Choose Picture"}
+                                </Text>
+                            </View>
                         </TouchableOpacity>
                     </View>
-                </View>}
 
-            {/* Password */}
-            {activeForm === "password" &&
-                <View>
-                    <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8 xs:mt-0 sm:mt-1 md:mt-2 lg:mt-3 xl:mt-4"}>
-                        <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>Your password must meet the following requirements:</Text>
-                        <View className={"flex-row items-center"}>
-                            <FontAwesome name={tenChars ? "check" : "close"} size={24} color={tenChars ? "#3B82F6" : "#EF5350"}/>
-                            <Text className={"ml-2 dark:text-white"}>At least 10 characters</Text>
-                        </View>
-                        <View className={"flex-row items-center"}>
-                            <FontAwesome name={upperCase ? "check" : "close"} size={24} color={upperCase ? "#3B82F6" : "#EF5350"}/>
-                            <Text className={"ml-2 dark:text-white"}>At least one uppercase letter</Text>
-                        </View>
-                        <View className={"flex-row items-center"}>
-                            <FontAwesome name={lowerCase ? "check" : "close"} size={24} color={lowerCase ? "#3B82F6" : "#EF5350"}/>
-                            <Text className={"ml-2 dark:text-white"}>At least one lowercase letter</Text>
-                        </View>
-                        <View className={"flex-row items-center"}>
-                            <FontAwesome name={number ? "check" : "close"} size={24} color={number ? "#3B82F6" : "#EF5350"}/>
-                            <Text className={"ml-2 dark:text-white"}>At least one number</Text>
-                        </View>
-                        <View className={"flex-row items-center"}>
-                            <FontAwesome name={specialChar ? "check" : "close"} size={24} color={specialChar ? "#3B82F6" : "#EF5350"}/>
-                            <Text className={"ml-2 dark:text-white"}>At least one special character</Text>
-                        </View>
-                        <View className={"flex-row items-center mb-5"}>
-                            <FontAwesome name={password === confirmPassword ? "check" : "close"} size={24} color={password === confirmPassword ? "#3B82F6" : "#EF5350"}/>
-                            <Text className={"ml-2 dark:text-white"}>Passwords match</Text>
-                        </View>
+                    {/* Next Button */}
+                    <View className={"my-2"}>
+                        <TouchableOpacity onPress={() => setActiveForm("occupation")}
+                                          className={"flex-row justify-center items-center bg-blue-500 p-4 rounded-lg"}>
+                            <Text className={"text-white text-center font-semibold text-lg"}>Next</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
 
-                        <InputGroup secureTextEntry={true} label={"Password"} errorMessage={"This field is required"} error={passwordErr} value={password} onChangeText={(s) => validatePassword(s)} placeholder={"********"} />
+            {activeForm === "occupation" && (
+                <View className={"md:px-4 lg:px-6 xl:px-8 pb-10"}>
+                    <View
+                        className={"w-full xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 my-2 rounded-lg flex-row items-center justify-between"}
+                        style={{
+                            shadowColor: colors.black,
+                            shadowOffset: {width: 0, height: 2},
+                            shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10,
+                            shadowRadius: 3.84,
+                            elevation: 2
+                        }}>
+                        <View className={"flex-col"}>
+                            <Text
+                                className={"dark:text-white xs-text-base sm:text-base md:text-base lg:text-xl font-bold text-center"}>
+                                Why do we ask these questions?
+                            </Text>
+                            <Text
+                                className={"dark:text-neutral-200 text-neutral-500 xs:text-sm sm:text-sm md:text-sm lg:text-base mt-2 text-center"}>
+                                We only ask these questions to provide you with the best possible experience on our platform.
+                            </Text>
+                            <Text
+                                className={"dark:text-neutral-200 text-neutral-900 font-semibold mt-1 xs:text-sm sm:text-sm md:text-sm lg:text-base text-center"}>
+                                This is both optional and confidential.
+                            </Text>
+                        </View>
+                    </View>
 
-                        <InputGroup secureTextEntry={true} label={"Confirm Password"} errorMessage={"This field is required"} error={confirmPasswordErr} value={confirmPassword} onChangeText={(s) => matchPasswords(s)} placeholder={"********"} />
 
-                        <TouchableOpacity className={"w-full bg-blue-500 text-white p-2.5 rounded-md xs:mt-3 sm:mt-4 md:mt-5 lg:mt-6"}>
-                            <Text className={"text-center text-white text-lg"}>
-                                Register
+                    {/* Professional Carer */}
+                    <View className={"my-2"}>
+                        <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>
+                            Are you a professional carer?
+                        </Text>
+                        <TouchableOpacity onPress={() => setForm({...form, professionalCarer: !form.professionalCarer})}
+                                          className={`flex-row items-center gap-2 justify-between rounded-lg p-3 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 my-1`}>
+                            <Text className={"dark:text-white"}>
+                                {form.professionalCarer ? "Yes" : "No"}
+                            </Text>
+                            <MaterialIcons name={form.professionalCarer ? "check-box" : "check-box-outline-blank"} size={24}
+                                           color={colorScheme === "dark" ? colors.white : colors.black}/>
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Family Carer */}
+                    <View className={"my-2"}>
+                        <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>
+                            Are you a family carer?
+                        </Text>
+                        <TouchableOpacity onPress={() => setForm({...form, familyCarer: !form.familyCarer})}
+                                          className={`flex-row items-center gap-2 justify-between rounded-lg p-3 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 my-1`}>
+                            <Text className={"dark:text-white"}>
+                                {form.familyCarer ? "Yes" : "No"}
+                            </Text>
+                            <MaterialIcons name={form.familyCarer ? "check-box" : "check-box-outline-blank"} size={24}
+                                           color={colorScheme === "dark" ? colors.white : colors.black}/>
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Mental Health Struggles */}
+                    <View className={"my-2"}>
+                        <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>
+                            Have you ever struggled with mental health?
+                        </Text>
+
+                        <TouchableOpacity
+                            onPress={() => setForm({...form, mentalHealthStruggles: !form.mentalHealthStruggles})}
+                            className={`flex-row items-center gap-2 justify-between rounded-lg p-3 border dark:border-gray-500 border-gray-400 dark:text-white focus:border-blue-500 my-1`}>
+                            <Text className={"dark:text-white"}>
+                                {form.mentalHealthStruggles ? "Yes" : "No"}
+                            </Text>
+                            <MaterialIcons name={form.mentalHealthStruggles ? "check-box" : "check-box-outline-blank"} size={24}
+                                           color={colorScheme === "dark" ? colors.white : colors.black}/>
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Next Button */}
+                    <TouchableOpacity onPress={() => setActiveForm("password")}
+                                        className={"flex-row justify-center items-center bg-blue-500 p-3 rounded-lg"}>
+                            <Text className={"text-white text-center font-semibold text-lg"}>Next</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+
+            {activeForm === "password" && (
+                <View className={"md:px-4 lg:px-6 xl:px-8"}>
+                    {/* Password */}
+                    <InputGroup label={"Password"} onChangeText={
+                        (text: string) => {
+                            setForm({...form, password: text});
+                        }
+                    } secureTextEntry={true} placeholder={"VerySecurePassword34563!"} errorMessage={errors.password} error={errors.password !== ""}/>
+
+                    {/* Confirm Password */}
+                    <InputGroup label={"Confirm Password"} onChangeText={
+                        (text: string) => {
+                            setForm({...form, confirmPassword: text});
+                        }
+                    } secureTextEntry={true} placeholder={"VerySecurePassword34563!"} errorMessage={errors.confirmPassword} error={errors.confirmPassword !== ""}/>
+
+                    {/* Terms of Service */}
+                    <View className={"flex-row items-center justify-start my-2"}>
+                        <TouchableOpacity onPress={() => setTosAccepted(!tosAccepted)} className={"flex-row items-center gap-2"}>
+                            <MaterialIcons name={tosAccepted ? "check-box" : "check-box-outline-blank"} size={24}
+                                           color={colorScheme === "dark" ? colors.white : colors.black}/>
+                            <Text className={"dark:text-white"}>
+                                I accept the <Text onPress={() => {
+                                // Navigate to the terms of service page
+                            }} className={"text-blue-500 underline"}>Terms of Service</Text>
                             </Text>
                         </TouchableOpacity>
                     </View>
-                    {/* Already have an account? */}
-                    <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8 flex-row items-center"}>
-                        <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>Already have an account?</Text>
-                        <TouchableOpacity onPress={() => router.push("/(auth)/login")}>
-                            <Text className={"dark:text-blue-500 sm:text-sm md:text-base lg:text-lg ml-4"}>Sign in</Text>
+
+                    {/* Email Updates */}
+                    <View className={"flex-row items-center justify-start my-2"}>
+                        <TouchableOpacity onPress={() => setEmailUpdates(!emailUpdates)} className={"flex-row items-center gap-2"}>
+                            <MaterialIcons name={emailUpdates ? "check-box" : "check-box-outline-blank"} size={24}
+                                           color={colorScheme === "dark" ? colors.white : colors.black}/>
+                            <Text className={"dark:text-white"}>
+                                I would like to receive email updates
+                            </Text>
                         </TouchableOpacity>
                     </View>
-                </View>}
 
-            {/* Occupation */}
-            {activeForm === "occupation" &&
-                <View>
-                    <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8 xs:mt-0 sm:mt-1 md:mt-2 lg:mt-3 xl:mt-4"}>
-                        <View className={"flex-row justify-between"}>
-                            <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>Are you a professional carer?</Text>
-                            <TouchableOpacity>
-                                <FontAwesome name={"info-circle"} size={24} color={"#AAAAA5"}/>
-                            </TouchableOpacity>
-                        </View>
-                        <View className={"flex-row items-center"}>
-                            {/* Radio Group for Yes/No */}
-                            <Checkbox.Android status={profCarer ? "checked" : "unchecked"} color={"#3B82F6"} onPress={() => {
-                                setProfCarer(true);
-                            }}/>
-                            <Text className={"dark:text-white mr-10"}>Yes</Text>
-
-                            <Checkbox.Android status={!profCarer ? "checked" : "unchecked"} color={"#3B82F6"} className={"dark:text-white"} onPress={
-                                () => {
-                                    setProfCarer(false);
-                                }
-                            }/>
-                            <Text className={"dark:text-white"}>No</Text>
-                        </View>
-                        {!profCarer ? <View className={"xs:mt-0 sm:mt-2 md:mt-3 lg:mt-4 xl:mt-5"}>
-                            <View className={"flex-row justify-between"}>
-                                <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>Are you caring for a family member?</Text>
-                                <TouchableOpacity>
-                                    <FontAwesome name={"info-circle"} size={24} color={"#AAAAA5"}/>
-                                </TouchableOpacity>
-                            </View>
-                            <View className={"flex-row items-center"}>
-                                {/* Radio Group for Yes/No */}
-                                <Checkbox.Android status={familyCarer ? "checked" : "unchecked"} color={"#3B82F6"} onPress={() => {
-                                    setFamilyCarer(true);
-                                }}/>
-                                <Text className={"dark:text-white mr-10"}>Yes</Text>
-
-                                <Checkbox.Android status={!familyCarer ? "checked" : "unchecked"} color={"#3B82F6"} className={"dark:text-white"} onPress={
-                                    () => {
-                                        setFamilyCarer(false);
-                                    }
-                                }/>
-                                <Text className={"dark:text-white"}>No</Text>
-                            </View>
-                        </View> : null}
-                        <View className={"xs:mt-0 sm:mt-2 md:mt-3 lg:mt-4 xl:mt-5"}>
-                            <Text className={"mb-2 dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>How many people do you care for?</Text>
-                            <TextInput key={"patient_count"} returnKeyType={"done"} keyboardType={"number-pad"} value={patientCount} onChangeText={(e) => setPatientCount(e)} placeholder={"1"} placeholderTextColor={"#AAAAA5"} className={"rounded-md p-4 border dark:text-white dark:border-gray-500 border-gray-400 focus:border-blue-500 transition-all ease-linear input"}/>
-                        </View>
-                        <View className={"xs:mt-0 sm:mt-2 md:mt-3 lg:mt-4 xl:mt-5"}>
-                            <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>Has caring ever caused you to suffer from mental health issues?</Text>
-                            <Text className={"dark:text-gray-400 mb-2"}>*This information is not saved, we only ask to tailor the support given.</Text>
-                            <View className={"flex-row items-center justify-between"}>
-                                {/* Radio Group for Yes/No */}
-                                <View className={"flex-row items-center"}>
-                                    <Checkbox.Android status={struggle && !preferNot ? "checked" : "unchecked"} color={"#3B82F6"} onPress={() => {
-                                        setStruggle(true);
-                                        setPreferNot(false);
-                                    }}/>
-                                    <Text className={"dark:text-white"}>Yes</Text>
-                                </View>
-                                <View className={"flex-row items-center"}>
-                                    <Checkbox.Android status={!struggle && !preferNot ? "checked" : "unchecked"} color={"#3B82F6"} className={"dark:text-white"} onPress={
-                                        () => {
-                                            setStruggle(false);
-                                            setPreferNot(false);
-                                        }
-                                    }/>
-                                    <Text className={"dark:text-white"}>No</Text>
-                                </View>
-                                <View className={"flex-row items-center"}>
-                                    <Checkbox.Android status={preferNot ? "checked" : "unchecked"} color={"#3B82F6"} onPress={() => {
-                                        setPreferNot(!preferNot);
-                                        if (preferNot) {
-                                            setStruggle(false);
-                                        }
-                                    }}/>
-                                    <Text className={"dark:text-white"}>Prefer not to say</Text>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
-                    {/* Already have an account? */}
-                    <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8 flex-row items-center"}>
-                        <Text className={"dark:text-white font-bold sm:text-sm md:text-base lg:text-lg"}>Already have an account?</Text>
-                        <TouchableOpacity onPress={() => router.push("/(auth)/login")}>
-                            <Text className={"dark:text-blue-500 sm:text-sm md:text-base lg:text-lg ml-4"}>Sign in</Text>
+                    {/* Submit Button */}
+                    <View className={"my-2"}>
+                        <TouchableOpacity onPress={() => {
+                            // Validate the form
+                            submitForm();
+                        }} className={"flex-row justify-center items-center bg-blue-500 p-3 rounded-lg"}>
+                            <Text className={"text-white text-center font-semibold text-lg"}>Submit</Text>
                         </TouchableOpacity>
                     </View>
-                </View>}
-        </ScrollView>
+                </View>
+            )}
+            <CreateProfilePicture visible={profilePictureVisible} onClose={() => {
+                setProfilePictureVisible(false);
+            }} onPicture={(image) => {onPicture(image)}} onErrors={() => {}}/>
+        </KeyboardAwareScrollView>
     );
 }
