@@ -8,6 +8,7 @@ import {setToken} from "@/services/store/slices/tokenSlice";
 import { useUser } from "@/hooks/store/user";
 import {setQuote} from "@/services/store/slices/quoteSlice";
 import {useQuote} from "@/hooks/useQuote";
+import {ImagePickerResult} from "expo-image-picker";
 
 // Define the shape of the context
 interface AuthContextType {
@@ -17,6 +18,7 @@ interface AuthContextType {
     sendResetEmail: (email: string) => Promise<boolean>;
     validateResetCode: (email: string, code: string) => Promise<boolean>;
     resetPassword: (email: string, code: string, password: string, confirmPassword: string) => Promise<boolean>;
+    registerUser: (data: any) => Promise<boolean>;
     loading: boolean;
     error: string | null;
 }
@@ -269,8 +271,54 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         return false;
     }
 
+
+    interface RegisterData {
+        email: string;
+        password1: string;
+        password2: string;
+        first_name: string;
+        last_name: string;
+        date_of_birth: string;
+        prof_carer: boolean;
+        family_carer: boolean;
+        mhstruggle: boolean;
+        profile_image: ImagePickerResult;
+    }
+
+    const registerUser = async ({email, password1, password2, first_name, last_name, date_of_birth, prof_carer, family_carer, mhstruggle, profile_image}: RegisterData): Promise<boolean> => {
+        setLoading(true);
+        setError(null);
+        let response;
+
+        const data = {
+            email: email,
+            password1: password1,
+            password2: password2,
+            first_name: first_name,
+            last_name: last_name,
+            date_of_birth: date_of_birth,
+            prof_carer: prof_carer,
+            family_carer: family_carer,
+            mhstruggle: mhstruggle,
+        };
+
+        try {
+            response = await API.image_post("/auth/register/", data, profile_image, "profile_image");
+        } catch (e) {
+            if (e instanceof Error) {
+                setError(e.message);
+            }
+            console.debug(e);
+            setError("An error occurred while registering the user");
+            response = null;
+        } finally {
+            setLoading(false);
+        }
+        return response !== null;
+    }
+
     return (
-        <AuthContext.Provider value={{ login, logout, update, sendResetEmail, validateResetCode, resetPassword, loading, error }}>
+        <AuthContext.Provider value={{ login, logout, update, sendResetEmail, validateResetCode, resetPassword, loading, error, registerUser }}>
             {children}
         </AuthContext.Provider>
     );
