@@ -119,7 +119,7 @@ const entry = () => {
         console.log(data)
 
         // Update the entry
-        update("entries", entry.uuid, data).then(() => {
+        update("entry", entry.uuid, data).then(() => {
             setEditable(false)
             // Refresh the entry
             getE()

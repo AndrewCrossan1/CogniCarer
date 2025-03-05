@@ -94,7 +94,7 @@ const Pictures = () => {
             setConfirmVisible(false);
             // For each selected album, delete it
             selected.forEach(async (picture) => {
-                await deleteItem({type: "pictures", id: picture.uuid});
+                await deleteItem({type: "picture", id: picture.uuid});
                 console.debug("Deleted picture: ", picture.title);
 
                 getPictures().then((valid) => {
