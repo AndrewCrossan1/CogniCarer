@@ -81,7 +81,7 @@ const SelectedArticle = () => {
         <ScrollView className={"flex-1 p-4 dark:bg-neutral-800 bg-neutral-100"}>
             <View className={"mb-10 dark:bg-neutral-800 bg-neutral-100"}>
                 <TouchableOpacity className={"flex flex-row gap-4 dark:bg-neutral-700 bg-white rounded-lg p-2 items-center"}
-                                    onPress={() => router.back()}
+                                    onPress={() => router.replace("/(app)/(help)") }
                                   style={{
                                       shadowColor: colors.black,
                                       shadowOffset: {width: 0, height: 2},

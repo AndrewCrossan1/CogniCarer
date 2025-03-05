@@ -128,6 +128,9 @@ export interface Article {
     source: string;
     source_url: string;
     content: string;
+    liked: boolean;
+    likes: number;
+    views: number;
     created_at: string;
     updated_at: string;
 }

@@ -13,12 +13,12 @@ import colors from "tailwindcss/colors";
 import {useThemeColor} from "@/hooks/useThemeColor";
 import {useReminisce} from "@/hooks/useReminisce";
 import {useCallback, useEffect, useState} from "react";
-import {UserAlbum} from "@/services/api/types";
 import {Alert} from "@/components/Alert";
 import NewAlbumForm from "@/components/reminisce/NewAlbumForm";
 import NewPictureForm from "@/components/reminisce/NewPictureForm";
 import * as Haptics from "expo-haptics";
 import {useColorScheme} from "nativewind";
+import {useFocusEffect} from "@react-navigation/native";
 
 const index = () => {
 
@@ -26,47 +26,37 @@ const index = () => {
     const quote = useAppSelector(state => state.quote.quote);
     const theme = useThemeColor();
     const { colorScheme: mode } = useColorScheme();
-    const [albums, setAlbums] = useState([] as UserAlbum[]);
     const [alertType] = useState<"success" | "error">("error");
     const [message, setMessage] = useState("");
     const [visible, setVisible] = useState(false);
-    const [currentAlbum, setCurrentAlbum] = useState<UserAlbum>({} as UserAlbum);
     const [newAlbumVisible, setNewAlbumVisible] = useState(false);
     const [newPictureVisible, setNewPictureVisible] = useState(false);
     const [entryDates, setEntryDates] = useState<string[]>([] as string[]);
     const [markedDates, setMarkedDates] = useState({} as any);
     const [refreshing, setRefreshing] = useState(false);
+    const [percentReminisced, setPercentReminisced] = useState<string>("");
 
-    const {getAlbums, loading, getEntries} = useReminisce()
+    const {loading, getEntries, familyReminisced} = useReminisce()
     const router = useRouter();
-    const albumCover = require('@/assets/images/yes.png');
 
-    useEffect(() => {
-        const fetchAlbums = async () => {
-            const fetchedAlbums = await getAlbums();
-            if (fetchedAlbums) {
-                setAlbums(fetchedAlbums.sort((a, b) => {
-                    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-                }));
-                setCurrentAlbum(fetchedAlbums[0]);
-            } else {
-                setMessage("No albums found");
-                setVisible(true);
+    useFocusEffect(
+        useCallback(() => {
+            const getEntryDates = async () => {
+                const fetchedEntries = await getEntries();
+                if (fetchedEntries) {
+                    setEntryDates(fetchedEntries.map((entry) => {
+                        return entry.created_at;
+                    }));
+                }
             }
-        }
 
-        const getEntryDates = async () => {
-            const fetchedEntries = await getEntries();
-            if (fetchedEntries) {
-                setEntryDates(fetchedEntries.map((entry) => {
-                    return entry.created_at;
-                }));
-            }
-        }
-
-        getEntryDates().then(() => console.debug("Entry dates fetched"));
-        fetchAlbums().then(() => console.debug("Albums fetched"));
-    }, []);
+            getEntryDates().then(() => console.debug("Entry dates fetched"));
+            familyReminisced().then((percent) => {
+                let edited = percent.split(".")[0];
+                setPercentReminisced(edited + "%");
+            });
+        }, [])
+    );
 
     useEffect(() => {
 
@@ -99,39 +89,14 @@ const index = () => {
                 markedDates[formattedDate] = {selected: true, selectedColor: colors.blue[500]};
             });
         });
-    }, [getEntries, entryDates, markedDates]);
-
-    const backAlbum = () => {
-        // Find the index of the current album
-        const index = albums.indexOf(currentAlbum as UserAlbum);
-        // If the current album is the first album, set the current album to the last album
-        if (index === 0) {
-            setCurrentAlbum(albums[albums.length - 1]);
-        } else {
-            // Otherwise, set the current album to the previous album
-            setCurrentAlbum(albums[index - 1]);
-        }
-    }
-
-    const nextAlbum = () => {
-        // Find the index of the current album
-        const index = albums.indexOf(currentAlbum as UserAlbum);
-        // If the current album is the last album, set the current album to the first album
-        if (index === albums.length - 1) {
-            setCurrentAlbum(albums[0]);
-        } else {
-            // Otherwise, set the current album to the next album
-            setCurrentAlbum(albums[index + 1]);
-        }
-    }
+        familyReminisced().then((percent) => {
+            // Remove anything after the decimal point except the percent sign
+            let edited = percent.split(".")[0];
+            setPercentReminisced(edited + "%");
+        });
+    }, [getEntries, entryDates, markedDates, familyReminisced]);
 
     const onSubmitted = () => {
-        // Fetch albums again
-        getAlbums().then((valid) => {
-            if (!valid) return;
-            console.debug("Albums updated, found: ", valid.length);
-            setAlbums(valid);
-        });
         setNewAlbumVisible(false);
     };
 
@@ -200,7 +165,7 @@ const index = () => {
                 </View>
                 <View className={"px-4"}>
                     <View
-                        className={"xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 xs:my-1 sm:my-2 md:my-3 lg:my-5 xl:my-6 rounded-lg"}
+                        className={"xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 rounded-lg xs:mt-1 sm:mt-2 md:mt-3 lg:mt-5 xl:mt-6"}
                         style={{
                             shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: mode === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}>
                         <View key={"subtasks"}>
@@ -219,54 +184,31 @@ const index = () => {
                             </Text>
                         </View>
                     </View>
-                    <View className={"flex-row gap-4 justify-between w-full mt-4"} key={"albums"}>
-                        {/* Albums */}
-                        {!loading && albums.length > 0 && (
+                    <View className={"flex-row gap-4 justify-between w-full"}>
+                        {!loading && (
                             <View
-                                className={"w-full xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 xs:my-1 sm:my-2 md:my-3 lg:my-5 xl:my-6 rounded-lg flex-row items-center justify-between"}
+                                className={"flex w-full xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 xs:my-1 sm:my-2 md:my-3 lg:my-5 xl:my-6 rounded-lg"}
                                 style={{
                                     shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: mode === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}>
-                                <Text className={"dark:text-white font-bold"}>
-                                    Albums
+                                <Text className={"text-5xl font-bold text-blue-500 text-center"}>
+                                    {percentReminisced}
                                 </Text>
-                                <View className={"flex-row items-center justify-between"}>
-                                    <TouchableOpacity onPress={backAlbum} hitSlop={20}>
-                                        <MaterialIcons name={"keyboard-arrow-left"}  size={28} color={theme.text}/>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        key={currentAlbum.uuid}
-                                        activeOpacity={0.8}
-                                        className={"w-1/2 p-2"}>
-                                        <View className={`w-full`}>
-                                            <View className={"justify-center items-center"}>
-                                                {/* Album Cover */}
-                                                <Image
-                                                    className={"rounded-t-lg border-t border-l border-r border-gray-400"}
-                                                    source={albumCover}
-                                                    style={{width: "100%", height: 100}}
-                                                />
-                                            </View>
-                                            <View className={"rounded-b-lg border-b border-r border-l border-gray-400 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-950 p-4"}>
-                                                <View className={"flex-row items-center justify-between"}>
-                                                    <Text className={"dark:text-white text-lg font-bold"}>
-                                                        title
-                                                    </Text>
-                                                    <Text className={"text-blue-500 text-sm"}>
-                                                        {currentAlbum.picture_count} Pictures
-                                                    </Text>
-                                                </View>
-                                                <Text className={"text-sm text-blue-500"}>
-                                                    {currentAlbum.patientActual?.first_name} {currentAlbum.patientActual?.last_name}
-                                                </Text>
+                                <Text className={"dark:text-neutral-200 text-neutral-700 text-sm text-center"}>
+                                    of your family members have been reminisced with today
+                                </Text>
 
-                                                <Text className={"text-xs text-neutral-500"}>
-                                                    Created: {new Date(currentAlbum.created_at).toDateString()}
-                                                </Text>
-                                            </View>
-                                        </View>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity onPress={nextAlbum} hitSlop={20}>
-                                        <MaterialIcons name={"keyboard-arrow-right"} size={28} color={theme.text}/>
+                                <Text className={"text-lg font-bold dark:text-white text-center mt-3"}>
+                                    {percentReminisced === "100%" ? "Great job!" : "Keep it up!"}
+                                </Text>
+
+                                <View className={"flex-1"}>
+                                    {/* Quick Action to reminisce */}
+                                    <TouchableOpacity onPress={() => router.push("/(app)/(reminisce)/(tabs)/NewEntry")}
+                                                      className={"flex-row items-center justify-center mt-2 p-2 bg-blue-500 dark:bg-neutral-950 rounded-lg"}>
+                                        <MaterialIcons name="add" size={24} color="white" className={"mr-1"}/>
+                                        <Text className={"text-white"}>
+                                            Reminisce Now
+                                        </Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>

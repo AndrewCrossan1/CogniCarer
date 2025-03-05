@@ -11,7 +11,7 @@ import {useFocusEffect} from "@react-navigation/native";
 
 export default function Index() {
     const {colorScheme} = useColorScheme();
-    const {loading, error, getArticles, getLatestArticle} = useSupport();
+    const {loading, error, getArticles, getLatestArticle, likeArticle, unlikeArticle} = useSupport();
     const [articles, setArticles] = useState<Article[] | null>(null);
     const [latestArticle, setLatestArticle] = useState<Article | null>(null);
     const [refreshing, setRefreshing] = useState(false);
@@ -108,6 +108,30 @@ export default function Index() {
             setFilteredArticles(filteredArticles || []);
         }
     };
+
+    /**
+     * Handle like button
+     * @description Handle like button click for an article
+     * @param uuid
+     * @param liked
+     */
+    const handleLike = async (uuid: string, liked: boolean) => {
+        if (liked) {
+            await unlikeArticle(uuid);
+        } else {
+            await likeArticle(uuid);
+        }
+
+        fetchArticles().then(
+            () => {
+                console.log("Articles fetched: ", articles?.length);
+                console.log("Latest article fetched: ", latestArticle?.uuid);
+            }
+        ).catch(
+            (e) => {
+                console.error(e);
+            });
+    }
 
     /**
      * Set tag filter
@@ -236,6 +260,25 @@ export default function Index() {
                                                 ))}
                                             </ScrollView>
                                         )}
+                                        <View className={"flex-row justify-between"}>
+                                            {/* Like Button with Count */}
+                                            <TouchableOpacity
+                                                onPress={() => handleLike(article.uuid, article.liked)}
+                                                className="flex-row items-center pt-2">
+                                                <MaterialIcons name="thumb-up" size={18} color={article.liked ? colors.blue[500] : colors.neutral[500]} />
+                                                <Text className="ml-1 text-base text-neutral-500 dark:text-neutral-400">
+                                                    {article.likes}
+                                                </Text>
+                                            </TouchableOpacity>
+
+                                            {/* View Count */}
+                                            <View className="flex-row items-center pt-2">
+                                                <MaterialIcons name="visibility" size={18} color={"gray"} />
+                                                <Text className="ml-1 text-base text-neutral-500 dark:text-neutral-400">
+                                                    {article.views}
+                                                </Text>
+                                            </View>
+                                        </View>
                                     </View>
                                 </TouchableOpacity>
                             )
