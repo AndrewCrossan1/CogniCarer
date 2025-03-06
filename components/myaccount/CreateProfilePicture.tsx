@@ -1,4 +1,4 @@
-import {Modal, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Modal, Platform, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {BlurView} from "expo-blur";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import * as ImagePicker from "expo-image-picker";
@@ -33,9 +33,18 @@ export default function CreateProfilePicture(props: CreateProfilePictureProps) {
             onRequestClose={() => {
                 props.onClose();
             }}>
-            <BlurView intensity={75} style={[StyleSheet.absoluteFill, styles.modalView]}/>
+            <BlurView intensity={Platform.OS === "ios" ? 75 : 100} style={[StyleSheet.absoluteFill, {
+                shadowColor: '#000',
+                shadowOffset: {
+                    width: 0,
+                    height: 2,
+                },
+                shadowOpacity: 0.5,
+                shadowRadius: 4,
+                elevation: 5,
+            }]}/>
 
-            <View className={"flex mt-safe mx-safe-or-4 dark:bg-neutral-900 border dark:border-neutral-800 border-gray-400 bg-white rounded-lg elevation-md p-4"}>
+            <View className={"mt-safe-or-10 mx-4 dark:bg-neutral-900 border dark:border-neutral-900 border-gray-200 bg-white rounded-lg p-4 android:elevation-md"}>
                 <View className={"flex-row justify-start items-center"}>
                     <FontAwesome name={"close"} size={30} color={"red"}
                                  onPress={props.onClose}
@@ -88,7 +97,7 @@ export default function CreateProfilePicture(props: CreateProfilePictureProps) {
                 )}
 
                 {/* Buttons */}
-                <View className={"flex-row justify-center gap-2"}>
+                <View className={"flex flex-row justify-center gap-2"}>
                     <TouchableOpacity
                         onPress={() => {
                             props.onPicture(picture);
@@ -97,7 +106,7 @@ export default function CreateProfilePicture(props: CreateProfilePictureProps) {
                             setPicture(undefined);
                             setPictureString(undefined);
                         }}
-                        className={`flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-blue-500`}>
+                        className={`flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-blue-500`}>
                         <MaterialIcons name="upload" size={24} color="white" className={"mr-1"}/>
                         <Text className="text-white">
                             Submit
@@ -110,7 +119,7 @@ export default function CreateProfilePicture(props: CreateProfilePictureProps) {
                                 props.onClose();
                             }
                         }
-                        className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-red-500"}>
+                        className={"flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-red-500"}>
                         <MaterialIcons name="cancel" size={24} color="white" className={"mr-1"}/>
                         <Text className="text-white">
                             Cancel
@@ -121,17 +130,4 @@ export default function CreateProfilePicture(props: CreateProfilePictureProps) {
         </Modal>
     )
 }
-
-const styles = StyleSheet.create({
-    modalView: {
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-});
 

@@ -1,4 +1,4 @@
-import {Modal, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Modal, Platform, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {BlurView} from "expo-blur";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {useEffect, useRef, useState} from "react";
@@ -186,8 +186,16 @@ const NewPictureForm = (props: NewAlbumProps) => {
                 animationType="slide"
                 transparent={true}
                 visible={visible}>
-                <BlurView intensity={75} style={[StyleSheet.absoluteFill, styles.modalView]}/>
-                <View className={"mt-safe mx-safe-or-4 dark:bg-neutral-900 border dark:border-neutral-800 border-gray-400 bg-white rounded-lg elevation-md p-4"}>
+                <BlurView intensity={Platform.OS === "ios" ? 75 : 100} style={[StyleSheet.absoluteFill, {
+                    shadowOffset: {
+                        width: 0,
+                        height: 2,
+                    },
+                    shadowOpacity: 0.5,
+                    shadowRadius: 4,
+                    elevation: 5,
+                }]}/>
+                <View className={"mt-safe-or-10 mx-4 dark:bg-neutral-900 border dark:border-neutral-900 border-gray-200 bg-white rounded-lg p-4 android:elevation-md"}>
                     <View className={"flex-row justify-start items-center"}>
                         <FontAwesome name={"close"} size={30} color={"red"}
                                      onPress={props.onClose}
@@ -272,12 +280,12 @@ const NewPictureForm = (props: NewAlbumProps) => {
                     )}
 
                     {/* Buttons */}
-                    <View className={"flex-row justify-center gap-2"}>
+                    <View className={"flex flex-row justify-center gap-2"}>
                         <TouchableOpacity
                             onPress={() => {
                                 submit();
                             }}
-                            className={`flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-blue-500`}>
+                            className={`flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-blue-500`}>
                             <MaterialIcons name="add" size={24} color="white" className={"mr-1"}/>
                             <Text className="text-white">
                                 Add Picture
@@ -297,7 +305,7 @@ const NewPictureForm = (props: NewAlbumProps) => {
                                     props.onClose();
                                 }
                             }
-                            className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-red-500"}>
+                            className={"flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-red-500"}>
                             <MaterialIcons name="cancel" size={24} color="white" className={"mr-1"}/>
                             <Text className="text-white">
                                 Cancel
@@ -309,18 +317,5 @@ const NewPictureForm = (props: NewAlbumProps) => {
         </>
     )
 }
-
-const styles = StyleSheet.create({
-    modalView: {
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-});
 
 export default NewPictureForm;

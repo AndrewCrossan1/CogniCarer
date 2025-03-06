@@ -127,16 +127,16 @@ const family = () => {
                     {/* Family member view */}
                     <View className={"w-full"}>
                         {/* Family member list */}
-                        {loading &&
+                        {loading && (
                             <View className={"w-full flex-col items-center justify-center"}>
                                 <ActivityIndicator size={"large"} color={colors.blue[500]}/>
                                 <Text className={"dark:text-neutral-200 text-neutral-500 text-sm"}>
                                     Please wait a moment.
                                 </Text>
                             </View>
-                        }
+                        )}
 
-                        {!loading && patients.length === 0 &&
+                        {!loading && patients.length === 0 && (
                             <View className={"w-full flex-col items-center justify-center"}>
                                 <Text className={"dark:text-white text-base font-bold"}>
                                     It's very quiet here!
@@ -145,66 +145,64 @@ const family = () => {
                                     Add a new family member to get started.
                                 </Text>
                             </View>
-                        }
+                        )}
 
-                        {!loading &&
-                          <View className={"w-full"} style={{
-                              shadowColor: colors.black,
-                              shadowOffset: {width: 0, height: 2},
-                              shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10,
-                              shadowRadius: 3.84,
-                              elevation: 2
-                          }}>
-                            <View className={"flex-row flex-wrap justify-start"}>
-                                {patients.map((patient, index) => (
-                                    <TouchableOpacity
-                                        key={patient.uuid}
-                                        activeOpacity={0.8}
-                                        className={"w-1/2"}
-                                        onPress={() => router.push(`/(app)/(myaccount)/family/${patient.uuid}`)}
-                                    >
-                                        <View className={`w-full py-2 px-2`}>
-                                            <View className={"justify-center items-center"}>
-                                                {patient.profile_picture ?
-                                                    <Image
-                                                        className={"rounded-t-lg"}
-                                                        // @ts-ignore
-                                                        source={{uri: patient.profile_picture}}
-                                                        style={{width: "100%", height: 150}}
-                                                        resizeMode={"cover"}
-                                                    /> :
-                                                    <Image
-                                                        className={"rounded-t-lg"}
-                                                        source={require("@/assets/images/undraw_pic-profile_nr49.png")}
-                                                        style={{width: "100%", height: 150}}
-                                                        resizeMode={"cover"}
-                                                    />
-                                                }
-                                            </View>
-                                            <View
-                                                className={"rounded-b-lg bg-white justify-center items-center dark:bg-neutral-900 p-2"}>
-                                                <View className={"items-center justify-between"}>
-                                                    <Text className={"dark:text-white text-base font-bold"}>
-                                                        {patient.first_name} {patient.last_name}
-                                                    </Text>
-                                                    <Text className={"text-blue-500 text-base"}>
-                                                        {patient.relationship}
+                        {!loading && (
+                            <View className={"w-full"} style={{
+                                shadowColor: colors.black,
+                                shadowOffset: {width: 0, height: 2},
+                                shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10,
+                                shadowRadius: 3.84,
+                                elevation: 2
+                            }}>
+                                <View className={"flex-row flex-wrap justify-start"}>
+                                    {patients.map((patient, index) => (
+                                        <TouchableOpacity
+                                            key={patient.uuid}
+                                            activeOpacity={0.8}
+                                            className={"w-1/2"}
+                                            onPress={() => router.push(`/(app)/(myaccount)/family/${patient.uuid}`)}
+                                        >
+                                            <View className={`w-full py-2 px-2`}>
+                                                <View className={"justify-center items-center"}>
+                                                    {patient.profile_picture ?
+                                                        <Image
+                                                            className={"rounded-t-lg"}
+                                                            // @ts-ignore
+                                                            source={{uri: patient.profile_picture}}
+                                                            style={{width: "100%", height: 150}}
+                                                            resizeMode={"cover"}
+                                                        /> :
+                                                        <Image
+                                                            className={"rounded-t-lg"}
+                                                            source={require("@/assets/images/undraw_pic-profile_nr49.png")}
+                                                            style={{width: "100%", height: 150}}
+                                                            resizeMode={"cover"}
+                                                        />
+                                                    }
+                                                </View>
+                                                <View
+                                                    className={"rounded-b-lg bg-white justify-center items-center dark:bg-neutral-900 p-2"}>
+                                                    <View className={"items-center justify-between"}>
+                                                        <Text className={"dark:text-white text-base font-bold"}>
+                                                            {patient.first_name} {patient.last_name}
+                                                        </Text>
+                                                        <Text className={"text-blue-500 text-base"}>
+                                                            {patient.relationship}
+                                                        </Text>
+                                                    </View>
+
+                                                    <Text className={"text-sm text-neutral-500"}>
+                                                        Age: {patient.age} years
                                                     </Text>
                                                 </View>
-
-                                                <Text className={"text-sm text-neutral-500"}>
-                                                    Age: {patient.age} years
-                                                </Text>
                                             </View>
-                                        </View>
-                                    </TouchableOpacity>
-                                ))}
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
                             </View>
-                          </View>
-                        }
-
+                        )}
                     </View>
-
                 </View>
             </View>
         </ScrollView>

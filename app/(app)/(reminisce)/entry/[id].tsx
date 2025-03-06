@@ -31,7 +31,7 @@ const entry = () => {
     const [show, setShow] = useState(false)
     const [dateError, setDateError] = useState(false)
     const [notes, setNotes] = useState("")
-    const [notesError, setNotesError] = useState(false)
+    const [notesError] = useState(false)
     const [editable, setEditable] = useState(false)
 
     // Date changing logic
@@ -66,6 +66,19 @@ const entry = () => {
         shadowRadius.value = withTiming(0, {duration: 300});
     }
 
+    const getE = async () => {
+        // Get the entry with ID
+        getEntries().then((entries) => {
+            const filtered = entries?.filter(entry => entry.uuid == id);
+            if (filtered && filtered.length === 1) {
+                setEntry(filtered[0])
+                // Set the date and notes
+                setDate(new Date(filtered[0].date_taken))
+                setNotes(filtered[0].notes)
+            }
+        })
+    }
+
     const animatedStyle = useAnimatedStyle(() => {
         return {
             transform: [{scale: scale.value}],
@@ -79,19 +92,6 @@ const entry = () => {
             borderRadius: 10
         }
     });
-
-    const getE = async () => {
-        // Get the entry with ID
-        getEntries().then((entries) => {
-            const filtered = entries?.filter(entry => entry.uuid == id);
-            if (filtered && filtered.length === 1) {
-                setEntry(filtered[0])
-                // Set the date and notes
-                setDate(new Date(filtered[0].date_taken))
-                setNotes(filtered[0].notes)
-            }
-        })
-    }
 
     // API Tasks
     useEffect(() => {
@@ -116,8 +116,6 @@ const entry = () => {
             updated_at: new Date().toISOString()
         }
 
-        console.log(data)
-
         // Update the entry
         update("entry", entry.uuid, data).then(() => {
             setEditable(false)
@@ -130,23 +128,23 @@ const entry = () => {
 
     return (
         <KeyboardAwareScrollView contentContainerStyle={{alignItems: "center"}} className={"flex-1 dark:bg-neutral-800"}>
-            <View className={"w-full bg-blue-500 dark:bg-neutral-800 p-6"}>
-                <View className={"flex-row items-center"}>
+            <View className={"w-full p-6"}>
+                <View className={"flex flex-row items-center"}>
                     <Image
                         source={image}
                         style={{width: 100, height: 100}}
-                        className={"mr-4 rounded-lg"}
+                        className={"mr-4 rounded-lg flex"}
                     />
-                    <View className={"p-2 w-3/4"}>
-                        <Text className={"dark:text-white text-2xl font-bold text-white"}>
+                    <View className={"p-2 flex-1"}>
+                        <Text className={"dark:text-white md:text-xl lg:text-2xl font-bold text-black"}>
                             View an Entry
                         </Text>
-                        <Text className={"mt-2 text-neutral-100 text-base"}>
+                        <Text className={"mt-2 text-neutral-600 dark:text-neutral-300 md:text-sm lg:text-base"}>
                             View and edit details about an entry.
                         </Text>
                     </View>
                 </View>
-                <View className={"flex-row justify-between gap-2"}>
+                <View className={"flex flex-row justify-between gap-2"}>
                     <TouchableOpacity
                         onPress={
                             () => {
@@ -159,37 +157,36 @@ const entry = () => {
                             }
                         }
                         style={{padding: 10, borderRadius: 10, marginTop: 10}}
-                        className={`flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900`}>
+                        className={`flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900`}>
                         <MaterialIcons name={editable ? "upload" : "edit"} size={24} color="white" className={"mr-1"}/>
                         <Text className={"text-white"}>
                             {editable ? "Save" : "Edit"}
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={
-                            () => {
-                                // When editable, cancel the edit
-                                if (editable) {
-                                    setEditable(false)
-                                    setNotes(entry.notes)
-                                    setDate(new Date(entry.date_taken))
-                                } else {
-                                    // Delete the entry
-                                    // API Call
+                    {editable && (
+                        <TouchableOpacity
+                            onPress={
+                                () => {
+                                    // When editable, cancel the edit
+                                    if (editable) {
+                                        setEditable(false)
+                                        setNotes(entry.notes)
+                                        setDate(new Date(entry.date_taken))
+                                    }
                                 }
                             }
-                        }
-                        style={{padding: 10, borderRadius: 10, marginTop: 10}}
-                        className={`flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-red-500`}>
-                        <MaterialIcons name={"delete"} size={24} color="white" className={"mr-1"}/>
-                        <Text className="text-white">
-                            {editable ? "Cancel" : "Delete"}
-                        </Text>
-                    </TouchableOpacity>
+                            style={{padding: 10, borderRadius: 10, marginTop: 10}}
+                            className={`flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-red-500`}>
+                            <MaterialIcons name={"delete"} size={24} color="white" className={"mr-1"}/>
+                            <Text className="text-white">
+                                Cancel
+                            </Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             </View>
 
-            <View className={"w-full p-4"}>
+            <View className={"w-full p-6"}>
                 {/* When an image selected, show the image and the entry form with a back button */}
                 {entry?.pictureActual && (
                     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -200,7 +197,7 @@ const entry = () => {
                                                               onPressIn={handlePressIn} onPressOut={handlePressOut}>
                                         <Image
                                             source={{uri: entry.pictureActual.image_url}}
-                                            style={[{aspectRatio: 1, height: 200}]}
+                                            style={[{aspectRatio: 1, height: 150}]}
                                             resizeMode={"cover"}
                                             className={"rounded-lg"}
                                         />
@@ -284,6 +281,7 @@ const entry = () => {
                                     error={notesError}
                                     errorMessage={"Please only use alphanumeric characters, spaces, and dashes."}
                                     multiline={true}
+                                    placeholder={"Enter notes about the entry here."}
                                     value={notes}
                                     editable={editable}
                                     onChangeText={(text) => setNotes(text)}
@@ -293,45 +291,41 @@ const entry = () => {
                     </TouchableWithoutFeedback>
                 )}
             </View>
-
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={fullImageVisible}
-                onRequestClose={() => {
-                    setFullImageVisible(false);
-                }}>
-                {/* Full Image */}
-                <BlurView intensity={75} style={[StyleSheet.absoluteFill, styles.modalView]}/>
-                <View
-                    className={"my-safe mx-safe-or-4 dark:bg-neutral-900 bg-white border dark:border-neutral-800 border-gray-400 rounded-lg elevation-md p-4"}>
-                    <TouchableWithoutFeedback onPress={() => setFullImageVisible(false)}>
-                        <Image
-                            source={{uri: entry?.pictureActual?.image_url}}
-                            style={{width: "100%", height: "100%"}}
-                            resizeMode={"contain"}
-                            className={"rounded-lg"}
-                        />
-                    </TouchableWithoutFeedback>
-                </View>
-            </Modal>
-            </KeyboardAwareScrollView>
+            <View className={"w-full absolute"}>
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={fullImageVisible}
+                    onRequestClose={() => {
+                        setFullImageVisible(false);
+                    }}>
+                    {/* Full Image */}
+                    <BlurView intensity={75} style={[StyleSheet.absoluteFill, {
+                        shadowColor: '#000',
+                        shadowOffset:
+                            {
+                                width: 0,
+                                height: 2,
+                            },
+                        shadowOpacity: 0.5,
+                        shadowRadius: 4,
+                        elevation: 5,
+                    }]}/>
+                    <View
+                        className={"my-safe mx-safe-or-4 dark:bg-neutral-900 bg-white border dark:border-neutral-800 border-gray-400 rounded-lg  p-4"}>
+                        <TouchableWithoutFeedback onPress={() => setFullImageVisible(false)}>
+                            <Image
+                                source={{uri: entry?.pictureActual?.image_url}}
+                                style={{width: "100%", height: "100%"}}
+                                resizeMode={"contain"}
+                                className={"rounded-lg"}
+                            />
+                        </TouchableWithoutFeedback>
+                    </View>
+                </Modal>
+            </View>
+        </KeyboardAwareScrollView>
     );
 }
-
-const styles = StyleSheet.create({
-    modalView: {
-        shadowColor: '#000',
-        shadowOffset:
-            {
-                width: 0,
-                height: 2,
-            },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-});
-
 
 export default entry;

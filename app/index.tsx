@@ -1,6 +1,12 @@
 import {useEffect, useState} from "react";
 import {useAppSelector} from "@/hooks/store/hooks";
 import {useRouter} from "expo-router";
+import { LogBox } from 'react-native';
+
+LogBox.ignoreLogs([
+    // Ignore 'You are setting the style'
+    'You are setting'
+]);
 
 export default function index() {
     const [mounted, setMounted] = useState(false)

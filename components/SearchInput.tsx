@@ -1,4 +1,4 @@
-import {View, TouchableOpacity} from "react-native";
+import {View, TouchableOpacity, TextInput} from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import React, {forwardRef, useImperativeHandle, useRef, useState} from "react";
 import Input from "@/components/forms/Input";
@@ -28,7 +28,7 @@ const SearchInput = forwardRef<SearchInputRef, SearchInputProps>((props, ref) =>
     }
 
     /* Make this a ref so that it can be accessed from the parent component */
-    const searchInputRef = useRef(null);
+    const searchInputRef = useRef<TextInput>(null);
 
     useImperativeHandle(ref, () => ({
         clearSearch: () => {
@@ -54,8 +54,8 @@ const SearchInput = forwardRef<SearchInputRef, SearchInputProps>((props, ref) =>
         <View className={`flex-row p-2.5 rounded-lg bg-neutral-200 dark:bg-neutral-900 transition ease-linear}`}>
             <FontAwesome style={{marginRight: 10}} name={"search"} size={16} color={setColor()}/>
             <View style={{flex: 1, flexDirection: "row", alignItems: "center"}}>
-                <Input
-                    className={"dark:text-white w-full"}
+                <TextInput
+                    className={"w-full"}
                     autoCorrect={false}
                     autoCapitalize={"none"}
                     ref={searchInputRef}
@@ -65,7 +65,6 @@ const SearchInput = forwardRef<SearchInputRef, SearchInputProps>((props, ref) =>
                     value={searchValue}
                     placeholderTextColor={colors.neutral[400]}
                     placeholder={props.placeholder}
-                    noStyle={true}
                 />
             </View>
             <TouchableOpacity className={"rounded-lg"}>

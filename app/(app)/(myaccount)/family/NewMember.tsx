@@ -282,7 +282,9 @@ const NewMember = () => {
                 </View>
             }
 
-            <CreateProfilePicture visible={modalVisible} onClose={() => setModalVisible(!modalVisible)} onErrors={() => {}} onPicture={(result) => onPicture(result)}/>
+            <View className={"w-full"}>
+                <CreateProfilePicture visible={modalVisible} onClose={() => setModalVisible(!modalVisible)} onErrors={() => {}} onPicture={(result) => onPicture(result)}/>
+            </View>
         </KeyboardAwareScrollView>
     )
 }

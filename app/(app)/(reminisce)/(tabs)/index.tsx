@@ -1,10 +1,4 @@
-import {
-    View,
-    Text,
-    Image,
-    TouchableOpacity,
-    ScrollView, RefreshControl
-} from "react-native";
+import {ActivityIndicator, Image, RefreshControl, Text, TouchableOpacity, View} from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
 import {useAppSelector} from "@/hooks/store/hooks";
 import {Link, useRouter} from "expo-router";
@@ -18,7 +12,7 @@ import NewAlbumForm from "@/components/reminisce/NewAlbumForm";
 import NewPictureForm from "@/components/reminisce/NewPictureForm";
 import * as Haptics from "expo-haptics";
 import {useColorScheme} from "nativewind";
-import {useFocusEffect} from "@react-navigation/native";
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 
 const index = () => {
 
@@ -27,7 +21,7 @@ const index = () => {
     const theme = useThemeColor();
     const { colorScheme: mode } = useColorScheme();
     const [alertType] = useState<"success" | "error">("error");
-    const [message, setMessage] = useState("");
+    const [message] = useState("");
     const [visible, setVisible] = useState(false);
     const [newAlbumVisible, setNewAlbumVisible] = useState(false);
     const [newPictureVisible, setNewPictureVisible] = useState(false);
@@ -39,24 +33,22 @@ const index = () => {
     const {loading, getEntries, familyReminisced} = useReminisce()
     const router = useRouter();
 
-    useFocusEffect(
-        useCallback(() => {
-            const getEntryDates = async () => {
-                const fetchedEntries = await getEntries();
-                if (fetchedEntries) {
-                    setEntryDates(fetchedEntries.map((entry) => {
-                        return entry.created_at;
-                    }));
-                }
+    useEffect(() => {
+        const getEntryDates = async () => {
+            const fetchedEntries = await getEntries();
+            if (fetchedEntries) {
+                setEntryDates(fetchedEntries.map((entry) => {
+                    return entry.created_at;
+                }));
             }
+        }
 
-            getEntryDates().then(() => console.debug("Entry dates fetched"));
-            familyReminisced().then((percent) => {
-                let edited = percent.split(".")[0];
-                setPercentReminisced(edited + "%");
-            });
-        }, [])
-    );
+        getEntryDates().then(() => console.debug("Entry dates fetched"));
+        familyReminisced().then((percent) => {
+            let edited = percent.split(".")[0];
+            setPercentReminisced(edited + "%");
+        });
+    }, []);
 
     useEffect(() => {
 
@@ -105,65 +97,48 @@ const index = () => {
     };
 
     return (
-        <ScrollView style={{backgroundColor: mode === 'dark' ? colors.neutral[800] : colors.neutral[100]}}
-                    contentContainerStyle={{flexGrow: 1}}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            title={"Refreshing..."}
-                            onRefresh={onRefresh}
-                            colors={[colors.blue[500]]}
-                        />
-                    }
+        <KeyboardAwareScrollView style={{backgroundColor: mode === 'dark' ? colors.neutral[800] : colors.neutral[100]}}
+                                 contentContainerStyle={{flexGrow: 1}}
+                                 refreshControl={
+                                     <RefreshControl
+                                         refreshing={refreshing}
+                                         title={"Refreshing..."}
+                                         onRefresh={onRefresh}
+                                         colors={[colors.blue[500]]}
+                                     />
+                                 }
         >
-            <View className={"flex-1 items-center bg-neutral-100 dark:bg-neutral-800 pb-10"}>
-                <View className={"w-full bg-blue-500 dark:bg-neutral-800 p-6"}>
-                    <Alert message={message} type={alertType} onPress={() => {
-                        setVisible(false);
-                    }} visible={visible}/>
-                    <View className={"flex-row items-center"}>
-                        <Image
-                            source={{uri: user?.profile_image}}
-                            style={{width: 100, height: 100}}
-                            className={"mr-4 rounded-lg"}
-                        />
-                        <View className={"p-2 w-3/4"}>
-                            <Text className={"dark:text-white text-2xl font-bold text-white"}>
-                                Hello, {user?.first_name}!
-                            </Text>
-                            <Text className={"mt-2 text-neutral-100 text-base"}>
-                                Get started now! Create a new entry to help someone reminisce.
-                            </Text>
-                        </View>
-                    </View>
-                    <View className={"flex-row items-center justify-between"}>
-                        <TouchableOpacity
-                            onPress={() => router.push("/(app)/(reminisce)/(tabs)/NewEntry")}
-                            className="flex-row items-center mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900">
-                            <MaterialIcons name="add" size={24} color="white" className={"mr-1"}/>
-                            <Text className="text-white">
-                                New Entry
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => setNewPictureVisible(true)}
-                            className="flex-row items-center mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900">
-                            <MaterialIcons name="upload" size={24} color="white" className={"mr-1"}/>
-                            <Text className="text-white">
-                                Upload Picture
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => setNewAlbumVisible(true)}
-                            className="flex-row items-center mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900">
-                            <MaterialIcons name="list" size={24} color="white" className={"mr-1"}/>
-                            <Text className="text-white">
-                                Create Album
-                            </Text>
-                        </TouchableOpacity>
+            <View className={"w-full p-6"}>
+                <Alert message={message} type={alertType} onPress={() => {
+                    setVisible(false);
+                }} visible={visible}/>
+                <View className={"flex flex-row items-center gap-4"}>
+                    <Image
+                        source={{uri: user?.profile_image}}
+                        style={{width: 100, height: 100}}
+                        className={"flex rounded-lg"}
+                    />
+                    <View className={"p-2 flex-1"}>
+                        <Text className={"dark:text-white md:text-xl lg:text-2xl font-bold text-black"}>
+                            Hello, {user?.first_name}!
+                        </Text>
+                        <Text className={"mt-2 text-neutral-600 dark:text-neutral-300 md:text-sm lg:text-base"}>
+                            Get started now! Create a new entry to help someone reminisce.
+                        </Text>
                     </View>
                 </View>
-                <View className={"px-4"}>
+                <View className={"flex flex-row items-center justify-between gap-2"}>
+                    <TouchableOpacity
+                        onPress={() => router.push("/(app)/(reminisce)/(tabs)/NewEntry")}
+                        className="flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900">
+                        <MaterialIcons name="add" size={24} color="white" className={"mr-1"}/>
+                        <Text className="text-white">
+                            Create a new entry
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View>
                     <View
                         className={"xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 rounded-lg xs:mt-1 sm:mt-2 md:mt-3 lg:mt-5 xl:mt-6"}
                         style={{
@@ -185,7 +160,16 @@ const index = () => {
                         </View>
                     </View>
                     <View className={"flex-row gap-4 justify-between w-full"}>
-                        {!loading && (
+                        {loading && percentReminisced === "" && (
+                            <View className={"flex w-full items-center justify-center my-4"}>
+                                <ActivityIndicator
+                                    size={"large"}
+                                    color={colors.blue[500]}
+                                />
+                            </View>
+                        )}
+
+                        {!loading && percentReminisced !== "" && (
                             <View
                                 className={"flex w-full xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 xs:my-1 sm:my-2 md:my-3 lg:my-5 xl:my-6 rounded-lg"}
                                 style={{
@@ -198,7 +182,7 @@ const index = () => {
                                 </Text>
 
                                 <Text className={"text-lg font-bold dark:text-white text-center mt-3"}>
-                                    {percentReminisced === "100%" ? "Great job!" : "Keep it up!"}
+                                    {percentReminisced === "100%" ? "Great job!" : "Reach for 100%!"}
                                 </Text>
 
                                 <View className={"flex-1"}>
@@ -214,53 +198,65 @@ const index = () => {
                             </View>
                         )}
                     </View>
+
                     <View className={"flex-row gap-4 justify-between w-full"} key={"dates"}>
-                        <View
-                            className={"w-full xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 rounded-lg"}
-                            style={{
-                                shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: mode === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}>
-                            <Text className={"dark:text-white text-lg mb-2 font-bold"}>
-                                See when you've reminisced
-                            </Text>
-                            <View className={"flex-row items-center"}>
-                                <View className={"p-1 rounded-3xl bg-blue-500"}/>
-                                <Text className={"text-neutral-500 text-sm ml-2"}>
-                                    Indicates a day you've reminisced
-                                </Text>
-                            </View>
-                            <View className={"flex-row items-center mt-2 mb-2"}>
-                                <Text className={"text-blue-500"}>day</Text>
-                                <Text className={"text-neutral-500 text-sm ml-2"}>
-                                    Indicates today
-                                </Text>
-                            </View>
-                            <View key={mode}>
-                                <Calendar markingType={"custom"}
-                                          theme={{
-                                              backgroundColor: mode === "dark" ? colors.neutral[900] : colors.white,
-                                              calendarBackground: mode === "dark" ? colors.neutral[900] : colors.white,
-                                              textSectionTitleColor: theme.text,
-                                              selectedDayBackgroundColor: colors.blue[500],
-                                              selectedDayTextColor: mode === "dark" ? colors.neutral[900] : colors.neutral[100],
-                                              todayTextColor: colors.blue[500],
-                                              dayTextColor: theme.text,
-                                              textInactiveColor: colors.neutral[500],
-                                              dotColor: colors.blue[500],
-                                              textDayStyle: {color: theme.text},
-                                              monthTextColor: theme.text,
-                                              yearTextColor: theme.text,
-                                              arrowColor: colors.blue[500],
-                                          }}
-                                          markedDates={markedDates}
+                        {loading && entryDates.length === 0 && (
+                            <View className={"flex w-full items-center justify-center my-4"}>
+                                <ActivityIndicator
+                                    size={"large"}
+                                    color={colors.blue[500]}
                                 />
                             </View>
-                        </View>
+                        )}
+
+                        {!loading && entryDates.length > 0 && (
+                            <View
+                                className={"w-full xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 rounded-lg"}
+                                style={{
+                                    shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: mode === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}>
+                                <Text className={"dark:text-white text-lg mb-2 font-bold"}>
+                                    See when you've reminisced
+                                </Text>
+                                <View className={"flex-row items-center"}>
+                                    <View className={"p-1 rounded-3xl bg-blue-500"}/>
+                                    <Text className={"text-neutral-500 text-sm ml-2"}>
+                                        Indicates a day you've reminisced
+                                    </Text>
+                                </View>
+                                <View className={"flex-row items-center mt-2 mb-2"}>
+                                    <Text className={"text-blue-500"}>day</Text>
+                                    <Text className={"text-neutral-500 text-sm ml-2"}>
+                                        Indicates today
+                                    </Text>
+                                </View>
+                                <View key={mode}>
+                                    <Calendar markingType={"custom"}
+                                              theme={{
+                                                  backgroundColor: mode === "dark" ? colors.neutral[900] : colors.white,
+                                                  calendarBackground: mode === "dark" ? colors.neutral[900] : colors.white,
+                                                  textSectionTitleColor: theme.text,
+                                                  selectedDayBackgroundColor: colors.blue[500],
+                                                  selectedDayTextColor: mode === "dark" ? colors.neutral[900] : colors.neutral[100],
+                                                  todayTextColor: colors.blue[500],
+                                                  dayTextColor: theme.text,
+                                                  textInactiveColor: colors.neutral[500],
+                                                  dotColor: colors.blue[500],
+                                                  textDayStyle: {color: theme.text},
+                                                  monthTextColor: theme.text,
+                                                  yearTextColor: theme.text,
+                                                  arrowColor: colors.blue[500],
+                                              }}
+                                              markedDates={markedDates}
+                                    />
+                                </View>
+                            </View>
+                        )}
                     </View>
                 </View>
             </View>
             <NewAlbumForm onSubmitted={onSubmitted} visible={newAlbumVisible} onClose={() => setNewAlbumVisible(!newAlbumVisible)}/>
             <NewPictureForm onSubmitted={onPictureSubmitted} visible={newPictureVisible} onClose={() => setNewPictureVisible(!newPictureVisible)}/>
-        </ScrollView>
+        </KeyboardAwareScrollView>
     )
 }
 
