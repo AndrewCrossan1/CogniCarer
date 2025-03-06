@@ -406,8 +406,12 @@ const familyMember = () => {
                 </Text>
             </TouchableOpacity>
 
-            <ConfRemoveFam visible={confirmDeleteVisible} onClose={() => {setConfirmDeleteVisible(false)}} familyMember={familyMember} onSubmitted={onSubmitted}/>
-            <CreateProfilePicture visible={profilePicVisible} onClose={() => {setProfilePicVisible(false)}} onErrors={() => {}} onPicture={onPicture}/>
+            <View className={"w-full"}>
+                <ConfRemoveFam visible={confirmDeleteVisible} onClose={() => {setConfirmDeleteVisible(false)}} familyMember={familyMember} onSubmitted={onSubmitted}/>
+            </View>
+            <View className={"w-full"}>
+                <CreateProfilePicture visible={profilePicVisible} onClose={() => {setProfilePicVisible(false)}} onErrors={() => {}} onPicture={onPicture}/>
+            </View>
         </KeyboardAwareScrollView>
     )
 }

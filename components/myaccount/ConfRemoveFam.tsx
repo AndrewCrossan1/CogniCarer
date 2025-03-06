@@ -1,4 +1,4 @@
-import {StyleSheet, Modal, View, Text, Image, TouchableOpacity} from "react-native";
+import {StyleSheet, Modal, View, Text, Image, TouchableOpacity, Platform} from "react-native";
 import {BlurView} from "expo-blur";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {Link} from "expo-router";
@@ -32,7 +32,7 @@ const ConfRemoveFam = (props: ConfRemoveFamProps) => {
             onRequestClose={() => {
                 props.onClose();
             }}>
-            <BlurView intensity={75} style={[StyleSheet.absoluteFill, {
+            <BlurView intensity={Platform.OS === "ios" ? 75 : 100} style={[StyleSheet.absoluteFill, {
                     shadowColor: '#000',
                     shadowOffset: {
                         width: 0,
@@ -43,7 +43,7 @@ const ConfRemoveFam = (props: ConfRemoveFamProps) => {
                     elevation: 5,
             }]}/>
 
-            <View className={"flex mt-safe mx-safe-or-4 dark:bg-neutral-900 bg-white rounded-lg p-4"}>
+            <View className={"mt-safe-or-10 mx-4 dark:bg-neutral-900 border dark:border-neutral-900 border-gray-200 bg-white rounded-lg p-4 android:elevation-md"}>
                 <View className={"flex-row justify-start items-center"}>
                     <FontAwesome name={"close"} size={30} color={"red"}
                                  onPress={props.onClose}
@@ -123,7 +123,7 @@ const ConfRemoveFam = (props: ConfRemoveFamProps) => {
                 </Text>
 
                 {/* Buttons */}
-                <View className={"flex-row justify-center gap-2"}>
+                <View className={"flex flex-row justify-center gap-2"}>
                     <TouchableOpacity
                         onPress={
                             // Reset errors and close the modal
@@ -131,7 +131,7 @@ const ConfRemoveFam = (props: ConfRemoveFamProps) => {
                                 props.onSubmitted();
                             }
                         }
-                        className={`flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-blue-500`}>
+                        className={`flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-blue-500`}>
                         <MaterialIcons name="check" size={24} color="white" className={"mr-1"}/>
                         <Text className="text-white">
                             Confirm
@@ -144,7 +144,7 @@ const ConfRemoveFam = (props: ConfRemoveFamProps) => {
                                 props.onClose();
                             }
                         }
-                        className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-red-500"}>
+                        className={"flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-red-500"}>
                         <MaterialIcons name="cancel" size={24} color="white" className={"mr-1"}/>
                         <Text className="text-white">
                             Cancel

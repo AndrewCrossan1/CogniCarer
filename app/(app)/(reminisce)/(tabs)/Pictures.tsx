@@ -1,6 +1,6 @@
 import {
     Image,
-    Modal,
+    Modal, Platform,
     RefreshControl,
     StyleSheet,
     Text,
@@ -269,70 +269,74 @@ const Pictures = () => {
                     </View>
                 )}
             </View>
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={confirmVisible}
-                onRequestClose={() => {
-                    setConfirmVisible(!confirmVisible);
-                }}>
-                <BlurView intensity={75} style={[StyleSheet.absoluteFill, {
-                    shadowColor: '#000',
-                    shadowOffset: {
-                        width: 0,
-                        height: 2,
-                    },
-                    shadowOpacity: 0.5,
-                    shadowRadius: 4,
-                    elevation: 5,
-                }]}/>
-                <View className={"mt-safe mx-safe-or-4 dark:bg-neutral-900 bg-white rounded-lg  p-4"}>
-                    <View className={"flex-row justify-start items-center"}>
-                        <FontAwesome name={"close"} size={30} color={"red"}
-                                     onPress={() => setConfirmVisible(!confirmVisible)}/>
-                        <Text className={"text-lg ml-4 dark:text-white font-bold w-full"}>Delete Pictures</Text>
-                    </View>
-                    <View style={{flex: 1, borderBottomWidth: 1, borderBottomColor: "white", marginVertical: 5}}/>
-                    <Text className={"dark:text-gray-400 mt-2"}>
-                        Are you sure you want to delete the selected pictures?
-                    </Text>
-                    <Text className={"dark:text-red-500 mt-2"}>
-                        This action is irreversible, all selected pictures will be deleted.
-                    </Text>
-                    {selected.map((picture, index) => (
-                        <View className={"p-2 dark:bg-black bg-neutral-100 mt-2 rounded-lg"} key={picture.uuid + "-deletion"}>
-                            <Text className={"dark:text-gray-400"}>
-                                {index + 1}. {picture.title}
-                            </Text>
+            <View className={"w-full"}>
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={confirmVisible}
+                    onRequestClose={() => {
+                        setConfirmVisible(!confirmVisible);
+                    }}>
+                    <BlurView intensity={Platform.OS ? 75: 100} style={[StyleSheet.absoluteFill, {
+                        shadowColor: '#000',
+                        shadowOffset: {
+                            width: 0,
+                            height: 2,
+                        },
+                        shadowOpacity: 0.5,
+                        shadowRadius: 4,
+                        elevation: 5,
+                    }]}/>
+                    <View className={"mt-safe-or-10 mx-4 dark:bg-neutral-900 border dark:border-neutral-900 border-gray-200 bg-white rounded-lg p-4 android:elevation-md"}>
+                        <View className={"flex-row justify-start items-center"}>
+                            <FontAwesome name={"close"} size={30} color={"red"}
+                                         onPress={() => setConfirmVisible(!confirmVisible)}/>
+                            <Text className={"text-lg ml-4 dark:text-white font-bold w-full"}>Delete Pictures</Text>
                         </View>
-                    ))}
-                    <View className={"flex flex-row justify-center gap-2"}>
-                        <TouchableOpacity
-                            onPress={deletePicture}
-                            className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-red-600 dark:bg-neutral-900"}>
-                            <MaterialIcons name="delete" size={24} color="white" className={"mr-1"} />
-                            <Text className="text-white">
-                                Delete
-                            </Text>
-                        </TouchableOpacity>
+                        <View style={{flex: 1, borderBottomWidth: 1, borderBottomColor: "white", marginVertical: 5}}/>
+                        <Text className={"dark:text-gray-400 mt-2"}>
+                            Are you sure you want to delete the selected pictures?
+                        </Text>
+                        <Text className={"dark:text-red-500 mt-2"}>
+                            This action is irreversible, all selected pictures will be deleted.
+                        </Text>
+                        {selected.map((picture, index) => (
+                            <View className={"p-2 dark:bg-black bg-neutral-100 mt-2 rounded-lg"} key={picture.uuid + "-deletion"}>
+                                <Text className={"dark:text-gray-400"}>
+                                    {index + 1}. {picture.title}
+                                </Text>
+                            </View>
+                        ))}
+                        <View className={"flex flex-row justify-center gap-2"}>
+                            <TouchableOpacity
+                                onPress={deletePicture}
+                                className={"flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-red-600"}>
+                                <MaterialIcons name="delete" size={24} color="white" className={"mr-1"} />
+                                <Text className="text-white">
+                                    Delete
+                                </Text>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity
-                            onPress={() => {
-                                setConfirmVisible(!confirmVisible)
-                                // Deselect all albums
-                                setSelected([]);
-                                setCanSelect(false);
-                            }}
-                            className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900"}>
-                            <MaterialIcons name="cancel" size={24} color="white" className={"mr-1"} />
-                            <Text className="text-white">
-                                Cancel
-                            </Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setConfirmVisible(!confirmVisible)
+                                    // Deselect all albums
+                                    setSelected([]);
+                                    setCanSelect(false);
+                                }}
+                                className={"flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-blue-600"}>
+                                <MaterialIcons name="cancel" size={24} color="white" className={"mr-1"} />
+                                <Text className="text-white">
+                                    Cancel
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
-            </Modal>
-            <NewPictureForm visible={newPictureVisible} onSubmitted={onSubmitted} onClose={() => setNewPictureVisible(!newPictureVisible)}/>
+                </Modal>
+            </View>
+            <View className={"w-full"}>
+                <NewPictureForm visible={newPictureVisible} onSubmitted={onSubmitted} onClose={() => setNewPictureVisible(!newPictureVisible)}/>
+            </View>
         </KeyboardAwareScrollView>
     )
 }

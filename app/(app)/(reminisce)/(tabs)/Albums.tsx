@@ -1,5 +1,5 @@
 import {
-    Image, Modal,
+    Image, Modal, Platform,
     RefreshControl,
     StyleSheet,
     Text,
@@ -158,7 +158,7 @@ const Albums = () => {
                                             onRefresh={onRefresh}/>
                         </View>
                     }>
-                <View className={"w-full p-6"}>
+                <View className={`w-full p-6`}>
                     <Alert message={message} type={alertType} onPress={() => {
                         setVisible(false);
                     }} visible={visible} />
@@ -293,72 +293,76 @@ const Albums = () => {
                 )}
             </View>
 
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={confirmVisible}
-                onRequestClose={() => {
-                    setConfirmVisible(!confirmVisible);
-                }}>
-                <BlurView intensity={75}
-                          style={[StyleSheet.absoluteFill, {
-                              shadowColor: '#000',
-                              shadowOffset: {
-                                  width: 0,
-                                  height: 2,
-                              },
-                              shadowOpacity: 0.5,
-                              shadowRadius: 4,
-                              elevation: 5,
-                          }]}
-                />
-                <View className={"mt-safe mx-safe-or-4 dark:bg-neutral-900 bg-white rounded-lg p-4"}>
-                    <View className={"flex-row justify-start items-center"}>
-                        <FontAwesome name={"close"} size={30} color={"red"}
-                                     onPress={() => setConfirmVisible(!confirmVisible)}/>
-                        <Text className={"text-lg ml-4 dark:text-white font-bold w-full"}>Delete Albums</Text>
-                    </View>
-                    <View style={{flex: 1, borderBottomWidth: 1, borderBottomColor: "white", marginVertical: 5}}/>
-                    <Text className={"dark:text-gray-400 mt-2"}>
-                        Are you sure you want to delete the selected albums?
-                    </Text>
-                    <Text className={"text-red-500 mt-2"}>
-                        This action is irreversible, any pictures in the album will not be affected.
-                    </Text>
-                    {selected.map((album, index) => (
-                        <View className={"p-2 dark:bg-black bg-neutral-100 mt-2 rounded-lg"} key={"selected" + album.uuid}>
-                            <Text className={"dark:text-white"}>
-                                {index + 1}. {album.title}
-                            </Text>
+            <View className={`w-full`}>
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={confirmVisible}
+                    onRequestClose={() => {
+                        setConfirmVisible(false);
+                    }}>
+                        <BlurView intensity={Platform.OS === "ios" ? 75 : 100}
+                              style={[StyleSheet.absoluteFill, {
+                                  shadowColor: '#000',
+                                  shadowOffset: {
+                                      width: 0,
+                                      height: 2,
+                                  },
+                                  shadowOpacity: 0.5,
+                                  shadowRadius: 4,
+                                  elevation: 5,
+                              }]}
+                        />
+                    <View className={"mt-safe-or-10 mx-4 dark:bg-neutral-900 border dark:border-neutral-900 border-gray-200 bg-white rounded-lg p-4 android:elevation-md"}>
+                        <View className={"flex-row justify-start items-center"}>
+                            <FontAwesome name={"close"} size={30} color={"red"}
+                                         onPress={() => setConfirmVisible(false)}/>
+                            <Text className={"text-lg ml-4 dark:text-white font-bold w-full"}>Delete Albums</Text>
                         </View>
-                    ))}
-                    <View className={"flex flex-row justify-center gap-2"}>
-                        <TouchableOpacity
-                            onPress={() => deleteAlbum()}
-                            className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-red-600 dark:bg-neutral-900"}>
-                            <MaterialIcons name="delete" size={24} color="white" className={"mr-1"} />
-                            <Text className="text-white">
-                                Delete
-                            </Text>
-                        </TouchableOpacity>
+                        <View style={{flex: 1, borderBottomWidth: 1, borderBottomColor: "white", marginVertical: 5}}/>
+                        <Text className={"dark:text-gray-400 mt-2"}>
+                            Are you sure you want to delete the selected albums?
+                        </Text>
+                        <Text className={"text-red-500 mt-2"}>
+                            This action is irreversible, any pictures in the album will not be affected.
+                        </Text>
+                        {selected.map((album, index) => (
+                            <View className={"p-2 dark:bg-black bg-neutral-100 mt-2 rounded-lg"} key={"selected" + album.uuid}>
+                                <Text className={"dark:text-white"}>
+                                    {index + 1}. {album.title}
+                                </Text>
+                            </View>
+                        ))}
+                        <View className={"flex flex-row justify-center gap-2"}>
+                            <TouchableOpacity
+                                onPress={() => deleteAlbum()}
+                                className={"flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-red-600"}>
+                                <MaterialIcons name="delete" size={24} color="white" className={"mr-1"} />
+                                <Text className="text-white">
+                                    Delete
+                                </Text>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity
-                            onPress={() => {
-                                setConfirmVisible(!confirmVisible)
-                                // Deselect all albums
-                                setSelected([]);
-                                setCanSelect(false);
-                            }}
-                            className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900"}>
-                            <MaterialIcons name="cancel" size={24} color="white" className={"mr-1"} />
-                            <Text className="text-white">
-                                Cancel
-                            </Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setConfirmVisible(false)
+                                    // Deselect all albums
+                                    setSelected([]);
+                                    setCanSelect(false);
+                                }}
+                                className={"flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-blue-600"}>
+                                <MaterialIcons name="cancel" size={24} color="white" className={"mr-1"} />
+                                <Text className="text-white">
+                                    Cancel
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
-            </Modal>
-            <NewAlbumForm visible={newAlbumVisible} onSubmitted={onSubmitted} onClose={() => setNewAlbumVisible(!newAlbumVisible)}/>
+                </Modal>
+            </View>
+            <View className={"w-full absolute"}>
+                <NewAlbumForm visible={newAlbumVisible} onSubmitted={onSubmitted} onClose={() => setNewAlbumVisible(!newAlbumVisible)}/>
+            </View>
         </KeyboardAwareScrollView>
     )
 }

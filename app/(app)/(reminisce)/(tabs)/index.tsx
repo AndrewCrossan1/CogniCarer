@@ -1,10 +1,4 @@
-import {
-    View,
-    Text,
-    Image,
-    TouchableOpacity,
-    RefreshControl
-} from "react-native";
+import {ActivityIndicator, Image, RefreshControl, Text, TouchableOpacity, View} from "react-native";
 import {MaterialIcons} from "@expo/vector-icons";
 import {useAppSelector} from "@/hooks/store/hooks";
 import {Link, useRouter} from "expo-router";
@@ -18,7 +12,6 @@ import NewAlbumForm from "@/components/reminisce/NewAlbumForm";
 import NewPictureForm from "@/components/reminisce/NewPictureForm";
 import * as Haptics from "expo-haptics";
 import {useColorScheme} from "nativewind";
-import {useFocusEffect} from "@react-navigation/native";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 
 const index = () => {
@@ -40,24 +33,22 @@ const index = () => {
     const {loading, getEntries, familyReminisced} = useReminisce()
     const router = useRouter();
 
-    useFocusEffect(
-        useCallback(() => {
-            const getEntryDates = async () => {
-                const fetchedEntries = await getEntries();
-                if (fetchedEntries) {
-                    setEntryDates(fetchedEntries.map((entry) => {
-                        return entry.created_at;
-                    }));
-                }
+    useEffect(() => {
+        const getEntryDates = async () => {
+            const fetchedEntries = await getEntries();
+            if (fetchedEntries) {
+                setEntryDates(fetchedEntries.map((entry) => {
+                    return entry.created_at;
+                }));
             }
+        }
 
-            getEntryDates().then(() => console.debug("Entry dates fetched"));
-            familyReminisced().then((percent) => {
-                let edited = percent.split(".")[0];
-                setPercentReminisced(edited + "%");
-            });
-        }, [])
-    );
+        getEntryDates().then(() => console.debug("Entry dates fetched"));
+        familyReminisced().then((percent) => {
+            let edited = percent.split(".")[0];
+            setPercentReminisced(edited + "%");
+        });
+    }, []);
 
     useEffect(() => {
 
@@ -169,7 +160,16 @@ const index = () => {
                         </View>
                     </View>
                     <View className={"flex-row gap-4 justify-between w-full"}>
-                        {!loading && (
+                        {loading && percentReminisced === "" && (
+                            <View className={"flex w-full items-center justify-center my-4"}>
+                                <ActivityIndicator
+                                    size={"large"}
+                                    color={colors.blue[500]}
+                                />
+                            </View>
+                        )}
+
+                        {!loading && percentReminisced !== "" && (
                             <View
                                 className={"flex w-full xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 xs:my-1 sm:my-2 md:my-3 lg:my-5 xl:my-6 rounded-lg"}
                                 style={{
@@ -198,47 +198,59 @@ const index = () => {
                             </View>
                         )}
                     </View>
+
                     <View className={"flex-row gap-4 justify-between w-full"} key={"dates"}>
-                        <View
-                            className={"w-full xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 rounded-lg"}
-                            style={{
-                                shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: mode === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}>
-                            <Text className={"dark:text-white text-lg mb-2 font-bold"}>
-                                See when you've reminisced
-                            </Text>
-                            <View className={"flex-row items-center"}>
-                                <View className={"p-1 rounded-3xl bg-blue-500"}/>
-                                <Text className={"text-neutral-500 text-sm ml-2"}>
-                                    Indicates a day you've reminisced
-                                </Text>
-                            </View>
-                            <View className={"flex-row items-center mt-2 mb-2"}>
-                                <Text className={"text-blue-500"}>day</Text>
-                                <Text className={"text-neutral-500 text-sm ml-2"}>
-                                    Indicates today
-                                </Text>
-                            </View>
-                            <View key={mode}>
-                                <Calendar markingType={"custom"}
-                                          theme={{
-                                              backgroundColor: mode === "dark" ? colors.neutral[900] : colors.white,
-                                              calendarBackground: mode === "dark" ? colors.neutral[900] : colors.white,
-                                              textSectionTitleColor: theme.text,
-                                              selectedDayBackgroundColor: colors.blue[500],
-                                              selectedDayTextColor: mode === "dark" ? colors.neutral[900] : colors.neutral[100],
-                                              todayTextColor: colors.blue[500],
-                                              dayTextColor: theme.text,
-                                              textInactiveColor: colors.neutral[500],
-                                              dotColor: colors.blue[500],
-                                              textDayStyle: {color: theme.text},
-                                              monthTextColor: theme.text,
-                                              yearTextColor: theme.text,
-                                              arrowColor: colors.blue[500],
-                                          }}
-                                          markedDates={markedDates}
+                        {loading && entryDates.length === 0 && (
+                            <View className={"flex w-full items-center justify-center my-4"}>
+                                <ActivityIndicator
+                                    size={"large"}
+                                    color={colors.blue[500]}
                                 />
                             </View>
-                        </View>
+                        )}
+
+                        {!loading && entryDates.length > 0 && (
+                            <View
+                                className={"w-full xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 rounded-lg"}
+                                style={{
+                                    shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: mode === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}>
+                                <Text className={"dark:text-white text-lg mb-2 font-bold"}>
+                                    See when you've reminisced
+                                </Text>
+                                <View className={"flex-row items-center"}>
+                                    <View className={"p-1 rounded-3xl bg-blue-500"}/>
+                                    <Text className={"text-neutral-500 text-sm ml-2"}>
+                                        Indicates a day you've reminisced
+                                    </Text>
+                                </View>
+                                <View className={"flex-row items-center mt-2 mb-2"}>
+                                    <Text className={"text-blue-500"}>day</Text>
+                                    <Text className={"text-neutral-500 text-sm ml-2"}>
+                                        Indicates today
+                                    </Text>
+                                </View>
+                                <View key={mode}>
+                                    <Calendar markingType={"custom"}
+                                              theme={{
+                                                  backgroundColor: mode === "dark" ? colors.neutral[900] : colors.white,
+                                                  calendarBackground: mode === "dark" ? colors.neutral[900] : colors.white,
+                                                  textSectionTitleColor: theme.text,
+                                                  selectedDayBackgroundColor: colors.blue[500],
+                                                  selectedDayTextColor: mode === "dark" ? colors.neutral[900] : colors.neutral[100],
+                                                  todayTextColor: colors.blue[500],
+                                                  dayTextColor: theme.text,
+                                                  textInactiveColor: colors.neutral[500],
+                                                  dotColor: colors.blue[500],
+                                                  textDayStyle: {color: theme.text},
+                                                  monthTextColor: theme.text,
+                                                  yearTextColor: theme.text,
+                                                  arrowColor: colors.blue[500],
+                                              }}
+                                              markedDates={markedDates}
+                                    />
+                                </View>
+                            </View>
+                        )}
                     </View>
                 </View>
             </View>

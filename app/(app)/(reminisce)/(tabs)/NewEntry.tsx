@@ -232,11 +232,11 @@ const NewEntry = () => {
                 />
             </View>
 
-            <View className={"w-full p-6"}>
+            <View className={"w-full px-6 p-4"}>
                 {/* While there is no image selected, show the patient and image dropdowns */}
                 {!selectedPicture && (
                     <View>
-                        <TouchableOpacity activeOpacity={0.5} className={"flex xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 rounded-lg mb-6"}
+                        <View className={"flex xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 rounded-lg mb-6"}
                                           style={{
                                               shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}>
                             <View className={"flex-1"}>
@@ -251,7 +251,7 @@ const NewEntry = () => {
                                     It can help create social skills, improve mood, and even cognitive function in some cases!
                                 </Text>
                             </View>
-                        </TouchableOpacity>
+                        </View>
 
                         <Text className={"text-lg dark:text-white font-semibold my-2"}>
                             Which family member would you like to help reminisce?
@@ -281,12 +281,12 @@ const NewEntry = () => {
                     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                         <View>
                             <View className={"flex flex-row gap-10 items-center rounded-lg"}>
-                                <Animated.View className={"w-1/2 rounded-lg flex-1"} style={[animatedStyle]}>
+                                <Animated.View className={"rounded-lg flex"} style={[animatedStyle]}>
                                     <TouchableWithoutFeedback onLongPress={() => handleLongPress()}
                                                               onPressIn={handlePressIn} onPressOut={handlePressOut}>
                                         <Image
                                             source={{uri: selectedPicture.image_url}}
-                                            style={[{aspectRatio: 1, height: 200}]}
+                                            style={[{aspectRatio: 1, height: 150}]}
                                             resizeMode={"cover"}
                                             className={"rounded-lg"}
                                             loadingIndicatorSource={loading}
@@ -396,7 +396,8 @@ const NewEntry = () => {
                                     </View>
                                 </TouchableWithoutFeedback>
                                 <View className={`${tipsVisible ? "" : "hidden"}`}>
-                                    <View className={"bg-white rounded-lg p-3 my-2 dark:bg-neutral-900"}>
+                                    <View className={"bg-white rounded-lg p-3 my-2 dark:bg-neutral-900"} style={{
+                                        shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}>
                                         <View>
                                             <Text className={"font-bold dark:text-white mb-1"}>
                                                 Q: What should I write about?
@@ -408,7 +409,8 @@ const NewEntry = () => {
                                         </Text>
                                     </View>
 
-                                    <View className={"bg-white rounded-lg p-3 my-2 dark:bg-neutral-900"}>
+                                    <View className={"bg-white rounded-lg p-3 my-2 dark:bg-neutral-900"} style={{
+                                        shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}>
                                         <Text className={"font-bold dark:text-white mb-1"}>
                                             Q: What if I don't remember?
                                         </Text>
@@ -418,7 +420,8 @@ const NewEntry = () => {
                                         </Text>
                                     </View>
 
-                                    <View className={"bg-white rounded-lg p-3 my-2 dark:bg-neutral-900"}>
+                                    <View className={"bg-white rounded-lg p-3 my-2 dark:bg-neutral-900"} style={{
+                                        shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}>
                                         <Text className={"font-bold dark:text-white mb-1"}>
                                             Q: What if I remember something later?
                                         </Text>
@@ -427,7 +430,8 @@ const NewEntry = () => {
                                         </Text>
                                     </View>
 
-                                    <View className={"bg-white rounded-lg p-3 my-2 dark:bg-neutral-900"}>
+                                    <View className={"bg-white rounded-lg p-3 my-2 dark:bg-neutral-900"} style={{
+                                        shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}>
                                         <Text className={"font-bold dark:text-white mb-1"}>
                                             Q: What if I need help?
                                         </Text>

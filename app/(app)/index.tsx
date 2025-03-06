@@ -167,7 +167,7 @@ export default function Home() {
                     </TouchableOpacity>
 
                     {/* Have you helped anyone reminisce today */}
-                    <View className={"flex-row gap-2 justify-between"}>
+                    <View className={"flex-row gap-2 justify-between my-2"}>
                         <TouchableOpacity
                             onPress={() => {
                                 router.push(`/(app)/(reminisce)/(tabs)/NewEntry`);

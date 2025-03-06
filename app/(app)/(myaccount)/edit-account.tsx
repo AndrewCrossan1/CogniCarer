@@ -267,8 +267,9 @@ const editAccount = () => {
                 )}
             </View>
             }
-
-            <NewProfilePicture visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} onSubmitted={onNewProfilePictureSubmit} form={form} onErrors={onErrors}/>
+            <View className={"w-full"}>
+                <NewProfilePicture visible={profileModalVisible} onClose={() => setProfileModalVisible(false)} onSubmitted={onNewProfilePictureSubmit} form={form} onErrors={onErrors}/>
+            </View>
         </KeyboardAwareScrollView>
     );
 }

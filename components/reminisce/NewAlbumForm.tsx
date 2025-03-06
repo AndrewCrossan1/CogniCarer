@@ -1,4 +1,4 @@
-import {Modal, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Modal, Platform, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {BlurView} from "expo-blur";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {Dropdown} from "@/components/forms/Dropdown";
@@ -132,7 +132,7 @@ const NewAlbum = (props: NewAlbumProps) => {
                 animationType="slide"
                 transparent={true}
                 visible={visible}>
-                <BlurView intensity={75} style={[StyleSheet.absoluteFill, {
+                <BlurView intensity={Platform.OS === "ios" ? 75 : 100 } style={[StyleSheet.absoluteFill, {
                     shadowColor: '#000',
                     shadowOffset: {
                         width: 0,
@@ -142,7 +142,7 @@ const NewAlbum = (props: NewAlbumProps) => {
                     shadowRadius: 4,
                     elevation: 5,
                 }]}/>
-                <View className={"mt-safe mx-safe-or-4 dark:bg-neutral-900 bg-white rounded-lg p-4"}>
+                <View className={"mt-safe-or-10 mx-4 dark:bg-neutral-900 border dark:border-neutral-900 border-gray-200 bg-white rounded-lg p-4 android:elevation-md"}>
                     <View className={"flex-row justify-start items-center"}>
                         <FontAwesome name={"close"} size={30} color={"red"}
                                      onPress={props.onClose}
