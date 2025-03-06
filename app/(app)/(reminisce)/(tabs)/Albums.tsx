@@ -14,7 +14,7 @@ import colors from "tailwindcss/colors";
 import {useReminisce} from "@/hooks/useReminisce";
 import {UserAlbum} from "@/services/api/types";
 import * as Haptics from "expo-haptics";
-import {Easing, useAnimatedStyle, useSharedValue, withTiming} from "react-native-reanimated";
+import {Easing, useSharedValue, withTiming} from "react-native-reanimated";
 import {BlurView} from "expo-blur";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import NewAlbumForm from "@/components/reminisce/NewAlbumForm";
