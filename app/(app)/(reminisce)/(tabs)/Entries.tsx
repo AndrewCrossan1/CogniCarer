@@ -1,7 +1,6 @@
 import {
     Image, Modal,
     RefreshControl,
-    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -12,13 +11,14 @@ import colors from "tailwindcss/colors";
 import {Alert} from "@/components/Alert";
 import {useCallback, useEffect, useState} from "react";
 import {ReminisceEntry} from "@/services/api/types";
-import Animated, {Easing, useAnimatedStyle, useSharedValue, withTiming} from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import {useColorScheme} from "nativewind"
 import {useReminisce} from "@/hooks/useReminisce";
 import {BlurView} from "expo-blur";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {useRouter} from "expo-router";
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
+import Selector from "@/components/forms/Selector";
 
 const Entries = () => {
 
@@ -35,7 +35,6 @@ const Entries = () => {
     const { getEntries, loading, deleteItem } = useReminisce()
     const [confirmVisible, setConfirmVisible] = useState(false);
     const [alertType, setAlertType] = useState<"success" | "error">("error");
-
 
     const onSelectPress = () => {
         if (!canSelect) {
@@ -117,113 +116,68 @@ const Entries = () => {
         }
     }, [confirmVisible, selected, deleteItem, getEntries]);
 
-    // Selected Animations
-    const maxHeight = useSharedValue(0)
-
-    useEffect(() => {
-        if (selected.length > 0) {
-            maxHeight.value = withTiming(200, {
-                duration: 1500,
-                easing: Easing.out(Easing.exp)
-            })
-        } else {
-            maxHeight.value = withTiming(0, {
-                duration: 1500,
-                easing: Easing.out(Easing.exp)
-            })
-        }
-    }, [selected.length]);
-
-    const animatedStyle = useAnimatedStyle(() => ({
-        maxHeight: maxHeight.value,
-        opacity: maxHeight.value > 0 ? 1 : 0
-    }))
-
     return (
-        <ScrollView className={"dark:bg-neutral-800 bg-neutral-100"} contentContainerStyle={{flexGrow: 1}}
-                    refreshControl={
-                        <View>
-                            <RefreshControl title={"Refreshing..."} titleColor={colors.neutral[400]}
-                                            tintColor={colors.neutral[400]} refreshing={refreshing}
-                                            onRefresh={onRefresh}/>
-                        </View>
-                    }>
-            <View className={"flex-1 items-center dark:bg-neutral-800 pb-10"}>
-                <View className={"w-full bg-blue-500 dark:bg-neutral-800 md:p-4 lg:p-6"}>
-                    <Alert message={message} type={alertType} onPress={() => {
-                        setVisible(false);
-                    }} visible={visible} />
-                    <View className={"flex-row items-center"}>
-                        <View className={"flex-col"}>
-                            <Image
-                                source={image}
-                                style={{width: 100, height: 100}}
-                                className={"mr-4 rounded-lg"}
-                            />
-                        </View>
-                        <View className={"flex-col w-2/3"}>
-                            <Text className={"dark:text-white md:text-xl lg:text-2xl font-bold text-white"}>
-                                Reminiscence Entries
-                            </Text>
-                            <Text className={"mt-1 text-neutral-100 md:text-base lg:text-base"}>
-                                See past entries and reminisce on previous memories.
-                            </Text>
-                        </View>
-                    </View>
-                    <View className={"flex-row items-center gap-2 justify-between w-full"}>
-                        <TouchableOpacity
-                            onPress={
-                                () => {
-                                    router.push("/(app)/(reminisce)/(tabs)/NewEntry");
-                                }
-                            }
-                            className="flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900">
-                            <MaterialIcons name="add" size={24} color="white" className={"mr-1"} />
-                            <Text className="text-white">
-                                Create Entry
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => {
-                                onSelectPress();
-                            }}
-                            className={`flex-row items-center mt-3 w-1/2 rounded-lg p-2 ${canSelect ? 'bg-amber-500' : 'bg-blue-600'} dark:bg-neutral-900`}>
-                            <MaterialIcons name={canSelect ? 'cancel' : 'edit'} size={24} color="white" className={"mr-1"} />
-                            <Text className="text-white">
-                                {canSelect ? "Cancel" : "Select Entries"}
-                            </Text>
-                        </TouchableOpacity>
+        <KeyboardAwareScrollView className={"dark:bg-neutral-800 bg-neutral-100"} contentContainerStyle={{flexGrow: 1}}
+                                 refreshControl={
+                                     <View>
+                                         <RefreshControl title={"Refreshing..."} titleColor={colors.neutral[400]}
+                                                         tintColor={colors.neutral[400]} refreshing={refreshing}
+                                                         onRefresh={onRefresh}/>
+                                     </View>
+                                 }>
+            <View className={"w-full p-6"}>
+                <Alert message={message} type={alertType} onPress={() => {
+                    setVisible(false);
+                }} visible={visible} />
+                <View className={"flex flex-row items-center gap-4"} style={{
+                    shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}
+                >
+                    <Image source={image} style={{width: 100, height: 100}} className={"rounded-lg flex"}/>
+                    <View className={"p-2 flex-1"}>
+                        <Text className={"dark:text-white md:text-xl lg:text-2xl font-bold text-black"}>
+                            Reminiscence Entries
+                        </Text>
+                        <Text className={"mt-2 text-neutral-600 dark:text-neutral-300 md:text-sm lg:text-base"}>
+                            See past entries and reminisce on previous memories.
+                        </Text>
                     </View>
                 </View>
-                {/* Selected album dropdown choices (Delete, etc.) */}
-                <Animated.View style={[styles.selectedContainer, animatedStyle]}>
-                    {canSelect && selected.length > 0 &&
-                      <View className={"w-full px-4 pt-4 flex-row items-center justify-between"}>
-                        <Text className={"dark:text-white text-lg font-bold"}>
-                          Selected Entries
+                <View className={"flex flex-row items-center gap-2 justify-between w-full"}>
+                    <TouchableOpacity
+                        onPress={
+                            () => {
+                                router.push("/(app)/(reminisce)/(tabs)/NewEntry");
+                            }
+                        }
+                        className="flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900">
+                        <MaterialIcons name="add" size={24} color="white" className={"mr-1"} />
+                        <Text className="text-white">
+                            Create Entry
                         </Text>
-                        <Text className={"text-blue-500 text-sm"}>
-                            {selected.length} Selected
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => {
+                            onSelectPress();
+                        }}
+                        className={`flex-1 flex-row items-center mt-3 rounded-lg p-2 ${canSelect ? 'bg-amber-500' : 'bg-blue-600'} dark:bg-neutral-900`}>
+                        <MaterialIcons name={canSelect ? 'cancel' : 'edit'} size={24} color="white" className={"mr-1"} />
+                        <Text className="text-white">
+                            {canSelect ? "Cancel" : "Select Entries"}
                         </Text>
-                      </View>
-                    }
-                    {canSelect && selected.length > 0 &&
-                      <View>
-                        <View className={"flex-row items-center justify-center gap-5 px-4 w-full"}>
-                          <TouchableOpacity
-                            onPress={() => {
-                                deleteEntry();
-                            }}
-                            className="flex-row items-center mt-3 w-full rounded-lg p-2 bg-red-600 dark:bg-neutral-900">
-                            <MaterialIcons name="delete" size={24} color="white" className={"mr-1"} />
-                            <Text className="text-white">
-                              Delete
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-                    }
-                </Animated.View>
+                    </TouchableOpacity>
+                </View>
+
+                {/* Separator */}
+                <View
+                    className={"flex border-b dark:border-b-neutral-600 border-b-neutral-300 mt-3"}
+                />
+            </View>
+
+            <View className={"w-full p-4"}>
+                {/* Selected entries dropdown choices (Delete, etc.) */}
+                <View className={"mb-2"}>
+                    <Selector canSelect={canSelect} selected={selected} onSelect={onSelectPress} setConfirmVisible={setConfirmVisible} confirmVisible={confirmVisible} label={"Entries"}/>
+                </View>
 
                 {!loading && entries.length === 0 &&
                   <View className={"w-full flex-col items-center justify-center mt-2"}>
@@ -237,8 +191,7 @@ const Entries = () => {
                 }
 
                 {/* Every 2 albums (Columns) create a new row */}
-                {!loading &&
-                  <View className={"w-full md:p-2 lg:p-4"}>
+                {!loading && (
                     <View className={"flex-row flex-wrap justify-start"}>
                         {entries.map((entry) => (
                             <TouchableOpacity
@@ -300,8 +253,7 @@ const Entries = () => {
                             </TouchableOpacity>
                         ))}
                     </View>
-                  </View>
-                }
+                )}
             </View>
 
             <Modal
@@ -321,7 +273,7 @@ const Entries = () => {
                     shadowRadius: 4,
                     elevation: 5,
                 }]} />
-                <View className={"mt-safe mx-safe-or-4 dark:bg-neutral-900 bg-white rounded-lg elevation-md p-4"}>
+                <View className={"mt-safe mx-safe-or-4 dark:bg-neutral-900 bg-white rounded-lg p-4"}>
                     <View className={"flex-row justify-start items-center"}>
                         <FontAwesome name={"close"} size={30} color={"red"}
                                      onPress={() => setConfirmVisible(!confirmVisible)}/>
@@ -346,7 +298,7 @@ const Entries = () => {
                             onPress={() => {
                                 deleteEntry();
                             }}
-                            className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-red-600 dark:bg-neutral-900"}>
+                            className={"flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-red-600 dark:bg-neutral-900"}>
                             <MaterialIcons name="delete" size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
                                 Delete
@@ -360,7 +312,7 @@ const Entries = () => {
                                 setSelected([]);
                                 setCanSelect(false);
                             }}
-                            className={"flex-row items-center w-1/2 mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900"}>
+                            className={"flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900"}>
                             <MaterialIcons name="cancel" size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
                                 Cancel
@@ -369,15 +321,8 @@ const Entries = () => {
                     </View>
                 </View>
             </Modal>
-        </ScrollView>
+        </KeyboardAwareScrollView>
     )
 }
-
-const styles = StyleSheet.create({
-    selectedContainer: {
-        flex: 1,
-        overflow: 'hidden',
-    },
-})
 
 export default Entries;

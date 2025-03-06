@@ -186,8 +186,16 @@ const NewPictureForm = (props: NewAlbumProps) => {
                 animationType="slide"
                 transparent={true}
                 visible={visible}>
-                <BlurView intensity={75} style={[StyleSheet.absoluteFill, styles.modalView]}/>
-                <View className={"mt-safe mx-safe-or-4 dark:bg-neutral-900 border dark:border-neutral-800 border-gray-400 bg-white rounded-lg elevation-md p-4"}>
+                <BlurView intensity={75} style={[StyleSheet.absoluteFill, {
+                    shadowOffset: {
+                        width: 0,
+                        height: 2,
+                    },
+                    shadowOpacity: 0.5,
+                    shadowRadius: 4,
+                    elevation: 5,
+                }]}/>
+                <View className={"mt-safe mx-safe-or-4 dark:bg-neutral-900 border dark:border-neutral-800 border-gray-400 bg-white rounded-lg p-4"}>
                     <View className={"flex-row justify-start items-center"}>
                         <FontAwesome name={"close"} size={30} color={"red"}
                                      onPress={props.onClose}
@@ -309,18 +317,5 @@ const NewPictureForm = (props: NewAlbumProps) => {
         </>
     )
 }
-
-const styles = StyleSheet.create({
-    modalView: {
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-});
 
 export default NewPictureForm;

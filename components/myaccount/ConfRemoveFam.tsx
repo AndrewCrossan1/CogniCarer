@@ -22,15 +22,6 @@ interface ConfRemoveFamProps {
 const ConfRemoveFam = (props: ConfRemoveFamProps) => {
 
     const {colorScheme} = useColorScheme();
-    const styles = StyleSheet.create({
-        modalView: {
-            shadowColor: colors.black,
-            shadowOffset: {width: 0, height: 2},
-            shadowOpacity: colorScheme === "dark" ? 0.50 : 0.20,
-            shadowRadius: 3.84,
-            elevation: 2
-        },
-    });
 
     return (
         <Modal
@@ -41,7 +32,16 @@ const ConfRemoveFam = (props: ConfRemoveFamProps) => {
             onRequestClose={() => {
                 props.onClose();
             }}>
-            <BlurView intensity={75} style={[StyleSheet.absoluteFill, styles.modalView]}/>
+            <BlurView intensity={75} style={[StyleSheet.absoluteFill, {
+                    shadowColor: '#000',
+                    shadowOffset: {
+                        width: 0,
+                        height: 2,
+                    },
+                    shadowOpacity: 0.5,
+                    shadowRadius: 4,
+                    elevation: 5,
+            }]}/>
 
             <View className={"flex mt-safe mx-safe-or-4 dark:bg-neutral-900 bg-white rounded-lg p-4"}>
                 <View className={"flex-row justify-start items-center"}>

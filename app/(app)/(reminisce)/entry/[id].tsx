@@ -66,20 +66,6 @@ const entry = () => {
         shadowRadius.value = withTiming(0, {duration: 300});
     }
 
-    const animatedStyle = useAnimatedStyle(() => {
-        return {
-            transform: [{scale: scale.value}],
-            shadowOpacity: shadowOpacity.value,
-            shadowRadius: shadowRadius.value,
-            shadowOffset: {
-                width: shadow.value,
-                height: shadow.value
-            },
-            shadowColor: "#000",
-            borderRadius: 10
-        }
-    });
-
     const getE = async () => {
         // Get the entry with ID
         getEntries().then((entries) => {
@@ -195,7 +181,19 @@ const entry = () => {
                     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                         <View>
                             <View className={"flex-row gap-10 items-center rounded-lg"}>
-                                <Animated.View className={"w-1/2 rounded-lg"} style={[animatedStyle]}>
+                                <Animated.View className={"w-1/2 rounded-lg"} style={[{
+                                    shadowOffset: {
+                                        width: shadow.value,
+                                        height: shadow.value
+                                    },
+                                }, useAnimatedStyle(() => {
+                                    return {
+                                        shadowOpacity: shadowOpacity.value,
+                                        shadowRadius: shadowRadius.value,
+                                        shadowColor: "#000",
+                                        borderRadius: 10
+                                    }
+                                })]}>
                                     <TouchableWithoutFeedback onLongPress={() => handleLongPress()}
                                                               onPressIn={handlePressIn} onPressOut={handlePressOut}>
                                         <Image
@@ -302,9 +300,19 @@ const entry = () => {
                     setFullImageVisible(false);
                 }}>
                 {/* Full Image */}
-                <BlurView intensity={75} style={[StyleSheet.absoluteFill, styles.modalView]}/>
+                <BlurView intensity={75} style={[StyleSheet.absoluteFill, {
+                    shadowColor: '#000',
+                    shadowOffset:
+                        {
+                            width: 0,
+                            height: 2,
+                        },
+                    shadowOpacity: 0.5,
+                    shadowRadius: 4,
+                    elevation: 5,
+                }]}/>
                 <View
-                    className={"my-safe mx-safe-or-4 dark:bg-neutral-900 bg-white border dark:border-neutral-800 border-gray-400 rounded-lg elevation-md p-4"}>
+                    className={"my-safe mx-safe-or-4 dark:bg-neutral-900 bg-white border dark:border-neutral-800 border-gray-400 rounded-lg  p-4"}>
                     <TouchableWithoutFeedback onPress={() => setFullImageVisible(false)}>
                         <Image
                             source={{uri: entry?.pictureActual?.image_url}}
@@ -318,20 +326,5 @@ const entry = () => {
             </KeyboardAwareScrollView>
     );
 }
-
-const styles = StyleSheet.create({
-    modalView: {
-        shadowColor: '#000',
-        shadowOffset:
-            {
-                width: 0,
-                height: 2,
-            },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-});
-
 
 export default entry;

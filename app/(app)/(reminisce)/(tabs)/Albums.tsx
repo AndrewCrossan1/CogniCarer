@@ -1,7 +1,6 @@
 import {
     Image, Modal,
     RefreshControl,
-    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -19,6 +18,8 @@ import Animated, {Easing, useAnimatedStyle, useSharedValue, withTiming} from "re
 import {BlurView} from "expo-blur";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import NewAlbumForm from "@/components/reminisce/NewAlbumForm";
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
+import Selector from "@/components/forms/Selector";
 
 const Albums = () => {
 
@@ -154,7 +155,7 @@ const Albums = () => {
     }))
 
     return (
-        <ScrollView className={"dark:bg-neutral-800 bg-neutral-100"} contentContainerStyle={{flexGrow: 1}}
+        <KeyboardAwareScrollView className={"dark:bg-neutral-800 bg-neutral-100"} contentContainerStyle={{flexGrow: 1}}
                     refreshControl={
                         <View>
                             <RefreshControl title={"Refreshing..."} titleColor={colors.neutral[400]}
@@ -162,29 +163,30 @@ const Albums = () => {
                                             onRefresh={onRefresh}/>
                         </View>
                     }>
-            <View className={"flex-1 items-center dark:bg-neutral-800 bg-neutral-100 pb-4"}>
-                <View className={"w-full bg-blue-500 dark:bg-neutral-800 md:p-4 lg:p-6"}>
+                <View className={"w-full p-6"}>
                     <Alert message={message} type={alertType} onPress={() => {
                         setVisible(false);
                     }} visible={visible} />
-                    <View className={"flex-row items-center"}>
+                    <View className={"flex flex-row items-center gap-4"} style={{
+                        shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}
+                    >
                         <Image
                             source={image}
                             style={{width: 100, height: 100}}
-                            className={"mr-4 rounded-lg"}
+                            className={"rounded-lg flex"}
                         />
-                        <View className={"w-1/2"}>
-                            <Text className={"dark:text-white md:text-xl lg:text-2xl font-bold text-white"}>
+                        <View className={"flex-1 p-2"}>
+                            <Text className={"dark:text-white md:text-xl lg:text-2xl font-bold text-black"}>
                                 Albums
                             </Text>
-                            <Text className={"mt-1 text-neutral-100 md:text-base lg:text-base"}>
+                            <Text className={"mt-2 text-neutral-600 dark:text-neutral-300 md:text-sm lg:text-base"}>
                                 See all of your pictures by their respective albums.
                             </Text>
                         </View>
                     </View>
-                    <View className={"flex-row items-center justify-between gap-2 w-full"}>
+                    <View className={"flex flex-row items-center gap-2 justify-between w-full"}>
                         <TouchableOpacity
-                            className="flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900"
+                            className="flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900"
                             onPress={() => {
                                 setNewAlbumVisible(true);
                             }}>
@@ -197,46 +199,24 @@ const Albums = () => {
                             onPress={() => {
                                 onSelectPress();
                             }}
-                            className={`flex-row items-center mt-3 w-1/2 rounded-lg p-2 ${canSelect ? 'bg-amber-500' : 'bg-blue-600'} dark:bg-neutral-900`}>
+                            className={`flex-1 flex-row items-center mt-3 rounded-lg p-2 ${canSelect ? 'bg-amber-500' : 'bg-blue-600'} dark:bg-neutral-900`}>
                             <MaterialIcons name={canSelect ? 'cancel' : 'edit'} size={24} color="white" className={"mr-1"} />
                             <Text className="text-white">
                                 {canSelect ? "Cancel" : "Select Albums"}
                             </Text>
                         </TouchableOpacity>
                     </View>
+
+                    {/* Separator */}
+                    <View
+                        className={"flex border-b dark:border-b-neutral-600 border-b-neutral-300 mt-3"}
+                    />
                 </View>
-                {/* Selected album dropdown choices (Delete, etc) */}
-                <Animated.View style={[styles.selectedContainer, animatedStyle]}>
-                    {canSelect && selected.length > 0 &&
-                      <View className={"w-full px-4 pt-4 flex-row items-center justify-between"}>
-                        <Text className={"dark:text-white text-lg font-bold"}>
-                          Selected Albums
-                        </Text>
-                        <Text className={"text-blue-500 text-sm"}>
-                            {selected.length} Selected
-                        </Text>
-                      </View>
-                    }
-                    {canSelect && selected.length > 0 &&
-                      <View>
-                        <View className={"flex-row items-center justify-center gap-5 px-4 w-full"}>
-                          <TouchableOpacity
-                            onPress={() => {
-                                deleteAlbum();
-                            }}
-                            className="flex-row items-center mt-3 w-full rounded-lg p-2 bg-red-600 dark:bg-neutral-900">
-                            <MaterialIcons name="delete" size={24} color="white" className={"mr-1"} />
-                            <Text className="text-white">
-                              Delete
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-                    }
-                </Animated.View>
 
-
-                {/* Every 2 albums (Columns) create a new row */}
+            <View className={"w-full p-4"}>
+                <View className={"mb-2"}>
+                    <Selector canSelect={canSelect} selected={selected} onSelect={onSelectPress} setConfirmVisible={setConfirmVisible} confirmVisible={confirmVisible} label={"Albums"}/>
+                </View>
 
                 {!loading && albums.length === 0 &&
                   <View className={"w-full flex-col items-center justify-center mt-2"}>
@@ -249,8 +229,7 @@ const Albums = () => {
                   </View>
                 }
 
-                {!loading &&
-                  <View className={"w-full md:p-2 lg:p-4"}>
+                {!loading && (
                     <View className={"flex-row flex-wrap justify-start"}>
                         {albums.map((album, index) => (
                             <TouchableOpacity
@@ -295,8 +274,8 @@ const Albums = () => {
                                         shadowRadius: 3.84,
                                         elevation: 2
                                     }}>
-                                        <View className={"flex-row items-center justify-between"}>
-                                            <Text className={"dark:text-white md:text-base lg:text-lg font-bold"}>
+                                        <View className={"flex flex-row items-center justify-evenly gap-4"}>
+                                            <Text className={"flex-1 dark:text-white md:text-base lg:text-lg font-bold"}>
                                                 {album.title}
                                             </Text>
                                             <Text className={"text-blue-500 md:text-xs lg:text-sm"}>
@@ -316,9 +295,9 @@ const Albums = () => {
                             </TouchableOpacity>
                         ))}
                     </View>
-                  </View>
-                }
+                )}
             </View>
+
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -338,7 +317,7 @@ const Albums = () => {
                               elevation: 5,
                           }]}
                 />
-                <View className={"mt-safe mx-safe-or-4 dark:bg-neutral-900 bg-white rounded-lg elevation-md p-4"}>
+                <View className={"mt-safe mx-safe-or-4 dark:bg-neutral-900 bg-white rounded-lg p-4"}>
                     <View className={"flex-row justify-start items-center"}>
                         <FontAwesome name={"close"} size={30} color={"red"}
                                      onPress={() => setConfirmVisible(!confirmVisible)}/>
@@ -385,15 +364,8 @@ const Albums = () => {
                 </View>
             </Modal>
             <NewAlbumForm visible={newAlbumVisible} onSubmitted={onSubmitted} onClose={() => setNewAlbumVisible(!newAlbumVisible)}/>
-        </ScrollView>
+        </KeyboardAwareScrollView>
     )
 }
-
-const styles = StyleSheet.create({
-    selectedContainer: {
-        flex: 1,
-        overflow: 'hidden',
-    },
-})
 
 export default Albums;

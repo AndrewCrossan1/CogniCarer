@@ -6,9 +6,10 @@ import {
     TouchableWithoutFeedback,
     StyleSheet,
     Keyboard,
-    TouchableOpacity, useColorScheme, Platform, SafeAreaView
+    TouchableOpacity, Platform, SafeAreaView
 } from 'react-native';
 import {useEffect, useState} from 'react';
+import {useColorScheme} from 'nativewind';
 import {Patient, Picture} from '@/services/api/types';
 import {Alert} from "@/components/Alert";
 import {useReminisce} from "@/hooks/useReminisce";
@@ -23,12 +24,13 @@ import DateTimePicker, {DateTimePickerEvent} from "@react-native-community/datet
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import {useRouter} from "expo-router";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
+import colors from "tailwindcss/colors";
 
 const NewEntry = () => {
 
     const {getPictures, newEntry} = useReminisce();
     const {getPatients} = usePatients();
-    const theme = useColorScheme();
+    const { colorScheme } = useColorScheme();
     const image = require('@/assets/images/undraw_dreamer_gb41.png');
     const loading = require('@/assets/images/loading.gif');
     const router = useRouter();
@@ -178,33 +180,30 @@ const NewEntry = () => {
         router.push("/(app)/(reminisce)/(tabs)/Entries");
     }
 
-
     return (
-        <KeyboardAwareScrollView contentContainerStyle={{alignItems: "center"}} className={"flex-1 dark:bg-neutral-800"}>
-            <View className={"w-full bg-blue-500 dark:bg-neutral-800 p-6"}>
+        <KeyboardAwareScrollView contentContainerStyle={{alignItems: "center"}} className={"flex dark:bg-neutral-800"}>
+            <View className={"w-full p-6"}>
                 <Alert type={alertType} message={alertMessage} onPress={() => setAlertVisible(false)} visible={alertVisible}/>
-                <View className={"flex-row items-center"}>
-                    <Image
-                        source={image}
-                        style={{width: 100, height: 100}}
-                        className={"mr-4 rounded-lg"}
-                    />
-                    <View className={"p-2 w-3/4"}>
-                        <Text className={"dark:text-white text-2xl font-bold text-white"}>
+                <View className={"flex flex-row items-center gap-4"} style={{
+                    shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}
+                >
+                    <Image source={image} className={"rounded-lg flex"} resizeMode={"cover"} style={{width: 100, height: 100}}/>
+                    <View className={"p-2 flex-1"}>
+                        <Text className={"dark:text-white md:text-xl lg:text-2xl font-bold text-black"}>
                             Create a new entry
                         </Text>
-                        <Text className={"mt-2 text-neutral-100 text-base"}>
+                        <Text className={"mt-2 text-neutral-600 dark:text-neutral-300 md:text-sm lg:text-base"}>
                             Pick an image and reminisce on the event!
                         </Text>
                     </View>
                 </View>
-                <View className={"flex-row justify-between gap-2"}>
+                <View className={"flex flex-row justify-between gap-2"}>
                     <TouchableOpacity
                         onPress={() => {
                             // Submit the entry
                             submit();
                         }}
-                        className={`flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900`}>
+                        className={`flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900`}>
                         <MaterialIcons name={"download-done"} size={24} color="white" className={"mr-1"}/>
                         <Text className={"text-white"}>
                             Submit
@@ -219,21 +218,43 @@ const NewEntry = () => {
                             setNotesError(false);
                             setDateError(false);
                         }}
-                        className={`flex-row items-center mt-3 w-1/2 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900`}>
+                        className={`flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-blue-600 dark:bg-neutral-900`}>
                         <MaterialIcons name={"restart-alt"} size={24} color="white" className={"mr-1"}/>
                         <Text className="text-white">
                             Restart
                         </Text>
                     </TouchableOpacity>
                 </View>
+
+                {/* Separator */}
+                <View
+                    className={"flex border-b dark:border-b-neutral-600 border-b-neutral-300 mt-3"}
+                />
             </View>
 
-            <View className={"w-full p-4"}>
+            <View className={"w-full p-6"}>
                 {/* While there is no image selected, show the patient and image dropdowns */}
                 {!selectedPicture && (
                     <View>
-                        <Text className={"text-lg dark:text-white font-bold"}>
-                            Select a Patient
+                        <TouchableOpacity activeOpacity={0.5} className={"flex xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 rounded-lg mb-6"}
+                                          style={{
+                                              shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 2}}>
+                            <View className={"flex-1"}>
+                                <Text className={"dark:text-white xs-text-base sm:text-base md:text-base lg:text-xl font-bold"}>
+                                    What is Reminiscence Therapy?
+                                </Text>
+                                <Text className={"dark:text-neutral-200 text-neutral-500 xs:text-sm sm:text-sm md:text-sm lg:text-base mt-2"}>
+                                    Reminiscence therapy is about using stimuli like photos, music, and other items to help
+                                    people remember events, people, and places from their past lives.
+                                </Text>
+                                <Text className={"dark:text-neutral-200 text-neutral-500 xs:text-sm sm:text-sm md:text-sm lg:text-base mt-2"}>
+                                    It can help create social skills, improve mood, and even cognitive function in some cases!
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+
+                        <Text className={"text-lg dark:text-white font-semibold my-2"}>
+                            Which family member would you like to help reminisce?
                         </Text>
                         <Dropdown options={patientOptions} onSelect={(value) => {
                             const patient = patients?.find(patient => patient.uuid === value);
@@ -242,9 +263,8 @@ const NewEntry = () => {
                             }
                             setSelectedPatient(patient);
                         }}/>
-                        <View className={"mt-4"}/>
-                        <Text className={"text-lg dark:text-white font-bold"}>
-                            Select an Image
+                        <Text className={"text-lg dark:text-white font-semibold mt-6 mb-2"}>
+                            Which image would they like to reminisce about?
                         </Text>
                         <Dropdown options={pictureOptions} onSelect={(value) => {
                             const picture = pictures?.find(picture => picture.uuid === value);
@@ -260,8 +280,8 @@ const NewEntry = () => {
                 {selectedPicture && (
                     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                         <View>
-                            <View className={"flex-row gap-10 items-center rounded-lg"}>
-                                <Animated.View className={"w-1/2 rounded-lg"} style={[animatedStyle]}>
+                            <View className={"flex flex-row gap-10 items-center rounded-lg"}>
+                                <Animated.View className={"w-1/2 rounded-lg flex-1"} style={[animatedStyle]}>
                                     <TouchableWithoutFeedback onLongPress={() => handleLongPress()}
                                                               onPressIn={handlePressIn} onPressOut={handlePressOut}>
                                         <Image
@@ -273,13 +293,14 @@ const NewEntry = () => {
                                         />
                                     </TouchableWithoutFeedback>
                                 </Animated.View>
-                                <View className={"w-1/2"}>
+                                <View className={"flex-1"}>
                                     {/* Picture details */}
                                     <View className={"w-full items-start"}>
                                         <SafeAreaView className={"my-2 max-w-full"}>
                                             <Text
-                                                className={"font-bold dark:text-white text-xl mb-2 underline underline-offset-2"}>Image
-                                                Name</Text>
+                                                className={"font-bold dark:text-white text-xl mb-2"}>
+                                                Image Name
+                                            </Text>
                                             <Text className={"dark:text-white break-words whitespace-normal"}>
                                                 {selectedPicture.title}
                                             </Text>
@@ -287,7 +308,7 @@ const NewEntry = () => {
 
                                         <View className={"my-2"}>
                                             <Text
-                                                className={"font-bold dark:text-white text-xl mb-2 underline underline-offset-2"}>Album</Text>
+                                                className={"font-bold dark:text-white text-xl mb-2"}>Album</Text>
                                             <Text className={"dark:text-white"}>
                                                 {selectedPicture.albumActual?.title}
                                             </Text>
@@ -295,7 +316,7 @@ const NewEntry = () => {
 
                                         <View className={"my-2"}>
                                             <Text
-                                                className={"font-bold dark:text-white text-xl mb-2 underline underline-offset-2"}>By</Text>
+                                                className={"font-bold dark:text-white text-xl mb-2"}>By</Text>
                                             <Text className={"dark:text-white"}>
                                                 {selectedPicture.patientActual?.first_name + " " + selectedPicture.patientActual?.last_name}
                                             </Text>
@@ -327,13 +348,13 @@ const NewEntry = () => {
                                         </TouchableOpacity>
 
                                         {show && (
-                                        <RNDateTimePicker
-                                            value={date}
-                                            mode={"date"}
-                                            display={"default"}
-                                            onChange={onChange}
-                                            style={{width: "100%"}}
-                                        />)}
+                                            <RNDateTimePicker
+                                                value={date}
+                                                mode={"date"}
+                                                display={"default"}
+                                                onChange={onChange}
+                                                style={{width: "100%"}}
+                                            />)}
                                     </View>
                                 )}
 
@@ -371,7 +392,7 @@ const NewEntry = () => {
                                             Helpful Questions and Answers
                                         </Text>
                                         <MaterialIcons name={tipsVisible ? "arrow-drop-up" : "arrow-drop-down"}
-                                                       size={24} color={theme === "dark" ? "white" : "#000"}/>
+                                                       size={24} color={colorScheme === "dark" ? "white" : "#000"}/>
                                     </View>
                                 </TouchableWithoutFeedback>
                                 <View className={`${tipsVisible ? "" : "hidden"}`}>
@@ -432,9 +453,18 @@ const NewEntry = () => {
                 }}>
 
                 {/* Full Image */}
-                <BlurView intensity={75} style={[StyleSheet.absoluteFill, styles.modalView]}/>
+                <BlurView intensity={75} style={[StyleSheet.absoluteFill, {
+                    shadowColor: '#000',
+                    shadowOffset: {
+                        width: 0,
+                        height: 2,
+                    },
+                    shadowOpacity: 0.5,
+                    shadowRadius: 4,
+                    elevation: 5,
+                }]}/>
                 <View
-                    className={"my-safe mx-safe-or-4 dark:bg-neutral-900 bg-white border dark:border-neutral-800 border-gray-400 rounded-lg elevation-md p-4"}>
+                    className={"my-safe mx-safe-or-4 dark:bg-neutral-900 bg-white border dark:border-neutral-800 border-gray-400 rounded-lg  p-4"}>
                     <TouchableWithoutFeedback onPress={() => setFullImageVisible(false)}>
                         <Image
                             source={{uri: selectedPicture?.image_url}}
@@ -449,19 +479,5 @@ const NewEntry = () => {
         </KeyboardAwareScrollView>
     );
 }
-
-const styles = StyleSheet.create({
-    modalView: {
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-});
-
 
 export default NewEntry;

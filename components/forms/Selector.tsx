@@ -43,7 +43,7 @@ const Selector = (props: SelectorProps) => {
             {/* Selected album dropdown choices (Delete, etc) */}
             <Animated.View style={[styles.selectedContainer, animatedStyle]}>
                 {canSelect && selected.length > 0 &&
-                  <View className={"w-full px-4 pt-4 flex-row items-center justify-between"}>
+                  <View className={"w-full px-2 flex-row items-center justify-between"}>
                     <Text className={"dark:text-white text-lg font-bold"}>
                       Selected {label}
                     </Text>
@@ -54,12 +54,12 @@ const Selector = (props: SelectorProps) => {
                 }
                 {canSelect && selected.length > 0 &&
                   <View>
-                    <View className={"flex-row items-center justify-center gap-5 px-4 w-full"}>
+                    <View className={"flex-row items-center justify-center gap-5 px-2 w-full"}>
                       <TouchableOpacity
                         onPress={() => {
                             setConfirmVisible(!confirmVisible);
                         }}
-                        className="flex-row items-center mt-3 w-full rounded-lg p-2 bg-red-600 dark:bg-neutral-900 drop-shadow-md shadow-blue-500/50">
+                        className="flex-row items-center mt-2 w-full rounded-lg p-2 bg-red-600 dark:bg-neutral-900">
                         <MaterialIcons name="delete" size={24} color="white" className={"mr-1"} />
                         <Text className="text-white">
                           Delete
@@ -78,16 +78,6 @@ const styles = StyleSheet.create({
     selectedContainer: {
         flex: 1,
         overflow: 'hidden',
-    },
-    modalView: {
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,
     },
 })
 
