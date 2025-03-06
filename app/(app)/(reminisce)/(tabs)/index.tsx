@@ -56,7 +56,7 @@ const index = () => {
                 let edited = percent.split(".")[0];
                 setPercentReminisced(edited + "%");
             });
-        }, [getEntries, familyReminisced])
+        }, [])
     );
 
     useEffect(() => {
@@ -182,7 +182,7 @@ const index = () => {
                                 </Text>
 
                                 <Text className={"text-lg font-bold dark:text-white text-center mt-3"}>
-                                    {percentReminisced === "100%" ? "Great job!" : "Keep it up!"}
+                                    {percentReminisced === "100%" ? "Great job!" : "Reach for 100%!"}
                                 </Text>
 
                                 <View className={"flex-1"}>

@@ -4,13 +4,18 @@ import { AuthProvider } from "@/context/AuthContext";
 import { configureReanimatedLogger, ReanimatedLogLevel} from "react-native-reanimated";
 import {Provider} from "react-redux";
 import {persistor, store} from "@/services/store/store";
-import {BackHandler} from "react-native";
+import {BackHandler, LogBox} from "react-native";
 import {PersistGate} from "redux-persist/integration/react";
 
 configureReanimatedLogger({
     level: ReanimatedLogLevel.warn,
     strict: false,
 })
+
+LogBox.ignoreLogs([
+    // Ignore 'You are setting the style'
+    'You are setting'
+]);
 
 BackHandler.addEventListener("hardwareBackPress", () => {
     return true;

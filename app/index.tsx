@@ -4,7 +4,8 @@ import {useRouter} from "expo-router";
 import { LogBox } from 'react-native';
 
 LogBox.ignoreLogs([
-    'You are setting the style `{ shadowOffset: ... }` as a prop. You should nest it in a style object.'
+    // Ignore 'You are setting the style'
+    'You are setting'
 ]);
 
 export default function index() {
