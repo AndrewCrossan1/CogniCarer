@@ -290,7 +290,7 @@ const Entries = () => {
                         {selected.map((entry, index) => (
                             <View className={"p-2 dark:bg-black bg-neutral-100 mt-2 rounded-lg"} key={"selected"+entry.uuid}>
                                 <Text className={"dark:text-gray-400"}>
-                                    {index + 1}. {entry.title}
+                                    {index + 1}. {entry.pictureActual?.title} - {entry.patientActual?.first_name} {entry.patientActual?.last_name}
                                 </Text>
                             </View>
                         ))}
