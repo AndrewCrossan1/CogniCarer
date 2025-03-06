@@ -28,7 +28,7 @@ const index = () => {
     const theme = useThemeColor();
     const { colorScheme: mode } = useColorScheme();
     const [alertType] = useState<"success" | "error">("error");
-    const [message, setMessage] = useState("");
+    const [message] = useState("");
     const [visible, setVisible] = useState(false);
     const [newAlbumVisible, setNewAlbumVisible] = useState(false);
     const [newPictureVisible, setNewPictureVisible] = useState(false);
@@ -56,7 +56,7 @@ const index = () => {
                 let edited = percent.split(".")[0];
                 setPercentReminisced(edited + "%");
             });
-        }, [])
+        }, [getEntries, familyReminisced])
     );
 
     useEffect(() => {

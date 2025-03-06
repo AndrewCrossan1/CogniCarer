@@ -31,7 +31,7 @@ const entry = () => {
     const [show, setShow] = useState(false)
     const [dateError, setDateError] = useState(false)
     const [notes, setNotes] = useState("")
-    const [notesError, setNotesError] = useState(false)
+    const [notesError] = useState(false)
     const [editable, setEditable] = useState(false)
 
     // Date changing logic

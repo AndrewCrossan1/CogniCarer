@@ -14,7 +14,7 @@ import colors from "tailwindcss/colors";
 import {useReminisce} from "@/hooks/useReminisce";
 import {UserAlbum} from "@/services/api/types";
 import * as Haptics from "expo-haptics";
-import Animated, {Easing, useAnimatedStyle, useSharedValue, withTiming} from "react-native-reanimated";
+import {Easing, useAnimatedStyle, useSharedValue, withTiming} from "react-native-reanimated";
 import {BlurView} from "expo-blur";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import NewAlbumForm from "@/components/reminisce/NewAlbumForm";
@@ -149,11 +149,6 @@ const Albums = () => {
         }
     }, [selected.length]);
 
-    const animatedStyle = useAnimatedStyle(() => ({
-        maxHeight: maxHeight.value,
-        opacity: maxHeight.value > 0 ? 1 : 0
-    }))
-
     return (
         <KeyboardAwareScrollView className={"dark:bg-neutral-800 bg-neutral-100"} contentContainerStyle={{flexGrow: 1}}
                     refreshControl={
@@ -231,7 +226,7 @@ const Albums = () => {
 
                 {!loading && (
                     <View className={"flex-row flex-wrap justify-start"}>
-                        {albums.map((album, index) => (
+                        {albums.map((album) => (
                             <TouchableOpacity
                                 key={album.uuid}
                                 activeOpacity={0.8}

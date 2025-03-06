@@ -14,7 +14,7 @@ interface SelectorProps {
 
 const Selector = (props: SelectorProps) => {
     // Destructure props
-    const { canSelect, selected, onSelect, setConfirmVisible, confirmVisible, label } = props;
+    const { canSelect, selected, setConfirmVisible, confirmVisible, label } = props;
 
     // Selected Animations
     const maxHeight = useSharedValue(0)
