@@ -185,7 +185,7 @@ export default function Home() {
                                     {entries}
                                 </Text>
                                 <Text className={"text-sm text-neutral-400 text-center"}>
-                                    reminisce entries today
+                                    reminisce {entries > 1 || entries === 0 ? "entries" : "entry"} today
                                 </Text>
 
                                 <Text className={"text-lg mt-2 font-semibold dark:text-white"}>
@@ -237,7 +237,7 @@ export default function Home() {
                                     {articlesViewedToday}
                                 </Text>
                                 <Text className={"text-sm text-neutral-400 text-center"}>
-                                    articles read today
+                                    new article{articlesViewedToday > 1 || articlesViewedToday === 0 ? "s" : ""} read today
                                 </Text>
                                 <Text className={"text-lg mt-2 font-semibold dark:text-white"}>
                                     {articlesViewedToday > 0 ? "Great job!" : "Read now!"}
