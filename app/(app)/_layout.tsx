@@ -126,6 +126,11 @@ export default function Layout() {
                                       drawerIcon: ({ color }) => <FontAwesome name="info-circle" size={24} color={color} />,
                                       title: 'Carer Support',
                                  }}/>
+                <Drawer.Screen name="(games)"
+                                    options={{
+                                        drawerIcon: ({ color }) => <FontAwesome name="gamepad" size={24} color={color} />,
+                                        title: 'Games',
+                                    }}/>
             </Drawer>
         </GestureHandlerRootView>
     )
