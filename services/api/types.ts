@@ -134,3 +134,28 @@ export interface Article {
     created_at: string;
     updated_at: string;
 }
+
+// Game Subtypes
+export interface Match {
+    uuid: string,
+    title: string,
+    description: string,
+    person_with_dementia: string,
+    public: boolean,
+    created_at: string,
+    updated_at: string,
+    maximum_score: number,
+    average_score: number,
+    times_played: number,
+}
+
+export interface Attempt {
+    uuid: string,
+    match: string | Match,
+    supervising_user: string | User,
+    patient: string | Patient,
+    score: number,
+    created_at: string,
+    updated_at: string,
+    percentage: number,
+}
