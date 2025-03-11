@@ -15,6 +15,7 @@ interface SearchInputProps {
     onSearch: (s: string) => void;
     modalVisible: boolean;
     modalVisibleFun: () => void;
+    infoVisible?: boolean;
 }
 
 const SearchInput = forwardRef<SearchInputRef, SearchInputProps>((props, ref) => {
@@ -68,9 +69,11 @@ const SearchInput = forwardRef<SearchInputRef, SearchInputProps>((props, ref) =>
                 />
             </View>
             <TouchableOpacity className={"rounded-lg"}>
-                <FontAwesome style={{marginLeft: 10}} name={"info-circle"} size={20} color={setColor()}
+                {props.infoVisible !== false && (
+                    <FontAwesome style={{marginLeft: 10}} name={"info-circle"} size={20} color={setColor()}
                                 onPress={props.modalVisibleFun}
-                />
+                    />
+                )}
             </TouchableOpacity>
         </View>
     )

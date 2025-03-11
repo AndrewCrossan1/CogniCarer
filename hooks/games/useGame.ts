@@ -1,5 +1,6 @@
 import {useState} from "react";
-import {Match} from "@/services/api/types";
+import {Article, Match} from "@/services/api/types";
+import API from "@/services/api/api";
 
 /**
  * Hook to manage the game data
@@ -15,7 +16,9 @@ import {Match} from "@/services/api/types";
  */
 export const useGame = () => {
     const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(null)
+    const [error, setError] = useState<string | null>(null);
+    const [game, setGame] = useState<Match | null>(null)
+    const [games, setGames] = useState<Match[] | null>(null)
 
     /**
      * Get a game by its UUID
@@ -27,11 +30,43 @@ export const useGame = () => {
     }
 
     /**
-     * Get a list of games
-     * @returns {Promise<Match[]>}
+     * Get a list of games created by patients registered to the authenticated user
+     * Note: All public games are also included
+     * @returns {Promise<Match[] | null>}
      */
-    const getGames = async (): Promise<Match[]> => {
-        return [] as Match[];
+    const getGames = async () : Promise<Match[] | null> => {
+        setLoading(true);
+        // Call the API to get all support articles
+        const response = await API.get('/games/matches/');
+
+        if (!response) {
+            setError('An error occurred while fetching games');
+            setLoading(false);
+            return null;
+        }
+
+        setLoading(false);
+        return response;
+    }
+
+
+    /**
+     * Get the latest available public game
+     * @returns {Promise<Match | null>}
+     */
+    const getLatestGame = async (): Promise<Match | null> => {
+        setLoading(true);
+        // Call the API to get all support articles
+        const response = await API.get('/games/matches/latest/');
+
+        if (!response) {
+            setError('An error occurred while fetching games');
+            setLoading(false);
+            return null;
+        }
+
+        setLoading(false);
+        return response;
     }
 
     /**
@@ -70,5 +105,5 @@ export const useGame = () => {
         return;
     }
 
-    return {getGame, getGames, getGamesByType, createGame, updateGame, deleteGame, loading, error}
+    return {getGame, getGames, getGamesByType, getLatestGame, createGame, updateGame, deleteGame, loading, error}
 }

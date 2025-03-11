@@ -223,7 +223,7 @@ export default function Index() {
                                         router.push(`/(app)/(help)/article/${article.uuid}`);
                                     }}
                                     key={article.uuid+"non-filtered"}
-                                    className={"w-full xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 xs:my-1 sm:my-1 md:my-1 lg:my-2 xl:my-2 rounded-lg flex-row items-center justify-between"}
+                                    className={"w-full bg-white dark:bg-neutral-900 xs:my-1 sm:my-1 md:my-1 lg:my-2 xl:my-2 rounded-lg flex-row items-center justify-between"}
                                     style={{
                                         shadowColor: colors.black,
                                         shadowOffset: {width: 0, height: 2},
@@ -233,15 +233,87 @@ export default function Index() {
                                     }}>
                                     <View className={"flex-1"}>
                                         {latestArticle && latestArticle.uuid === article.uuid && (
-                                            <View className="bg-indigo-200 dark:bg-blue-500 px-2 py-2 rounded-lg flex-row items-center w-auto mb-2">
+                                            <View className="bg-indigo-200 dark:bg-blue-500 px-2 py-4 rounded-t-lg flex-row items-center w-auto">
                                                 <MaterialIcons name="new-releases" size={18} color={colors.blue[800]} />
                                                 <Text className="ml-1 text-sm font-semibold text-blue-800 dark:text-blue-900 uppercase tracking-wide">
                                                     Latest Article
                                                 </Text>
                                             </View>
                                         )}
+                                        <View className={"xs:p-2 sm:p-2 md:p-3 lg:p-4 xl:p-4"}>
+                                            <View className={"flex-row items-center justify-between"}>
+                                                <Text className={"flex-1 text-base font-bold dark:text-white text-black tracking-wide "}>
+                                                    {article.title}
+                                                </Text>
+                                                <Text className="uppercase text-xs font-semibold text-neutral-500 dark:text-neutral-400 tracking-wide">
+                                                    Category: {article.category.name}
+                                                </Text>
+                                            </View>
+                                            <Text className={"text-base text-neutral-500"}>{article.source}</Text>
+                                            {article.tags && (
+                                                <ScrollView horizontal={true} contentContainerStyle={{justifyContent: "flex-start"}} className={"flex-row mt-4"}>
+                                                    {article.tags.map((tag, index) => (
+                                                        <TouchableOpacity onPress={() => setTagFilter([...tags, tag])} key={index} className={"bg-neutral-200 dark:bg-neutral-950 px-2 py-1 rounded-lg mr-2"}>
+                                                            <Text className={"text-sm dark:text-white text-neutral-600"}>
+                                                                {tag}
+                                                            </Text>
+                                                        </TouchableOpacity>
+                                                    ))}
+                                                </ScrollView>
+                                            )}
+                                            <View className={"flex-row justify-between"}>
+                                                {/* Like Button with Count */}
+                                                <TouchableOpacity
+                                                    onPress={() => handleLike(article.uuid, article.liked)}
+                                                    className="flex-row items-center pt-2">
+                                                    <MaterialIcons name="thumb-up" size={18} color={article.liked ? colors.blue[500] : colors.neutral[500]} />
+                                                    <Text className="ml-1 text-base text-neutral-500 dark:text-neutral-400">
+                                                        {article.likes}
+                                                    </Text>
+                                                </TouchableOpacity>
+
+                                                {/* View Count */}
+                                                <View className="flex-row items-center pt-2">
+                                                    <MaterialIcons name="visibility" size={18} color={"gray"} />
+                                                    <Text className="ml-1 text-base text-neutral-500 dark:text-neutral-400">
+                                                        {article.views}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                            )
+                        )
+                    }
+
+                    {!loading && filteredArticles && filteredArticles.length > 0 &&
+                        filteredArticles.map((article) => (
+                            <TouchableOpacity
+                                onPress={() => {
+                                    router.push(`/(app)/(help)/article/${article.uuid}`);
+                                }}
+                                key={article.uuid+"non-filtered"}
+                                className={"w-full bg-white dark:bg-neutral-900 xs:my-1 sm:my-1 md:my-1 lg:my-2 xl:my-2 rounded-lg flex-row items-center justify-between"}
+                                style={{
+                                    shadowColor: colors.black,
+                                    shadowOffset: {width: 0, height: 2},
+                                    shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10,
+                                    shadowRadius: 3.84,
+                                    elevation: 2
+                                }}>
+                                <View className={"flex-1"}>
+                                    {latestArticle && latestArticle.uuid === article.uuid && (
+                                        <View className="bg-indigo-200 dark:bg-blue-500 px-2 py-4 rounded-t-lg flex-row items-center w-auto">
+                                            <MaterialIcons name="new-releases" size={18} color={colors.blue[800]} />
+                                            <Text className="ml-1 text-sm font-semibold text-blue-800 dark:text-blue-900 uppercase tracking-wide">
+                                                Latest Article
+                                            </Text>
+                                        </View>
+                                    )}
+                                    <View className={"xs:p-2 sm:p-2 md:p-3 lg:p-4 xl:p-4"}>
                                         <View className={"flex-row items-center justify-between"}>
-                                            <Text className={"text-base font-bold dark:text-white text-black tracking-wide "}>
+                                            <Text className={"flex-1 text-base font-bold dark:text-white text-black tracking-wide "}>
                                                 {article.title}
                                             </Text>
                                             <Text className="uppercase text-xs font-semibold text-neutral-500 dark:text-neutral-400 tracking-wide">
@@ -280,54 +352,8 @@ export default function Index() {
                                             </View>
                                         </View>
                                     </View>
-                                </TouchableOpacity>
-                            )
-                        )
-                    }
-
-                    {!loading && filteredArticles && filteredArticles.length > 0 &&
-                        filteredArticles.map((article) => (
-                                <View
-                                    key={article.uuid + "-filtered"}
-                                    className={"w-full xs:p-2 sm:p-2 md:p-4 lg:p-6 xl:p-6 bg-white dark:bg-neutral-900 xs:my-1 sm:my-1 md:my-1 lg:my-2 xl:my-2 rounded-lg flex-row items-center justify-between"}
-                                    style={{
-                                        shadowColor: colors.black,
-                                        shadowOffset: {width: 0, height: 2},
-                                        shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10,
-                                        shadowRadius: 3.84,
-                                        elevation: 2
-                                    }}>
-                                    <View className={"flex-1"}>
-                                        {latestArticle && latestArticle.uuid === article.uuid && (
-                                            <View className="bg-indigo-200 dark:bg-blue-500 px-2 py-2 rounded-lg flex-row items-center w-auto mb-2">
-                                                <MaterialIcons name="new-releases" size={18} color={colors.blue[800]} />
-                                                <Text className="ml-1 text-sm font-semibold text-blue-800 dark:text-blue-900 uppercase tracking-wide">
-                                                    Latest Article
-                                                </Text>
-                                            </View>
-                                        )}
-                                        <View className={"flex-row items-center justify-between"}>
-                                            <Text className={"text-base font-bold dark:text-white text-black tracking-wide "}>
-                                                {article.title}
-                                            </Text>
-                                            <Text className="uppercase text-xs font-semibold text-neutral-500 dark:text-neutral-400 tracking-wide">
-                                                Category: {article.category.name}
-                                            </Text>
-                                        </View>
-                                        <Text className={"text-base text-neutral-500"}>{article.source}</Text>
-                                        {article.tags && (
-                                            <ScrollView horizontal={true} contentContainerStyle={{justifyContent: "flex-start"}} className={"flex-row mt-4"}>
-                                                {article.tags.map((tag, index) => (
-                                                    <TouchableOpacity onPress={() => setTagFilter([...tags, tag])} key={index} className={"bg-neutral-200 dark:bg-neutral-950 px-2 py-1 rounded-lg mr-2"}>
-                                                        <Text className={"text-sm dark:text-white text-neutral-600"}>
-                                                            {tag}
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                ))}
-                                            </ScrollView>
-                                        )}
-                                    </View>
                                 </View>
+                            </TouchableOpacity>
                             )
                         )
                     }
