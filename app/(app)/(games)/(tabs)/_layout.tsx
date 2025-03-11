@@ -24,14 +24,7 @@ const TabLayout = () => {
         >
             <Tabs.Screen name="matchGame"
                          options={{
-                             title: "Play",
-                             tabBarIcon: ({ color }) => <FontAwesome name="gamepad" size={24} color={color} />,
-                         }}
-            />
-            <Tabs.Screen name="index"
-                         options={{
-                             title: "Home",
-                             tabBarIcon: ({ color }) => <FontAwesome name="home" size={24} color={color} />,
+                             href: null
                          }}
             />
             <Tabs.Screen name="gameHistory"
@@ -40,9 +33,16 @@ const TabLayout = () => {
                                 tabBarIcon: ({ color }) => <MaterialIcons name="analytics" size={24} color={color} />,
                             }}
             />
+            <Tabs.Screen name="index"
+                         options={{
+                             title: "Home",
+                             tabBarIcon: ({ color }) => <FontAwesome name="home" size={24} color={color} />,
+                         }}
+            />
             <Tabs.Screen name="gameList"
                             options={{
-                                href: null
+                                title: "Games",
+                                tabBarIcon: ({ color }) => <FontAwesome name="list" size={24} color={color} />,
                             }}
             />
             <Tabs.Screen name="createGame"
