@@ -5,10 +5,12 @@ import {useColorScheme} from "nativewind";
 import {LinkButton} from "@/components/LinkButton";
 import {MaterialIcons} from "@expo/vector-icons";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
+import {useRouter} from "expo-router";
 
 const GameIndex = () => {
     const user = useAppSelector(state => state.user.user);
     const { colorScheme } = useColorScheme();
+    const router = useRouter();
 
     return (
         <KeyboardAwareScrollView contentContainerStyle={{justifyContent: "flex-start"}} className={"flex-1 bg-neutral-100 dark:bg-neutral-800 w-full md:px-4 lg:px-6"}>
@@ -50,7 +52,7 @@ const GameIndex = () => {
                         <View className="bg-indigo-200 dark:bg-blue-500 px-2 py-2 rounded-lg flex-row items-center w-auto mb-2">
                             <MaterialIcons name="new-releases" size={18} color={colors.blue[800]} />
                             <Text className="ml-1 text-sm font-semibold text-blue-800 dark:text-blue-900 uppercase tracking-wide">
-                                Latest Game
+                                Featured Game
                             </Text>
                         </View>
                         <View className={"flex-row items-center justify-between"}>
@@ -67,19 +69,10 @@ const GameIndex = () => {
                             {/* Like Button with Count */}
                             <TouchableOpacity
                                 className="flex-row items-center pt-2">
-                                <MaterialIcons name="star-outline" size={18} color={"gold"} />
-                                <Text className="ml-1 text-base text-neutral-500 dark:text-neutral-400">
-                                    Favourites
+                                <Text className="text-base text-neutral-500 dark:text-neutral-400">
+                                    Maximum Score: 100
                                 </Text>
                             </TouchableOpacity>
-
-                            {/* View Count */}
-                            <View className="flex-row items-center pt-2">
-                                <MaterialIcons name="visibility" size={18} color={"gray"} />
-                                <Text className="ml-1 text-base text-neutral-500 dark:text-neutral-400">
-                                    Views
-                                </Text>
-                            </View>
                         </View>
                     </View>
                 </TouchableOpacity>
@@ -93,13 +86,17 @@ const GameIndex = () => {
                 <View className={"border-b dark:border-b-neutral-600 border-b-neutral-300 xs:px-1 sm:px-2 md:px-2 lg:px-3 xl:px-4"}/>
 
                 <View className={"flex flex-row md:gap-2 lg:gap-4"}>
-                    <TouchableOpacity className="flex-1 bg-white p-4 rounded-lg dark:bg-neutral-900" style={{
+                    <TouchableOpacity className="flex-1 bg-white p-4 rounded-lg dark:bg-neutral-900 items-center justify-center" style={{
                         shadowColor: colors.black,
                         shadowOffset: {width: 0, height: 2},
                         shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10,
                         shadowRadius: 3.84,
                         elevation: 2
-                    }}>
+                    }}
+                        onPress={() => {
+                            router.push("/(app)/(games)/(tabs)/gameList")
+                        }}
+                    >
                         <View className={"items-center"}>
                             <MaterialIcons name="sports-esports" size={26} color={colorScheme === "dark" ? colors.white : colors.blue[500]} />
                             <Text className="text-base font-semibold tracking-wide text-blue-500 dark:text-white text-center">
@@ -107,7 +104,7 @@ const GameIndex = () => {
                             </Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity className="flex-1 bg-white p-4 rounded-lg dark:bg-neutral-900" style={{
+                    <TouchableOpacity disabled={true} className="flex-1 bg-gray-200 p-4 rounded-lg dark:bg-neutral-900 items-center justify-center" style={{
                         shadowColor: colors.black,
                         shadowOffset: {width: 0, height: 2},
                         shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10,
@@ -115,13 +112,13 @@ const GameIndex = () => {
                         elevation: 2
                     }}>
                         <View className={"items-center"}>
-                            <MaterialIcons name="sports-esports" size={26} color={colorScheme === "dark" ? colors.white : colors.blue[500]} />
-                            <Text className="text-base font-semibold text-blue-500 dark:text-white text-center">
-                                Unscramble
+                            <MaterialIcons name="construction" size={26} color={colorScheme === "dark" ? colors.white : colors.blue[400]} />
+                            <Text className="text-base font-semibold text-blue-400 dark:text-white text-center">
+                                Coming Soon
                             </Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity className="flex-1 bg-white p-4 rounded-lg dark:bg-neutral-900" style={{
+                    <TouchableOpacity disabled={true} className="flex-1 bg-gray-200 p-4 rounded-lg dark:bg-neutral-900 items-center justify-center" style={{
                         shadowColor: colors.black,
                         shadowOffset: {width: 0, height: 2},
                         shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10,
@@ -129,9 +126,9 @@ const GameIndex = () => {
                         elevation: 2
                     }}>
                         <View className={"items-center"}>
-                            <MaterialIcons name="sports-esports" size={26} color={colorScheme === "dark" ? colors.white : colors.blue[500]} />
-                            <Text className="text-base font-semibold tracking-wide text-blue-500 dark:text-white text-center text-wrap">
-                                Face-to-Name
+                            <MaterialIcons name="construction" size={26} color={colorScheme === "dark" ? colors.white : colors.blue[400]} />
+                            <Text className="text-base font-semibold text-blue-400 dark:text-white text-center text-wrap">
+                                Coming Soon
                             </Text>
                         </View>
                     </TouchableOpacity>
@@ -152,7 +149,11 @@ const GameIndex = () => {
                         shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10,
                         shadowRadius: 3.84,
                         elevation: 2
-                    }}>
+                    }}
+                        onPress={() => {
+                            router.push("/(app)/(games)/(tabs)/createGame")
+                        }}
+                    >
                         <View className={"items-center"}>
                             <MaterialIcons name="draw" size={26} color={colorScheme === "dark" ? colors.white : colors.blue[500]} />
                             <Text className="text-base font-semibold tracking-wide text-blue-500 dark:text-white text-center">
@@ -166,7 +167,11 @@ const GameIndex = () => {
                         shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10,
                         shadowRadius: 3.84,
                         elevation: 2
-                    }}>
+                    }}
+                        onPress={() => {
+                            router.push("/(app)/(games)/(tabs)/gameHistory")
+                        }}
+                    >
                         <View className={"items-center"}>
                             <MaterialIcons name="analytics" size={26} color={colorScheme === "dark" ? colors.white : colors.blue[500]} />
                             <Text className="text-base font-semibold tracking-wide text-blue-500 dark:text-white text-center">
