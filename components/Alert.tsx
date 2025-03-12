@@ -8,16 +8,16 @@ export function Alert({ message, type, visible, onPress}: { message: string, typ
         type === "success" ? "bg-green-200 border-green-500 text-green-700" : "bg-red-200 border-red-500 text-red-700";
 
     return (
-        <SafeAreaView className={"flex-1 inset-x-0 top-0"} style={{ zIndex: 1000}}>
+        visible && (
+        <View className="w-full absolute top-0 left-0 right-0 z-50">
             <Animated.View
-                className={`transition ease-linear ${visible ? "visible" : "invisible" } absolute top-6 left-4 right-4 mx-auto border-1-4 rounded-lg ${alertColors} p-4`}
+                className={`transition ease-linear mt-6 rounded-lg ${alertColors} p-6`}
                 style={{
                     shadowColor: '#000',
                     shadowOffset: { width: 0, height: 2 },
                     shadowOpacity: 0.4,
                     shadowRadius: 3,
                     elevation: 5,
-                    zIndex: 1000
                 }}>
                 <TouchableOpacity onPress={onPress} className={"absolute top-2 right-2"}>
                     <FontAwesome name={"close"} size={30} color={"#000"}/>
@@ -32,7 +32,8 @@ export function Alert({ message, type, visible, onPress}: { message: string, typ
                 {/* Alert Message */}
                 <Text className={"mt-2"}>{message}</Text>
             </Animated.View>
-        </SafeAreaView>
+        </View>
+        )
     );
 
 }
