@@ -1,6 +1,7 @@
 import {useState} from "react";
-import {Article, Match} from "@/services/api/types";
-import API from "@/services/api/api";
+import {Match} from "@/services/api/types";
+import API, {ImagePair} from "@/services/api/api";
+import {ImagePickerResult} from "expo-image-picker";
 
 /**
  * Hook to manage the game data
@@ -15,10 +16,8 @@ import API from "@/services/api/api";
  * @returns {Error} error - The error object
  */
 export const useGame = () => {
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null);
-    const [game, setGame] = useState<Match | null>(null)
-    const [games, setGames] = useState<Match[] | null>(null)
 
     /**
      * Get a game by its UUID
@@ -80,11 +79,50 @@ export const useGame = () => {
 
     /**
      * Create a new game
-     * @param {Match} game - The game object
-     * @returns {Promise<Match>}
+     * @param {any} game - The game object
+     * @param {ImagePickerResult} matching_image - The matching image
+     * @param {ImagePickerResult} image_1 - The first image
+     * @param {ImagePickerResult} image_2 - The second image
+     * @returns {Promise<boolean>}
      */
-    const createGame = async (game: Match): Promise<Match> => {
-        return {} as Match;
+    const createGame = async (game: any, matching_image: ImagePickerResult, image_1: ImagePickerResult, image_2: ImagePickerResult): Promise<boolean> => {
+        setLoading(true);
+
+        // Create an array of ImagePair objects
+        const images: ImagePair[] = [
+            {
+                label: 'matching_image',
+                file: matching_image,
+            },
+            {
+                label: 'non_matching_image_1',
+                file: image_1,
+            },
+            {
+                label: 'non_matching_image_2',
+                file: image_2,
+            },
+        ];
+
+        images.forEach((pair) => {
+            if (!pair.file) {
+                setError('Please provide all images');
+                setLoading(false);
+                return false;
+            }
+        });
+
+        // Call the API to create a new game
+        const response = await API.multiple_image_post('/games/matches/', game, images);
+
+        if (!response) {
+            setError('An error occurred while creating the game');
+            setLoading(false);
+            return false;
+        }
+
+        setLoading(false);
+        return true;
     }
 
     /**
