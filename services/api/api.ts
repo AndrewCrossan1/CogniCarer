@@ -210,6 +210,58 @@ export class API {
         });
         return response.data;
     }
+
+    /**
+     * Multiple Image POST
+     * @param endpoint
+     * @param data
+     * @param images - An array of labels and images, e.g. ["matching_image", image, "image_1", image, "image_2", image]
+     */
+    public async multiple_image_post(endpoint: string, data: any, images: ImagePair[]): Promise<any> {
+        const formData = new FormData();
+
+        images.forEach((pair, index) => {
+            if (!pair.file) {
+                return Promise.reject("No file provided");
+            }
+
+            if (!pair.file.assets) {
+                return Promise.reject("No file provided");
+            }
+
+            // Get the file type
+            const uri = pair.file.assets[0].mimeType;
+            if (!uri) {
+                return Promise.reject("Invalid file type");
+            }
+
+            // Create a new file from the image
+            const newFile = {
+                uri: pair.file.assets[0].uri,
+                name: `image.${uri.split('/')[1]}`,
+                type: pair.file.assets[0].mimeType,
+            };
+
+            formData.append(pair.label, newFile as any);
+        });
+
+        // Append the data to the form data
+        Object.keys(data).forEach((key) => {
+            formData.append(key, data[key]);
+        });
+
+        const response = await this.client.post(endpoint, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    }
+}
+
+export interface ImagePair {
+    label: string;
+    file: ImagePickerResult;
 }
 
 // Export the API instance
