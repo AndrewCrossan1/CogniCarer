@@ -1,5 +1,6 @@
 import {useState} from "react";
 import {Attempt} from "@/services/api/types";
+import API from "@/services/api/api";
 
 /**
  * useGameStatistics
@@ -16,14 +17,26 @@ import {Attempt} from "@/services/api/types";
  */
 export const useGameStatistics = () => {
     const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(false)
+    const [error, setError] = useState<string | null>(null);
 
     /**
      * Get the average score of a user across all games played
+     * @param {string} uuid - The ID of the person with dementia
      * @returns {Promise<number>}
      */
-    const getAverageScore = async (): Promise<number> => {
-        return 0
+    const getAverageScore = async (uuid: string): Promise<number> => {
+        setLoading(true);
+        // Call the API to get all support articles
+        const response = await API.get('/games/attempts/average-score/?uuid=' + uuid);
+
+        if (!response) {
+            setError('An error occurred while fetching games');
+            setLoading(false);
+            return -1;
+        }
+
+        setLoading(false);
+        return response;
     }
 
     /**
@@ -35,11 +48,62 @@ export const useGameStatistics = () => {
     }
 
     /**
-     * Get the highest score of a user across all games played
+     * Get the number of unique plays of a user across all games played
+     * @param uuid - The ID of the person with dementia
+     */
+    const getUniquePlays = async (uuid: string): Promise<number> => {
+        setLoading(true);
+
+        const response = await API.get('/games/attempts/unique-plays/?uuid=' + uuid);
+
+        if (!response) {
+            setError('An error occurred while fetching games');
+            setLoading(false);
+            return -1;
+        }
+
+        setLoading(false);
+        return response;
+    }
+
+    /**
+     * Get the most played game by a user
+     * @param {string} uuid - The ID of the person with dementia
      * @returns {Promise<number>}
      */
-    const getHighestScore = async (): Promise<number> => {
-        return 0
+    const getMostPlayedGame = async (uuid: string): Promise<any> => {
+        setLoading(true);
+
+        const response = await API.get('/games/attempts/most-played/?uuid=' + uuid);
+
+        if (!response) {
+            setError('An error occurred while fetching games');
+            setLoading(false);
+            return null
+        }
+
+        setLoading(false);
+        return response;
+    }
+
+    /**
+     * Get the highest score of a user across all games playe
+     * @param {string} uuid - The ID of the person with dementia
+     * @returns {Promise<number>}
+     */
+    const getHighestScore = async (uuid: string): Promise<number> => {
+        setLoading(true);
+
+        const response = await API.get('/games/attempts/highest-score/?uuid=' + uuid);
+
+        if (!response) {
+            setError('An error occurred while fetching games');
+            setLoading(false);
+            return -1;
+        }
+
+        setLoading(false);
+        return response;
     }
 
     /**
@@ -62,6 +126,25 @@ export const useGameStatistics = () => {
     }
 
     /**
+     * Get the top 3 attempts for the current user's family members
+     * @returns {Promise<any>}
+     */
+    const getTopAttempts = async (): Promise<any> => {
+        setLoading(true);
+
+        const response = await API.get('/games/attempts/weeks-scores/');
+
+        if (!response) {
+            setError('An error occurred while fetching games');
+            setLoading(false);
+            return [];
+        }
+
+        setLoading(false);
+        return response;
+    }
+
+    /**
      * Get a specific attempt
      * @param {string} uuid - The ID of the attempt
      * @returns {Promise<Attempt>}
@@ -70,5 +153,5 @@ export const useGameStatistics = () => {
         return {} as Attempt
     }
 
-    return {getAverageScore, getLatestScore, getHighestScore, getAttempts, getAttemptsByGame, getAttempt, loading, error}
+    return {getAverageScore, getLatestScore, getMostPlayedGame, getTopAttempts, getHighestScore, getUniquePlays, getAttempts, getAttemptsByGame, getAttempt, loading, error}
 }
