@@ -25,7 +25,19 @@ export const useGame = () => {
      * @returns {Promise<Match>} - The game object
      */
     const getGame = async (uuid: string): Promise<Match> => {
-        return {} as Match;
+        setLoading(true);
+
+        // Call the API to get the game
+        const response = await API.get(`/games/matches/${uuid}/`);
+
+        if (!response) {
+            setError('An error occurred while fetching the game');
+            setLoading(false);
+            return {} as Match;
+        }
+
+        setLoading(false);
+        return response;
     }
 
     /**
