@@ -22,10 +22,15 @@ const TabLayout = () => {
             }}
             initialRouteName={'index'}
         >
-            <Tabs.Screen name="matchGame"
-                         options={{
-                             href: null
-                         }}
+            <Tabs.Screen name="play/[id]"
+                            options={{
+                                href: null,
+                            }}
+            />
+            <Tabs.Screen name="play/play"
+                            options={{
+                                href: null
+                            }}
             />
             <Tabs.Screen name="gameHistory"
                             options={{
