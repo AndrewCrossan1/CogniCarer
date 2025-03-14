@@ -15,6 +15,7 @@ import SearchInput from "@/components/SearchInput";
 import colors from "tailwindcss/colors";
 import {usePatients} from "@/hooks/patients/usePatients";
 import {useFocusEffect} from "@react-navigation/native";
+import {useRouter} from "expo-router";
 
 const GameList = () => {
     const { colorScheme } = useColorScheme();
@@ -22,6 +23,7 @@ const GameList = () => {
     const [games, setGames] = useState<Match[] | null>(null);
     const [refreshing, setRefreshing] = useState(false);
     const { getPatient } = usePatients();
+    const router = useRouter();
 
     // Pagination
     const [page, setPage] = useState(1);
@@ -199,7 +201,9 @@ const GameList = () => {
                                 </View>
                             </View>
 
-                            <TouchableOpacity className={"flex flex-row items-center justify-center bg-blue-500 dark:bg-blue-600 p-2 rounded-lg mt-2"}>
+                            <TouchableOpacity onPress={() => {
+                                router.push(`/(app)/(games)/(tabs)/play/${item.uuid}`);
+                            }} className={"flex flex-row items-center justify-center bg-blue-500 dark:bg-blue-600 p-2 rounded-lg mt-2"}>
                                 <Text className={"text-white text-sm font-semibold"}>
                                     Play Now
                                 </Text>
