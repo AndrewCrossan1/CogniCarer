@@ -153,5 +153,26 @@ export const useGameStatistics = () => {
         return {} as Attempt
     }
 
-    return {getAverageScore, getLatestScore, getMostPlayedGame, getTopAttempts, getHighestScore, getUniquePlays, getAttempts, getAttemptsByGame, getAttempt, loading, error}
+    /**
+     * Get all attempts from a user for a specific game
+     * @param gameId - The ID of the game
+     * @param patientId - The ID of the user who made the attempts
+     * @returns {Promise<Attempt[]>}
+     */
+    const getAttemptsByGameAndPatient = async (gameId: string, patientId: string): Promise<Attempt[]> => {
+        setLoading(true);
+
+        const response = await API.get('/games/attempts/by-g-p/?uuid=' + patientId + '&game=' + gameId + '/');
+
+        if (!response) {
+            setError('An error occurred while fetching games');
+            setLoading(false);
+            return [];
+        }
+
+        setLoading(false);
+        return response;
+    }
+
+    return {getAverageScore, getLatestScore, getMostPlayedGame, getTopAttempts, getHighestScore, getAttemptsByGameAndPatient, getUniquePlays, getAttempts, getAttemptsByGame, getAttempt, loading, error}
 }
