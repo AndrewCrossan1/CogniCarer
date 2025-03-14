@@ -46,7 +46,7 @@ export const Dropdown = (props: DropdownProps) => {
 
             {isOpen && (
                 <ScrollView
-                    className={"w-full flex flex-col bg-white h-48 dark:bg-neutral-900 border-b border-l border-t border-r dark:border-gray-500 border-gray-400 rounded-b-lg"}>
+                    className={"w-full flex flex-col bg-white max-h-48 dark:bg-neutral-900 border-b border-l border-t border-r dark:border-gray-500 border-gray-400 rounded-b-lg"}>
                     {options.map((option: any, index: number) => (
                         <TouchableOpacity key={index} onPress={() => {
                             setSelected(option.display);
