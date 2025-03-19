@@ -1,23 +1,26 @@
 import {ActivityIndicator, Text, TouchableOpacity, View} from "react-native";
 import {useLocalSearchParams} from "expo-router";
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {useGame} from "@/hooks/games/useGame";
-import {Match} from "@/services/api/types";
+import {Attempt, Match} from "@/services/api/types";
 import {useColorScheme} from "nativewind";
 import colors from "tailwindcss/colors";
-import {Dropdown} from "@/components/forms/Dropdown";
+import {Dropdown, DropdownRef} from "@/components/forms/Dropdown";
 import {usePatients} from "@/hooks/patients/usePatients";
 import {useGameStatistics} from "@/hooks/games/useGameStatistics";
+import {useFocusEffect} from "@react-navigation/native";
 
 const SelectedGameHome = () => {
     const { getGame, loading } = useGame();
-    const { getAttemptsByGameAndPatient } = useGameStatistics();
+    const { getAttemptsByGameAndPatient, loading: statsLoading } = useGameStatistics();
     const { id } = useLocalSearchParams();
     const [game, setGame] = useState<Match | null>(null);
     const { colorScheme } = useColorScheme();
     const { getPatients } = usePatients();
     const [selectedPatient, setSelectedPatient] = useState(null);
     const [patientOptions, setPatientOptions] = useState([] as { value: string, display: string }[]);
+    const [previousAttempts, setPreviousAttempts] = useState([] as Attempt[]);
+    const dropdownRef = useRef<DropdownRef>(null);
 
 
     const fetchGame = async () => {
@@ -50,19 +53,36 @@ const SelectedGameHome = () => {
 
     useEffect(() => {
         fetchGame();
+
+        if (game?.person_with_dementia) {
+            // Use patientOptions to match the person_with_dementia to the patient value
+            let patient = patientOptions.find((patient) => patient.value === game.person_with_dementia);
+            console.log(patient);
+            if (patient) {
+                game.person_with_dementia = patient.display;
+            }
+        }
     }, [id]);
 
     useEffect(() => {
-        console.log("Patient", selectedPatient);
-        console.log("Game", id);
         if (selectedPatient) {
-            getAttemptsByGameAndPatient(selectedPatient, id.toString()).then((attempts) => {
-                console.log(attempts);
+            getAttemptsByGameAndPatient(id.toString(), selectedPatient).then((attempts) => {
+                if (attempts) {
+                    setPreviousAttempts(attempts);
+                }
             }).catch((error) => {
                 console.error(error);
             });
         }
     }, [selectedPatient]);
+
+    useFocusEffect(
+        useCallback(() => {
+            setSelectedPatient(null);
+            setPreviousAttempts([]);
+            dropdownRef.current?.setSelected("");
+        }, [])
+    );
 
     return (
         <View className={"flex-1 justify-between items-center bg-neutral-100 dark:bg-neutral-800 md:px-4 lg:px-6"}>
@@ -71,8 +91,8 @@ const SelectedGameHome = () => {
             )}
 
             {!loading && game && (
-                <View className={"w-full h-full justify-between"}>
-                    <View className={"py-16"}>
+                <View className={"w-full h-full justify-center lg:justify-evenly"}>
+                    <View>
                         <View className={"items-center my-4"}>
                             <Text className="text-4xl font-bold text-neutral-900 dark:text-white">
                                 {game.title}
@@ -159,7 +179,7 @@ const SelectedGameHome = () => {
                             <Text className={"text-lg dark:text-white font-semibold my-2"}>
                                 Select the player
                             </Text>
-                            <Dropdown options={patientOptions} onSelect={(value => {
+                            <Dropdown ref={dropdownRef} options={patientOptions} onSelect={(value => {
                                 setSelectedPatient(value);
                             })} />
                         </View>
@@ -170,21 +190,59 @@ const SelectedGameHome = () => {
                         <View className={"w-full flex border-b dark:border-b-neutral-600 border-b-neutral-300"}/>
 
                         <View className={"flex flex-row gap-3 mt-3"}>
-                            <View className={"flex-1 py-4 bg-white dark:bg-neutral-900 rounded-lg items-center"}>
-                                <Text className={"text-lg dark:text-white"}>
-                                    1. 10 points
-                                </Text>
-                            </View>
-                            <View className={"flex-1 py-4 bg-white dark:bg-neutral-900 rounded-lg items-center"}>
-                                <Text className={"text-lg dark:text-white"}>
-                                    1. 10 points
-                                </Text>
-                            </View>
-                            <View className={"flex-1 py-4 bg-white dark:bg-neutral-900 rounded-lg items-center"}>
-                                <Text className={"text-lg dark:text-white"}>
-                                    1. 10 points
-                                </Text>
-                            </View>
+                            {!selectedPatient && (
+                                <View className={"flex-1 py-4 bg-white dark:bg-neutral-900 rounded-lg items-center"} style={{
+                                    shadowColor: colors.black,
+                                    shadowOffset: {width: 0, height: 2},
+                                    shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10,
+                                    shadowRadius: 3.84,
+                                    elevation: 2
+                                }}>
+                                    <Text className="text-4xl font-bold text-blue-500">
+                                        Select a player
+                                    </Text>
+                                    <Text className="text-sm text-neutral-500 dark:text-neutral-400">
+                                        Select a player to view their attempts
+                                    </Text>
+                                </View>
+                            )}
+
+                            {selectedPatient && previousAttempts.length === 0 && (
+                                <View className={"flex-1 py-4 bg-white dark:bg-neutral-900 rounded-lg items-center"} style={{
+                                    shadowColor: colors.black,
+                                    shadowOffset: {width: 0, height: 2},
+                                    shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10,
+                                    shadowRadius: 3.84,
+                                    elevation: 2
+                                }}>
+                                    <Text className="text-4xl font-bold text-blue-500">
+                                        No attempts
+                                    </Text>
+                                    <Text className="text-sm text-neutral-500 dark:text-neutral-400">
+                                        No attempts have been made yet
+                                    </Text>
+                                </View>
+                            )}
+                            {previousAttempts.map((attempt, index) => (
+                                <View key={index} className={"flex-1 py-4 bg-white dark:bg-neutral-900 rounded-lg items-center"} style={{
+                                    shadowColor: colors.black,
+                                    shadowOffset: {width: 0, height: 2},
+                                    shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10,
+                                    shadowRadius: 3.84,
+                                    elevation: 2
+                                }}>
+                                    <Text className="text-4xl font-bold text-blue-500">
+                                        {statsLoading ? (
+                                            <ActivityIndicator size={"large"} color={colors.blue[500]} />
+                                        ) : (
+                                            <Text>{attempt.score} / {game.maximum_score}</Text>
+                                        )}
+                                    </Text>
+                                    <Text className="text-sm text-neutral-500 dark:text-neutral-400">
+                                        {attempt.created_at}
+                                    </Text>
+                                </View>
+                            ))}
                         </View>
                     </View>
 
