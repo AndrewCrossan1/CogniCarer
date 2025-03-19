@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {forwardRef, useImperativeHandle, useRef, useState} from "react";
 import {
     TextInput,
     TouchableOpacity,
@@ -16,7 +16,11 @@ interface DropdownProps {
     onSelect: (value: any) => void;
 }
 
-export const Dropdown = (props: DropdownProps) => {
+export type DropdownRef = {
+    setSelected: (value: string) => void;
+}
+
+export const Dropdown = forwardRef<DropdownRef, DropdownProps>((props, ref) => {
     // Destructure props
     const {options, onSelect} = props;
 
@@ -26,6 +30,13 @@ export const Dropdown = (props: DropdownProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selected, setSelected] = useState("");
 
+    const dropdownRef = useRef<TextInput>(null);
+
+    useImperativeHandle(ref, () => ({
+        setSelected: (value: string) => {
+            setSelected(value);
+        }
+    }));
 
     // Dropdown toggle function
     const toggle = () => {
@@ -37,7 +48,7 @@ export const Dropdown = (props: DropdownProps) => {
             <TouchableWithoutFeedback onPress={toggle} hitSlop={10}>
                 <View
                     className={`w-full flex flex-row justify-between items-center p-3 ${isOpen ? "border-t border-l border-r rounded-tl-lg rounded-tr-lg" : "border-t border-l border-r border-b rounded-lg"} dark:border-gray-500 border-gray-400`}>
-                    <TextInput editable={false} key={"dropdown"} value={selected} className={"dark:text-white"}
+                    <TextInput ref={dropdownRef} editable={false} key={"dropdown"} value={selected} className={"dark:text-white"}
                                placeholder={"Choose an option"} placeholderTextColor={"#AAAAA5"}/>
                     <MaterialIcons name={isOpen ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={24}
                                    color={theme === "dark" ? colors.white : colors.black}/>
@@ -55,11 +66,11 @@ export const Dropdown = (props: DropdownProps) => {
                         }}>
                             <Text className={"p-4 dark:text-white"}>{option.display}</Text>
                             {index !== options.length - 1 &&
-                              <View className={"border-b border-gray-400 dark:border-gray-500"}/>}
+                                <View className={"border-b border-gray-400 dark:border-gray-500"}/>}
                         </TouchableOpacity>
                     ))}
                 </ScrollView>
             )}
         </View>
     )
-}
+})
