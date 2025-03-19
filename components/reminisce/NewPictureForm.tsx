@@ -56,7 +56,6 @@ const NewPictureForm = (props: NewAlbumProps) => {
     // Refs for input fields
     const titleRef = useRef<InputGroupRef>(null);
 
-
     // Fetch patients and albums
     useEffect(() => {
         const fetchPatients = async () => {
@@ -72,41 +71,25 @@ const NewPictureForm = (props: NewAlbumProps) => {
             }
         }
 
-        const fetchAlbums = async () => {
-            const fetchedAlbums = await getAlbums();
-            if (fetchedAlbums) {
-                setAlbums(fetchedAlbums);
-            }
-        }
-
         fetchPatients();
-        fetchAlbums();
     }, []);
 
-    // Fetch albums
     useEffect(() => {
-        const getUsersAlbums = async () => {
-            // Filter the albums set in albums to only show the albums of the selected patient
-            const usersAlbums = albums.filter((album) => album.patient === patient);
-            let a = usersAlbums.map((album: any) => {
-                return {
-                    value: album.uuid,
-                    display: album.title
-                }
-            });
-            setAlbumsOptions(a);
-        }
-        const fetchAlbums = async () => {
-            if (patient !== "") {
-                await getUsersAlbums();
-                console.debug("Fetching albums for patient: ", patient);
-                console.debug("Album Options: ", albums);
+        const fetchedAlbums = async () => {
+            const albums = await getAlbums();
+            if (albums) {
+                setAlbums(albums);
+                let albumOptions = albums.map((album) => {
+                    return {
+                        value: album.uuid,
+                        display: album.title
+                    }
+                });
+                setAlbumsOptions(albumOptions);
             }
         }
 
-        fetchAlbums().then(() => {
-            console.debug("Albums fetched");
-        });
+        fetchedAlbums();
     }, [patient]);
 
     /**
