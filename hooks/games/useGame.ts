@@ -81,15 +81,6 @@ export const useGame = () => {
     }
 
     /**
-     * Get a list of games by category
-     * @param {string} category - The category of the games
-     * @returns {Promise<Match[]>}
-     */
-    const getGamesByType = async (category: string): Promise<Match[]> => {
-        return [] as Match[];
-    }
-
-    /**
      * Create a new game
      * @param {any} game - The game object
      * @param {ImagePickerResult} matching_image - The matching image
@@ -137,23 +128,5 @@ export const useGame = () => {
         return true;
     }
 
-    /**
-     * Update a game
-     * @param {Match} game - The game object
-     * @returns {Promise<Match>}
-     */
-    const updateGame = async (game: Match): Promise<Match> => {
-        return {} as Match;
-    }
-
-    /**
-     * Delete a game
-     * @param {string} uuid - The UUID of the game
-     * @returns {Promise<void>}
-     */
-    const deleteGame = async (uuid: string): Promise<void> => {
-        return;
-    }
-
-    return {getGame, getGames, getGamesByType, getLatestGame, createGame, updateGame, deleteGame, loading, error}
+    return {getGame, getGames, getLatestGame, createGame, loading, error}
 }

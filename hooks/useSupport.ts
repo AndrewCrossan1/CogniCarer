@@ -59,18 +59,6 @@ export const useSupport = () => {
     }
 
     /**
-     * getArticleBySource function
-     * @param {string} source
-     * @returns {Promise<Article[] | null>}
-     * @description This function is used to get support articles starting with the source parameter, e.g. 'nhs' will return the articles with source 'nhs scotland', 'nhs england' or 'nhs wales'.
-     * @example
-     * const articles = await getArticleBySource('nhs')
-     */
-    const getArticleBySource = async (source: string) : Promise<Article[] | null> => {
-        return null;
-    }
-
-    /**
      * getArticle function
      * @param {string} uuid
      * @returns {Promise<Article | null>}
@@ -141,5 +129,5 @@ export const useSupport = () => {
         return response.articles_viewed_today;
     }
 
-    return {loading, error, getArticles, getLatestArticle, getArticleBySource, getArticle, likeArticle, unlikeArticle, getArticlesViewedToday}
+    return {loading, error, getArticles, getLatestArticle, getArticle, likeArticle, unlikeArticle, getArticlesViewedToday}
 }
