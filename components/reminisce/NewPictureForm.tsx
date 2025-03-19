@@ -1,4 +1,4 @@
-import {Modal, Platform, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator, Modal, Platform, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {BlurView} from "expo-blur";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {useEffect, useRef, useState} from "react";
@@ -12,6 +12,7 @@ import {useReminisce} from "@/hooks/useReminisce";
 import * as ImagePicker from 'expo-image-picker';
 import {ImagePickerResult} from "expo-image-picker";
 import ImageViewer from "@/components/ImageViewer";
+import colors from "tailwindcss/colors";
 
 /**
  * NewAlbumProps interface
@@ -35,7 +36,7 @@ interface NewAlbumProps {
 const NewPictureForm = (props: NewAlbumProps) => {
     // Hooks
     const {getPatients} = usePatients();
-    const {getAlbums, newPicture} = useReminisce();
+    const {getAlbums, newPicture, loading} = useReminisce();
     const {visible, onSubmitted} = props;
     const user = useAppSelector(state => state.user.user);
 
@@ -158,6 +159,8 @@ const NewPictureForm = (props: NewAlbumProps) => {
         if (s === "") {
             setTitleError(true);
             titleRef.current?.shake();
+        } else {
+            setTitleError(false);
         }
         setTitle(s);
     }
@@ -263,38 +266,44 @@ const NewPictureForm = (props: NewAlbumProps) => {
                     )}
 
                     {/* Buttons */}
-                    <View className={"flex flex-row justify-center gap-2"}>
-                        <TouchableOpacity
-                            onPress={() => {
-                                submit();
-                            }}
-                            className={`flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-blue-500`}>
-                            <MaterialIcons name="add" size={24} color="white" className={"mr-1"}/>
-                            <Text className="text-white">
-                                Add Picture
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={
-                                // Reset errors and close the modal
-                                () => {
-                                    setTitleError(false);
-                                    setTitle("");
-                                    setPatient("");
-                                    setAlbum("");
-                                    setPicture(null);
-                                    setErrors(false);
-                                    setPictureString(undefined);
-                                    props.onClose();
+                    {loading ? (
+                        <View className={"flex flex-row justify-center gap-2"}>
+                            <ActivityIndicator size={"large"} color={colors.blue[500]}/>
+                        </View>
+                    ) : (
+                        <View className={"flex flex-row justify-center gap-2"}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    submit();
+                                }}
+                                className={`flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-blue-500`}>
+                                <MaterialIcons name="add" size={24} color="white" className={"mr-1"}/>
+                                <Text className="text-white">
+                                    Add Picture
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={
+                                    // Reset errors and close the modal
+                                    () => {
+                                        setTitleError(false);
+                                        setTitle("");
+                                        setPatient("");
+                                        setAlbum("");
+                                        setPicture(null);
+                                        setErrors(false);
+                                        setPictureString(undefined);
+                                        props.onClose();
+                                    }
                                 }
-                            }
-                            className={"flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-red-500"}>
-                            <MaterialIcons name="cancel" size={24} color="white" className={"mr-1"}/>
-                            <Text className="text-white">
-                                Cancel
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
+                                className={"flex-1 flex-row items-center mt-3 rounded-lg p-2 bg-red-500"}>
+                                <MaterialIcons name="cancel" size={24} color="white" className={"mr-1"}/>
+                                <Text className="text-white">
+                                    Cancel
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
                 </View>
             </Modal>
         </>
