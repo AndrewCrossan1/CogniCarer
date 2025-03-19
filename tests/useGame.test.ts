@@ -28,9 +28,28 @@ describe('Test getGames() from useGame', () => {
     });
 })
 
-describe('Test getLatestGame() from useGame', () => {
+describe('Test getGame() from useGame', () => {
     it('Should return a single Game', async () => {
         // Mock the API response
+        const response = { uuid: '123', name: 'Test Game' };
+        (API.get as jest.Mock).mockResolvedValue(response);
+
+        const { result } = renderHook(() => useGame());
+
+        await act(async () => {
+            const game = await result.current.getGame('123');
+            expect(game).toEqual(response);
+        });
+
+        expect(API.get).toHaveBeenCalledWith('/games/matches/123/');
+        expect(result.current.loading).toBeFalsy();
+        expect(result.current.error).toBeNull();
+    });
+});
+
+describe('Test getLatestGame() from useGame', () => {
+    it('Should return a single Game', async () => {
+        // Mock the API responseA
         const response = { uuid: '123', name: 'Test Game' };
         (API.get as jest.Mock).mockResolvedValue(response);
 
