@@ -78,7 +78,11 @@ const GameIndex = () => {
                         shadowRadius: 3.84,
                         elevation: 2
                     }}>
-                    <View className={"flex-1"}>
+                    <TouchableOpacity onPress={
+                        () => {
+                            router.push(`/(app)/(games)/(tabs)/play/${game.uuid}`)
+                        }
+                    } className={"flex-1"}>
                         <View className="bg-indigo-200 dark:bg-blue-500 px-2 py-4 rounded-t-lg flex-row items-center w-auto">
                             <MaterialIcons name="new-releases" size={18} color={colors.blue[800]} />
                             <Text className="ml-1 text-sm font-semibold text-blue-800 dark:text-blue-900 uppercase tracking-wide">
@@ -106,12 +110,12 @@ const GameIndex = () => {
                                 <TouchableOpacity
                                     className="flex-row items-center pt-2">
                                     <Text className="text-base text-neutral-500 dark:text-neutral-400">
-                                        Avg: {game.average_score}/{game.maximum_score}
+                                        {game.times_played} plays
                                     </Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
-                    </View>
+                    </TouchableOpacity>
                 </TouchableOpacity>
                 )}
             </View>
