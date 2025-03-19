@@ -124,7 +124,7 @@ export const useReminisce = () => {
     }
 
     interface DeleteProps {
-        type: "entry" | "album" | "picture";
+        type: "entries" | "albums" | "pictures";
         id: string;
     }
 
@@ -133,13 +133,13 @@ export const useReminisce = () => {
 
         if (response) {
             switch (type) {
-                case "entry":
+                case "entries":
                     setEntries(entries.filter((entry) => entry.uuid !== id));
                     break;
-                case "album":
+                case "albums":
                     setAlbums(albums.filter((album) => album.uuid !== id));
                     break;
-                case "picture":
+                case "pictures":
                     setPictures(pictures.filter((picture) => picture.uuid !== id));
                     break;
             }
