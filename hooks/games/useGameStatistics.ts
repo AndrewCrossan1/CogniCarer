@@ -126,7 +126,7 @@ export const useGameStatistics = () => {
     const getAttemptsByGameAndPatient = async (gameId: string, patientId: string): Promise<Attempt[]> => {
         setLoading(true);
 
-        const response = await API.get('/games/attempts/by-g-p/?patient_uuid=' + patientId + '&game_uuid=' + gameId + '/');
+        const response = await API.get('/games/attempts/by-g-p/?patient_uuid=' + patientId + '&game_uuid=' + gameId);
 
         if (!response) {
             setError('An error occurred while fetching games');
