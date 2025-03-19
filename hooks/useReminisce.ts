@@ -160,15 +160,16 @@ export const useReminisce = () => {
     }
 
     const newPicture = async (data: { title: string, patient: string, album?: string, user: string}, image: any) => {
-        //
+        setLoading(true);
+
         const response = await API.image_post("reminisce/pictures/", data, image);
 
-        if (response) {
-            setPictures([...pictures, response]);
-        } else {
-            console.error("Error creating picture");
+        if (!response) {
+            setLoading(false);
+            return null;
         }
 
+        setLoading(false);
         return response;
     }
 
