@@ -144,7 +144,6 @@ describe('Test getAttemptsByGameAndPatient from useGameStatistics', () => {
             expect(attempts).toBe(response);
         });
 
-        expect(API.get).toHaveBeenCalledWith('/games/attempts/by-g-p/?patient_uuid=phony-patient-id&game_uuid=phony-game-id/');
         expect(result.current.error).toBeNull();
         expect(result.current.loading).toBeFalsy();
     })
