@@ -68,8 +68,6 @@ export const useSupport = () => {
      */
     const getArticle = async (uuid: string) : Promise<Article | null> => {
         setLoading(true);
-        // Call the API to get all support articles
-        console.log(uuid)
         const response = await API.get(`/support/articles/${uuid}/`);
 
         if (!response) {
@@ -84,8 +82,6 @@ export const useSupport = () => {
 
     const likeArticle = async (uuid: string) : Promise<boolean> => {
         setLoading(true);
-        // Call the API to get all support articles
-        console.log(uuid)
         const response = await API.POST(`/support/articles/${uuid}/like/`);
 
         if (!response) {
@@ -100,8 +96,6 @@ export const useSupport = () => {
 
     const unlikeArticle = async (uuid: string) : Promise<boolean> => {
         setLoading(true);
-        // Call the API to get all support articles
-        console.log(uuid)
         const response = await API.POST(`/support/articles/${uuid}/unlike/`);
 
         if (!response) {
