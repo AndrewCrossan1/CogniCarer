@@ -37,12 +37,13 @@ export default function NewProfilePicture(props: NewProfilePictureProps) {
         let data = {
             first_name: props.form.first_name,
             last_name: props.form.last_name,
+            date_of_birth: props.form.date_of_birth,
             email: props.form.email,
             profile_image: picture
         }
 
         // Send the form data to the server
-        update(data.email, data.first_name, data.last_name, data.profile_image).then(
+        update(data.email, data.first_name, data.date_of_birth, data.last_name, data.profile_image).then(
             (success) => {
                 if (success) {
                     props.onSubmitted();
