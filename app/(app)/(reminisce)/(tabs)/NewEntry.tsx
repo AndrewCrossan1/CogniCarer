@@ -447,39 +447,40 @@ const NewEntry = () => {
                     </TouchableWithoutFeedback>
                 )}
             </View>
+            <View className={"w-full absolute"}>
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={fullImageVisible}
+                    onRequestClose={() => {
+                        setFullImageVisible(false);
+                    }}>
 
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={fullImageVisible}
-                onRequestClose={() => {
-                    setFullImageVisible(false);
-                }}>
+                    {/* Full Image */}
+                    <BlurView intensity={75} style={[StyleSheet.absoluteFill, {
+                        shadowColor: '#000',
+                        shadowOffset: {
+                            width: 0,
+                            height: 2,
+                        },
+                        shadowOpacity: 0.5,
+                        shadowRadius: 4,
+                        elevation: 5,
+                    }]}/>
+                    <View
+                        className={"my-safe mx-safe-or-4 dark:bg-neutral-900 bg-white border dark:border-neutral-800 border-gray-400 rounded-lg  p-4"}>
+                        <TouchableWithoutFeedback onPress={() => setFullImageVisible(false)}>
+                            <Image
+                                source={{uri: selectedPicture?.image_url}}
+                                style={{width: "100%", height: "100%"}}
+                                resizeMode={"contain"}
+                                className={"rounded-lg"}
 
-                {/* Full Image */}
-                <BlurView intensity={75} style={[StyleSheet.absoluteFill, {
-                    shadowColor: '#000',
-                    shadowOffset: {
-                        width: 0,
-                        height: 2,
-                    },
-                    shadowOpacity: 0.5,
-                    shadowRadius: 4,
-                    elevation: 5,
-                }]}/>
-                <View
-                    className={"my-safe mx-safe-or-4 dark:bg-neutral-900 bg-white border dark:border-neutral-800 border-gray-400 rounded-lg  p-4"}>
-                    <TouchableWithoutFeedback onPress={() => setFullImageVisible(false)}>
-                        <Image
-                            source={{uri: selectedPicture?.image_url}}
-                            style={{width: "100%", height: "100%"}}
-                            resizeMode={"contain"}
-                            className={"rounded-lg"}
-
-                        />
-                    </TouchableWithoutFeedback>
-                </View>
-            </Modal>
+                            />
+                        </TouchableWithoutFeedback>
+                    </View>
+                </Modal>
+            </View>
         </KeyboardAwareScrollView>
     );
 }
