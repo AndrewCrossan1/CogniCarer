@@ -47,7 +47,22 @@ const editAccount = () => {
     // Date changing logic
     const onChange = (_event: DateTimePickerEvent, selectedDate?: Date) => {
         const currentDate = selectedDate || new Date();
-        setForm({...form, date_of_birth: currentDate.toDateString()});
+
+        // Build a new date string (MM-DD-YYYY)
+        let date: any = currentDate.getDate();
+        let month: any = currentDate.getMonth() + 1;
+        let year = currentDate.getFullYear();
+
+        if (date < 10) {
+            date = "0" + date;
+        }
+        if (month < 10) {
+            month = "0" + month;
+        }
+
+        date = year + "-" + month + "-" + date;
+
+        setForm({...form, date_of_birth: date});
         setShow(Platform.OS === "ios");
     }
 
@@ -111,6 +126,10 @@ const editAccount = () => {
             emailRef.current?.shake();
         }
 
+        if (form.date_of_birth === "") {
+            errors.date_of_birth = "Date of birth is required.";
+        }
+
         setErrors(errors);
         return Object.values(errors).every((value) => value === "");
     }
@@ -128,8 +147,8 @@ const editAccount = () => {
             console.debug("[EditAccount] Saving form: ", form);
         }
 
-        // Use the useAuth hook to update the user
-        update(form.email, form.first_name, form.last_name).then(
+        // @ts-ignore - we ensured that date_of_birth is not empty in validateForm
+        update(form.email, form.first_name, form.date_of_birth, form.last_name).then(
             () => {
                 setAlert({
                     message: "Account updated successfully.",
@@ -158,7 +177,9 @@ const editAccount = () => {
                 {/* Profile Edit Quick Action */}
                 <View className={"flex-col items-center justify-center xs:mt-2 sm:mt-3 md:mt-3 lg:mt-3 xl:mt-3"}>
                     {/* @ts-ignore */}
-                    <Image source={{uri: user.profile_image}} className={"rounded-full xs:w-16 sm:w-24 md:w-32 lg:w-40 xl:w-40 xs:h-16 sm:h-24 md:h-32 lg:h-40 xl:h-40 "}/>
+                    {user?.profile_image && (
+                        <Image source={{uri: user.profile_image}} className={"rounded-full xs:w-16 sm:w-24 md:w-32 lg:w-40 xl:w-40 xs:h-16 sm:h-24 md:h-32 lg:h-40 xl:h-40 "}/>
+                    )}
                     <View className={"items-center"}>
                         <TouchableOpacity>
                             <Text className={"dark:text-white xs:text-xs sm:text-sm md:text-sm lg:text-base xl:text-base text-blue-500 underline underline-offset-1"} onPress={() => {setProfileModalVisible(true)}}>
