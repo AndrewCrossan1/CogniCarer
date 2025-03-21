@@ -5,7 +5,7 @@ import {
     ActivityIndicator,
     ScrollView
 } from "react-native";
-import {useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {useRouter} from "expo-router";
 import colors from "tailwindcss/colors";
 import {useAuth} from "@/context/AuthContext";
@@ -16,6 +16,7 @@ import * as SecureStore from "expo-secure-store";
 import * as LocalAuthentication from "expo-local-authentication";
 import {MaterialIcons} from "@expo/vector-icons";
 import {Alert} from "@/components/Alert";
+import {useFocusEffect} from "@react-navigation/native";
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -26,9 +27,9 @@ export default function LoginScreen() {
     const [emailErrVisible, setEmailErrVisible] = useState(false);
     const [message, setMessage] = useState("");
     const [alertType, setAlertType] = useState<"error" | "success">("error");
+    const [hasBiometricsEnabled, setHasBiometricsEnabled] = useState(false);
 
     const refEmailInput = useRef<InputGroupRef>(null);
-    const refPasswordInput = useRef<InputGroupRef>(null);
 
     const [checked, setChecked] = useState(false);
 
@@ -42,13 +43,6 @@ export default function LoginScreen() {
             }, 3000);
         }
     }, [showAlert]);
-
-    const focusOnPassword = () => {
-        if (refPasswordInput && refPasswordInput.current) {
-            // @ts-ignore
-            refPasswordInput.current.focus();
-        }
-    };
 
     // Check if the user has biometric authentication enabled
     const hasBiometrics = async () => {
@@ -65,13 +59,23 @@ export default function LoginScreen() {
             console.debug("User does not have biometric records");
             return false;
         }
+        setHasBiometricsEnabled(true);
         return true;
     }
+
+    useFocusEffect(
+        useCallback(() => {
+            hasBiometrics().then(hasBio =>
+                setHasBiometricsEnabled(hasBio)
+            );
+        }, [])
+    )
 
     const useLocalAuth = async () => {
         // Check if the user has biometric authentication enabled
         if (!await hasBiometrics()) {
             console.debug("Biometric authentication is not enabled, defaulting to login screen");
+            setHasBiometricsEnabled(false);
             return;
         }
 
@@ -81,7 +85,7 @@ export default function LoginScreen() {
 
         if (!email || !password) {
             setShowAlert(true);
-            setMessage("No stored credentials found");
+            setMessage("No stored credentials found, please log in using your email and password");
             setAlertType("error");
             console.debug("No stored credentials found, defaulting to login screen");
             return;
@@ -104,9 +108,8 @@ export default function LoginScreen() {
         if (!response) {
             setShowAlert(true);
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-            setMessage("Invalid email or password");
+            setMessage("Invalid email or password, try logging in manually!");
             setAlertType("error");
-            console.debug("Stored credentials are invalid, defaulting to login screen");
             return;
         }
 
@@ -127,7 +130,6 @@ export default function LoginScreen() {
         }
         if (password.length === 0) {
             setPasswordErrVisible(true);
-            refPasswordInput.current?.shake();
             // Give a gentle vibration to the user
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         }
@@ -137,7 +139,7 @@ export default function LoginScreen() {
             const response = await login(email, password);
             if (!response) {
                 setShowAlert(true);
-                setMessage("Invalid email or password");
+                setMessage("Your email or password is incorrect, please try again!");
                 setAlertType("error");
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
                 return;
@@ -155,13 +157,13 @@ export default function LoginScreen() {
 
     return (
         <ScrollView className={"flex-1 w-full dark:bg-neutral-800 bg-neutral-100"}>
+            {/* Header */}
             <Alert
                 message={message}
                 type={alertType}
                 visible={showAlert}
                 onPress={() => setShowAlert(false)}
             />
-            {/* Header */}
             <View className={"xs:mt-1 sm:mt-2 md:mt-4 lg:mt-6"}>
                 <Text
                     className={"dark:text-white font-bold text-center xs:text-base sm:text-xl md:text-2xl lg:text-4xl"}>Welcome
@@ -170,13 +172,13 @@ export default function LoginScreen() {
             </View>
             {/* Form */}
             <View className={"xs:pb-2 sm:pb-3 md:pb-4 lg:pb-5 px-8"}>
-                <InputGroup ref={refEmailInput} onSubmitEditing={focusOnPassword} error={emailErrVisible}
+                <InputGroup ref={refEmailInput} error={emailErrVisible}
                             errorMessage={"This field is required!"} label={"Email Address"} value={email}
                             onChangeText={(e) => setEmail(e)} placeholder={"joe.bloggs@cognicarer.com"}
                             textContentType={"emailAddress"}
                             autoComplete={"email"} keyboardType={"email-address"}
                 />
-                <InputGroup ref={refPasswordInput} error={passwordErrVisible} errorMessage={"This field is required!"}
+                <InputGroup error={passwordErrVisible} errorMessage={"This field is required!"}
                             label={"Password"} value={password} onChangeText={(e) => setPassword(e)}
                             autoComplete={"password"}
                             textContentType={"password"}
@@ -211,13 +213,15 @@ export default function LoginScreen() {
                 }
 
                 {/* Biometric Authentication */}
-                <TouchableOpacity onPress={useLocalAuth}
-                                  className={"w-full bg-blue-500 flex-row justify-center text-white p-2.5 rounded-md xs:mt-3 sm:mt-4 md:mt-5 lg:mt-6"}>
-                    <MaterialIcons name={"fingerprint"} size={24} color={colors.white}/>
-                    <Text className={"text-center text-white text-lg"}>
-                        Use Biometrics
-                    </Text>
-                </TouchableOpacity>
+                {hasBiometricsEnabled && (
+                    <TouchableOpacity onPress={useLocalAuth}
+                                      className={"w-full bg-blue-500 flex-row justify-center text-white p-2.5 rounded-md xs:mt-3 sm:mt-4 md:mt-5 lg:mt-6"}>
+                        <MaterialIcons name={"fingerprint"} size={24} color={colors.white}/>
+                        <Text className={"text-center text-white text-lg"}>
+                            Use Biometrics
+                        </Text>
+                    </TouchableOpacity>
+                )}
 
                 <View className={"xs:mt-1 sm:mt-3 md:mt-5 lg:mt-7 flex-row items-center"}>
                     <Text className={"text-xl dark:text-white font-bold"}>
