@@ -14,7 +14,7 @@ import {ImagePickerResult} from "expo-image-picker";
 interface AuthContextType {
     login: (email: string, password: string) => Promise<boolean>;
     logout: () => Promise<boolean>;
-    update: (email: string, firstName: string, lastName: string, image?: any) => Promise<boolean>
+    update: (email: string, firstName: string, lastName: string, date_of_birth: string, image?: any) => Promise<boolean>
     sendResetEmail: (email: string) => Promise<boolean>;
     validateResetCode: (email: string, code: string) => Promise<boolean>;
     resetPassword: (email: string, code: string, password: string, confirmPassword: string) => Promise<boolean>;
@@ -122,18 +122,21 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
      * Update the user's information
      * @param email The email of the user
      * @param firstName The first name of the user
+     * @param date_of_birth The date of birth of the user
      * @param lastName The last name of the user
      * @param image
      * @returns A boolean indicating the success of the operation
      */
-    const update = async (email: string, firstName: string, lastName: string, image?: any): Promise<boolean> => {
+    const update = async (email: string, firstName: string, date_of_birth: string, lastName: string, image?: any): Promise<boolean> => {
         setLoading(true);
         setError(null);
         if (image) {
             try {
+                console.log
                 const response = await API.image_put("/auth/user/", {
                     email: email,
                     first_name: firstName,
+                    date_of_birth: date_of_birth,
                     last_name: lastName,
                 }, image, "profile_image");
 
@@ -159,6 +162,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 const response = await API.put("/auth/user/", {
                     email: email,
                     first_name: firstName,
+                    date_of_birth: date_of_birth,
                     last_name: lastName,
                 });
 
