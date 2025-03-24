@@ -14,6 +14,10 @@ export const useReminisce = () => {
 
     const { getPatient } = usePatients();
 
+    /**
+     * Get all the entries
+     * @returns {Promise<ReminisceEntry[] | null>} The entries or null if an error occurred
+     */
     const getEntries = async (): Promise<ReminisceEntry[] | null> => {
         setLoading(true);
 
@@ -42,6 +46,10 @@ export const useReminisce = () => {
         return null;
     }
 
+    /**
+     * Get all albums for the user
+     * @returns {Promise<UserAlbum[] | null>} The albums or null if an error occurred
+     */
     const getAlbums = async (): Promise<UserAlbum[] | null> => {
         setLoading(true);
 
@@ -64,6 +72,11 @@ export const useReminisce = () => {
         return null;
     }
 
+    /**
+     * Get the name of an album
+     * @param albumId The ID of the album
+     * @returns {Promise<string | null>} The name of the album or null if an error occurred
+     */
     const getAlbumName = async (albumId: string): Promise<string | null> => {
         setLoading(true);
 
@@ -79,6 +92,11 @@ export const useReminisce = () => {
         return null;
     }
 
+    /**
+     * Get the album data
+     * @param albumName The name of the album
+     * @returns {Promise<string | null>} The album data or null if an error occurred
+     */
     const getAlbum = async (albumName: string): Promise<string | null> => {
         setLoading(true);
 
@@ -94,6 +112,10 @@ export const useReminisce = () => {
         return null;
     }
 
+    /**
+     * Get all the pictures
+     * @returns {Promise<Picture[] | null>} The pictures or null if an error occurred
+     **/
     const getPictures = async (): Promise<Picture[] | null> => {
         setLoading(true);
 
@@ -128,6 +150,12 @@ export const useReminisce = () => {
         id: string;
     }
 
+    /**
+     * Delete an item
+     * @param type The type of item to delete
+     * @param id The ID of the item to delete
+     * @returns {Promise<boolean>} True if the item was deleted, false otherwise
+     */
     const deleteItem = async ({ type, id }: DeleteProps) => {
         const response = await API.delete(`reminisce/${type}/${id}/`);
 
@@ -147,6 +175,11 @@ export const useReminisce = () => {
         return response;
     }
 
+    /**
+     * Create a new album
+     * @returns {Promise<UserAlbum | null>} The new album or null if an error occurred
+     * @param data The data for the new album
+     */
     const newAlbum = async (data: { title: string, description: string, patient: string, user: string }) => {
         const response = await API.POST("reminisce/albums/", data);
 
@@ -159,6 +192,12 @@ export const useReminisce = () => {
         return response;
     }
 
+    /**
+     * Create a new picture
+     * @param data The data for the new picture
+     * @param image The image to upload
+     * @returns {Promise<Picture | null>} The new picture or null if an error occurred
+     */
     const newPicture = async (data: { title: string, patient: string, album?: string, user: string}, image: any) => {
         setLoading(true);
 
@@ -173,6 +212,11 @@ export const useReminisce = () => {
         return response;
     }
 
+    /**
+     * Create a new entry
+     * @param data The data for the new entry
+     * @returns {Promise<ReminisceEntry | null>} The new entry or null if an error occurred
+     */
     const newEntry = async (data: { patient: string, picture: string, notes: string, date_taken: string }) => {
         setLoading(true);
 
@@ -188,6 +232,11 @@ export const useReminisce = () => {
         return response
     }
 
+    /**
+     * Get an entry
+     * @param entryId The ID of the entry
+     * @returns {Promise<ReminisceEntry | null>} The entry or null if an error occurred
+     */
     const getEntry = async (entryId: string): Promise<ReminisceEntry | null> => {
         setLoading(true);
 
@@ -203,6 +252,13 @@ export const useReminisce = () => {
         return null;
     }
 
+    /**
+     * Update an entry, album or picture
+     * @param type The type of item to update
+     * @param id The ID of the item to update
+     * @param data The new data for the item
+     * @returns {Promise<any>} The updated item
+     */
     const update = async (type: "entry" | "album" | "picture", id: string, data: any) => {
         setLoading(true);
 
