@@ -101,11 +101,18 @@ const NewEntry = () => {
     }, []);
 
     useEffect(() => {
-        if (pictures && patients) {
-            const filteredPictures = pictures.filter(picture => picture.patient === selectedPatient?.uuid);
-            const options = filteredPictures.map(picture => ({value: picture.uuid, display: picture.title}));
-            setPictureOptions(options);
+        const fetchPictures = async () => {
+            const fetchedPictures = await getPictures();
+            if (fetchedPictures) {
+                setPictures(fetchedPictures);
+                setPictureOptions(fetchedPictures.map(picture => ({
+                    value: picture.uuid,
+                    display: picture.title
+                })));
+            }
         }
+
+        fetchPictures().then();
     }, [selectedPatient]);
 
     const handleLongPress = () => {
