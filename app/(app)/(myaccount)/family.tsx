@@ -74,7 +74,7 @@ const family = () => {
                                       onPress={() => router.push("/(app)/(myaccount)/edit-account")}>
                         <View className={"flex-row items-center"}>
                             {/* @ts-ignore */}
-                            <Image source={{uri: user.profile_image}}
+                            <Image source={{uri: user?.profile_image}}
                                    className={"mr-4 rounded-full xs:w-10 sm:w-15 md:w-20 lg:w-25 xl:w-30 xs:h-10 sm:h-15 md:h-20 lg:h-25 xl:h-30 "}/>
                             <View className={"flex-col"}>
                                 <Text
