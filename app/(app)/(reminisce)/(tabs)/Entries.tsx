@@ -232,7 +232,6 @@ const Entries = () => {
                                         <Image
                                             className={"rounded-t-lg"}
                                             source={{uri: entry.pictureActual?.image_url}}
-                                            loadingIndicatorSource={require('@/assets/images/undraw_loading_65y2.png')}
                                             style={{
                                                 width: "100%", height: 125,
                                             }}

@@ -32,7 +32,6 @@ const NewEntry = () => {
     const {getPatients} = usePatients();
     const { colorScheme } = useColorScheme();
     const image = require('@/assets/images/undraw_dreamer_gb41.png');
-    const loading = require('@/assets/images/loading.gif');
     const router = useRouter();
 
     const [pictures, setPictures] = useState<Picture[] | null>([] as Picture[]);
@@ -296,7 +295,6 @@ const NewEntry = () => {
                                             style={[{aspectRatio: 1, height: 150}]}
                                             resizeMode={"cover"}
                                             className={"rounded-lg"}
-                                            loadingIndicatorSource={loading}
                                         />
                                     </TouchableWithoutFeedback>
                                 </Animated.View>

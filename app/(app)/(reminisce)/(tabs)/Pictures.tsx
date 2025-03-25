@@ -148,7 +148,7 @@ const Pictures = () => {
                 <View className={"flex flex-row items-center gap-4"} style={{
                     shadowColor: colors.black, shadowOffset: { width: 0, height: 2}, shadowOpacity: colorScheme === "dark" ? 0.30 : 0.10, shadowRadius: 3.84, elevation: 5}}
                 >
-                    <Image source={image} loadingIndicatorSource={{uri: require('@/assets/images/reminisce/undraw_loading_65y2.png')}} className={"rounded-lg flex"} resizeMode={"cover"} style={{width: 100, height: 100}}/>
+                    <Image source={image} className={"rounded-lg flex"} resizeMode={"cover"} style={{width: 100, height: 100}}/>
                     <View className={"p-2 flex-1"}>
                         <Text className={"dark:text-white md:text-xl lg:text-2xl font-bold text-black"}>
                             Pictures
@@ -242,7 +242,6 @@ const Pictures = () => {
                                             <Image
                                                 className={"rounded-t-lg xs:h-20 sm:h-24 md:h-40 lg:h-44 xl:h-48"}
                                                 source={{uri: picture.image_url}}
-                                                loadingIndicatorSource={require('@/assets/images/undraw_loading_65y2.png')}
                                                 style={{width: "100%"}}
                                             />
                                         </View>
