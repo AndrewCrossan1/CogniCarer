@@ -154,15 +154,6 @@ export default function Register() {
             tempErrors = {...tempErrors, confirmPassword: "Passwords do not match"};
         }
 
-        // Validate the terms of service
-        if (!tosAccepted) {
-            setAlert({
-                message: "You must accept the terms of service to continue",
-                type: "error",
-                visible: true,
-            });
-        }
-
         // Set the errors
         setErrors(tempErrors);
 
@@ -179,6 +170,11 @@ export default function Register() {
         // Validate the form
         const isValid = await validateForm();
         if (!isValid) {
+            setAlert({
+                message: "Please fill in the required fields",
+                type: "error",
+                visible: true,
+            });
             return;
         }
 
